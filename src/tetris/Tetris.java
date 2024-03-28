@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import blocks.*;
 
-public class TetrisBoard {
+public class Tetris {
 	private static final int BoardWidth = 10;
     private static final int BoardHeight = 20;
     private static int[][] board = new int[BoardHeight][BoardWidth];
