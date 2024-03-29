@@ -8,6 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import tetris.Board;
 
 public class StartMenu extends Application {
     public static int XSIZE = 400;	 
@@ -112,14 +113,16 @@ public class StartMenu extends Application {
 			ScoreBoard.showSettingDialog(score,primaryStage);
         } 
         else if (selectedItem.equals("Setting")) {
-        	if(a==true) {
+        	/*if(a==true) {
             	changeSize(200, 400);
             	a=false;
             }
             else {
             	changeSize(400, 800);
             	a=true;
-            }
+            }*/
+        	Board board=new Board();
+        	board.start(primaryStage);
         } 
         else if (selectedItem.equals("Score Board")) {
             primaryStage.setScene(ScoreBoard.createScene(primaryStage));

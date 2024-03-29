@@ -1,4 +1,4 @@
-package Tetris;
+package tetris;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -19,7 +19,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import Tetris.BlockData;
+import tetris.BlockData;
 
 public class Board extends Application {
     
