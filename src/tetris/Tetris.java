@@ -23,7 +23,7 @@ public class Tetris {
     }
     
     
-    // 보드 초기화
+    // 보드 초기화 
     private void clearBoard() {
     	
         for (int y = 0; y < BoardHeight; y++) {
