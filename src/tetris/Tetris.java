@@ -17,7 +17,7 @@ public class Tetris {
     
     
     // 생성자
-    public TetrisBoard() {
+    public Tetris() {
         clearBoard();
         randomBlock();
     }
