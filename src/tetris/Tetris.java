@@ -14,10 +14,12 @@ public class Tetris {
     private static int dropSpeed = 1000;
     private static Block block;
     private static Block preBlock;
+    private static int level = 1;
     
     
     // 생성자
-    public Tetris() {
+    public Tetris(int level) {
+    	this.level = level;
         clearBoard();
         randomBlock();
     }
@@ -28,7 +30,7 @@ public class Tetris {
     	
         for (int y = 0; y < BoardHeight; y++) {
             for (int x = 0; x < BoardWidth; x++) {
-                board[y][x] = 0;
+                board[y][x] = ' ';
             }
         }
     }
@@ -45,7 +47,7 @@ public class Tetris {
                         return true; // 보드 바깥으로 나가는 경우
                     }
 
-                    if (board[newY][newX] != 0) {
+                    if (board[newY][newX] != ' ') {
                         return true; // 이미 채워진 공간으로 이동하는 경우
                     }
                 }
@@ -77,7 +79,7 @@ public class Tetris {
         for (int y = BoardHeight - 1; y >= 0; y--) {
             boolean lineComplete = true;
             for (int x = 0; x < BoardWidth; x++) {
-            	 if (board[y][x] == 0 ) {
+            	 if (board[y][x] == ' ' ) {
                     lineComplete = false;
                     break;
                 }
@@ -110,7 +112,7 @@ public class Tetris {
         }
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
-            board[0][x] = 0;
+            board[0][x] = ' ';
         }
     }
     
@@ -223,16 +225,16 @@ public class Tetris {
     
     // 현재 현황판 출력
     public int[][] boardPrint() {
-    	int[][] printBoard = new int[BoardHeight][BoardWidth];
+    	int[][] printBoard = new int[BoardHeight+2][BoardWidth+2];
     	for (int y = 0; y < BoardHeight; y++) {
             for (int x = 0; x < BoardWidth; x++) {
-            	printBoard[y][x] = board[y][x];
+            	printBoard[y+1][x+1] = board[y][x];
             }
         }
     	for (int y = 0; y < block.height(); y++) {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y) == 1) {
-                	printBoard[currentY + y][currentX + x] = block.getColorNum();
+                	printBoard[currentY + y + 1][currentX + x + 1] = block.getColorNum();
                 }
             }
         }
