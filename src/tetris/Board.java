@@ -105,6 +105,8 @@ public class Board extends Application {
         			if(!(inGame.initialiBlock())) {
         				// Game over 시 작동
         			}
+        		} else if (keyCode == KeyCode.ALT) {
+        			inGame.rotateBlock();
         		}
             }
         });
@@ -113,7 +115,7 @@ public class Board extends Application {
         
         AnimationTimer timer = new AnimationTimer() {
         	private long lastUpdate = 0;
-            private final long interval = 1_000_000_000; // 1초마다 이동
+            private long interval = inGame.getDropSpeed(); // 1초마다 이동
         	
             @Override
             public void handle(long now) {

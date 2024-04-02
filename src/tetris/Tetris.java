@@ -11,7 +11,7 @@ public class Tetris {
     private static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
     private static int currentY = 0; // 현재 블록의 Y 위치
     private static int score = 0;
-    private static int dropSpeed = 1000;
+    private static int dropSpeed = 1_000_000_000;
     private static Block block;
     private static Block preBlock;
     private static int level = 1;
@@ -56,9 +56,9 @@ public class Tetris {
         return false;
     }
     
-    // 최소 속도는 200ms로 제한 임의로 5번 내려올때마다 1ms씩 빨라지도록 설정 1000 은 1초임
+    // 최소 속도는 200ms로 제한 임의로 1번 내려올때마다 0.1ms씩 빨라지도록 설정 1000 은 1초임
     private void adjustDropSpeed() {
-    	dropSpeed = Math.max(200, 1000 - (score/500)); 
+    	dropSpeed = Math.max(200_000_000, dropSpeed - (score*1000)); 
     }
     
     // 블럭 이동
