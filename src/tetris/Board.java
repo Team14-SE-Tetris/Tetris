@@ -294,7 +294,6 @@ public class Board extends Application {
 //				}
 //			}
 //		}
-//		
 //		if (check == 6) {
 //			addBlock();
 //			return;
