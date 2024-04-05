@@ -22,9 +22,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import application.ScoreBoard;
 import application.StartMenu;
@@ -32,11 +36,18 @@ import tetris.Tetris;
 
 public class Board {
     
-    public static final int SIZE = 25;
-    public static final int XMAX = SIZE * 20;
-    public static final int YMAX = SIZE * (26);
-    final public static Pane pane = new Pane();
-    public static Scene scene = new Scene(pane, XMAX + 150, YMAX - SIZE);
+	public int gameSize = 2;
+	//윈도우를 (xPoint)x(Ypoint)칸의 좌표 나누었다.
+	public int SIZE = gameSize*5 + 20; //윈도우 창 한 칸의 크기    public static final int XMAX = SIZE * 20;
+    public int xPoint = 21; //가로 칸 수
+    public int yPoint = 24; //세로 칸 수
+    public int XMAX = SIZE * xPoint; //윈도우의 실제 가로 크기
+    public int YMAX = SIZE * yPoint; //윈도우의 실제 세로 크기
+    public Pane pane = new Pane();
+    //final public static Pane으로 하면 메인화면 => gamestart => 메인화면 후 다시 gamestart를 눌렀을때 오류가 발생
+    //gamestart후 게임을 하다가 메인으로 다시 돌아가서 다시 gamestart를 누르면 
+    //게임 내의 점수, 블록 떨어지는 속도,다음에 내려올 블럭이 초기화가 안되는 현상발생 
+    public Scene scene = new Scene(pane, XMAX, YMAX);
     
     private static final int BOARD_WIDTH = 12;
     private static final int BOARD_HEIGHT = 22;
@@ -47,15 +58,16 @@ public class Board {
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
     
-    public int startpointX = 85;
-    public int startpointY = 90;
-    public int endpointX = 325;
-    
-    public int interver = 25;
+    public double boardsize = 0.95 * SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
+    //윈도우 창 좌표 한칸과 pane 좌표에서의 한칸의 크기를 동기화시킴 
+    public double startpointX = 0 + boardsize*1;//pane에서의 x좌표 1
+    public double startpointY = 5 + boardsize*2;//pane에서의 y좌표 2
+    public int endpointX = xPoint * 16; 
     
     public int deadlinenum = 9;
     
-    public int boardsize = 45;
+    public double blocksize = 1.3* SIZE;
+    public double interver = 0.75* blocksize;
     public int dlsize = 20;
     public int scoresize = 20;
     
@@ -68,7 +80,19 @@ public class Board {
     public Tetris inGame = new Tetris(level);
     
     private boolean gamePaused;
-
+    
+	//설정파일 변수
+		//키코드
+	private KeyCode rotateKey = KeyCode.U, 
+			teleportKey = KeyCode.T, 
+			leftKey = KeyCode.LEFT, 
+			downKey = KeyCode.DOWN, 
+			rightKey = KeyCode.RIGHT;
+		//화면 크기
+	private int screenSize = 0;
+		//색맹모드
+	private int colorBlindMode = 0;
+	
     public Scene createScene(Stage primaryStage) {
     	
 		//initializeBoard(); -> inGame 객체 내부 시작
@@ -83,6 +107,8 @@ public class Board {
         deadLine();
         
         Styleset();
+        
+        settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
         
         AnimationTimer timer = new AnimationTimer() {
         	private long lastUpdate = 0;
@@ -107,29 +133,28 @@ public class Board {
                 Styleset();
             }
         };
-        timer.start(); // AnimationTimer 시작
         
      // 키 이벤트 핸들러 등록
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 KeyCode keyCode = event.getCode();
-                if (keyCode == KeyCode.LEFT) {
+                if (keyCode == leftKey) {
                 	inGame.moveLeft(); // 왼쪽으로 이동
-                } else if (keyCode == KeyCode.RIGHT) {
+                } else if (keyCode == rightKey) {
                     inGame.moveRight(); // 오른쪽으로 이동
-                } else if (keyCode == KeyCode.DOWN) {
+                } else if (keyCode == downKey) {
                 	if(!(inGame.moveDown())) {
             			if(!(inGame.initialiBlock())) {
             				// Game over 시 작동
             			}
             		}
-                } else if (keyCode == KeyCode.UP) {
+                } else if (keyCode == teleportKey) {
         			inGame.moveBottom(); // 맨 아래로 이동
         			if(!(inGame.initialiBlock())) {
         				// Game over 시 작동
         			}
-        		} else if (keyCode == KeyCode.ALT) {
+        		} else if (keyCode == rotateKey) {
         			inGame.rotateBlock();
         		}
         		else if(keyCode == KeyCode.SPACE) {
@@ -162,34 +187,75 @@ public class Board {
                 	cellText.setFill(Color.WHITE);
                 }
                 
-                cellText.setFont(Font.font(boardsize));
-                cellText.setX(j * interver + 0.4 * startpointX);
-                cellText.setY(i * interver + 0.8 * startpointY);
+                cellText.setFont(Font.font(blocksize));
+                cellText.setX(j * interver + startpointX);
+                cellText.setY(i * interver + startpointY);
                 pane.getChildren().add(cellText);
                 int[][] board = inGame.boardPrint();
                 if(board[i][j] != ' ') {
                 	cellText.setText("■");
                 	switch (board[i][j]) {
         			case 1:
-        				cellText.setFill(Color.CYAN);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.CYAN);
+        				}
+        				else {//색맹모드 on일 때
+        		            cellText.setFill(Color.rgb(0, 255, 255));
+        					//하늘색 => 밝은 청록
+        				}
         				break;
         			case 2:		
-        				cellText.setFill(Color.BLUE);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.BLUE);
+        				}
+        				else {//색맹모드 on일 때
+        		            cellText.setFill(Color.rgb(153, 102, 255));
+        					//파란색 => 밝은 청보라
+        				}
         				break;
         			case 3:
-        				cellText.setFill(Color.ORANGE);
+        				if(colorBlindMode == 0) {//색맹모드 on일 때
+        		            cellText.setFill(Color.ORANGE);
+        		        } else {//색맹모드 off일
+        		            // 주황색(ORANGE) => 밝은 주황색 유지
+        		            cellText.setFill(Color.ORANGE);
+        		        }
         				break;
         			case 4:
-        				cellText.setFill(Color.YELLOW);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.YELLOW);
+        				}
+        				else {//색맹모드 on일 때
+        					cellText.setFill(Color.rgb(255, 255, 102)); 
+        					//노란색 => 밝은 노란
+        				}
         				break;
         			case 5:
-        				cellText.setFill(Color.GREEN);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.GREEN);
+        				}
+        				else {//색맹모드 on일 때
+        					cellText.setFill(Color.rgb(0, 255, 204));
+        					//초록색 =>청록색 
+        				}
         				break;
         			case 6:
-        				cellText.setFill(Color.MAGENTA);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.MAGENTA);
+        				}
+        				else {//색맹모드 on일 때
+        					cellText.setFill(Color.rgb(204, 0, 204)); 
+        					//자주색 => 진보라
+        				}
         				break;
         			case 7:
-        				cellText.setFill(Color.RED);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.RED);
+        				}
+        				else {//색맹모드 on일 때
+        		            cellText.setFill(Color.rgb(210, 105, 30));
+        					//빨간색 => 주황
+        				}
         				break;
         			default:
         			
@@ -324,7 +390,52 @@ public class Board {
 	    // 다이얼로그를 표시하고 사용자 입력을 기다림
 	    alert.showAndWait();
     }
+	
+	public void settingConfigLoader() {
+        // 설정파일의 위치 설정
+        String filePath = "src/Settings.txt"; // 상대 경로
+        try {
+            // 파일의 모든 라인을 읽어온다.
+            List<String> lines = Files.readAllLines(Paths.get(filePath));
 
+            // 각 라인을 순회하며 키와 값을 분리
+            for (String line : lines) {
+                String[] parts = line.split(" = ");
+                if (parts.length < 2) continue; // 유효하지 않은 라인 건너뛰기
+
+                String key = parts[0].trim();
+                String value = parts[1].trim().replaceAll("\"", ""); // 따옴표 제거
+
+                // 문자열을 KeyCode로 변환하고 적절한 변수에 할당
+                switch (key) {
+                    case "rotateKey":
+                        rotateKey = KeyCode.valueOf(value);
+                        break;
+                    case "teleportKey":
+                        teleportKey = KeyCode.valueOf(value);
+                        break;
+                    case "leftKey":
+                        leftKey = KeyCode.valueOf(value);
+                        break;
+                    case "downKey":
+                        downKey = KeyCode.valueOf(value);
+                        break;
+                    case "rightKey":
+                        rightKey = KeyCode.valueOf(value);
+                        break;
+                    case "screenSize":
+                    	screenSize = Integer.parseInt(value);
+                    	break;
+                    case "colorBlindMode":
+                    	colorBlindMode = Integer.parseInt(value);
+                    	break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 파일 읽기 실패 시, 적절한 예외 처리나 사용자 알림이 필요할 수 있습니다.
+        }
+	}
 
 //	public static void main(String[] args) {
 //		

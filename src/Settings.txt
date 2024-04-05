@@ -1,0 +1,7 @@
+rotateKey = "U"
+screenSize = "2"
+teleportKey = "T"
+downKey = "S"
+colorBlindMode = "1"
+leftKey = "A"
+rightKey = "D"

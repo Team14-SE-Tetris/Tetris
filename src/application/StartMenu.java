@@ -119,8 +119,10 @@ public class StartMenu extends Application {
         	//게임이 종료되었을 때 밑에 코드를 쓰면 창이 나오면서 이름을 입력받을거임, 위의 score는 해당 판의 점수임! 지금은 random값 넣음
         	//***********************************************************************************************
             //ScoreBoard scoreBoard = new ScoreBoard();
-			ScoreBoard.showSettingDialog(score,primaryStage);
-        } 
+//			ScoreBoard.showSettingDialog(score,primaryStage);
+        	board=new Board();
+        	primaryStage.setScene(board.createScene(primaryStage));
+        }
         else if (selectedItem.equals("Setting")) {
         	/*if(a==true) {
             	changeSize(700, 1000);
@@ -130,8 +132,7 @@ public class StartMenu extends Application {
             	changeSize(400, 800);
             	a=true;
             }*/
-        	board=new Board();
-        	primaryStage.setScene(board.createScene(primaryStage));
+        	new SettingMenu(primaryStage, scene).display();//설정화면 표시
         } 
         else if (selectedItem.equals("Score Board")) {
             primaryStage.setScene(ScoreBoard.createScene(primaryStage));
