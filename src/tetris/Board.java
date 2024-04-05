@@ -36,7 +36,9 @@ public class Board{
     private static final int BOARD_HEIGHT = 22;
     
     private static int level = 1;
+
     private int score = 1;
+
     
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
@@ -59,6 +61,7 @@ public class Board{
     
     public static Text Title = new Text("board");
     
+
     public Tetris inGame;
     
     public Board() {
@@ -68,6 +71,7 @@ public class Board{
     }
 
 	public Scene createScene(Stage primaryStage) {
+
 		//initializeBoard(); -> inGame 객체 내부 시작
     	inGame.initialiBlock();
     	
@@ -303,7 +307,6 @@ public class Board{
 //				}
 //			}
 //		}
-//		
 //		if (check == 6) {
 //			addBlock();
 //			return;
@@ -395,6 +398,7 @@ public class Board{
 //	    return true;
 //	}
 	
+
 //	private void MoveRight(int x[], int y[]) {
 //		for(int j=1; j>=0; j--) {
 //			
