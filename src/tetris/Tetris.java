@@ -20,8 +20,10 @@ public class Tetris {
     // 생성자
     public Tetris(int level) {
     	this.level = level;
+
     	this.score = 0;
     	dropSpeed = 1_000_000_000;
+
         clearBoard();
         randomBlock();
     }
