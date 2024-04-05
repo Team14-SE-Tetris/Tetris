@@ -13,17 +13,14 @@ public class Tetris {
     private static int score = 0;
     private static int dropSpeed = 1_000_000_000;
     private static Block block;
-    private static Block preBlock;
+    private static Block nextBlock;
     private static int level = 1;
+    public int nextnum = 0;
     
     
     // 생성자
     public Tetris(int level) {
     	this.level = level;
-
-    	this.score = 0;
-    	dropSpeed = 1_000_000_000;
-
         clearBoard();
         randomBlock();
     }
@@ -121,42 +118,45 @@ public class Tetris {
     }
     
     // 블럭들 랜덤 생성
-    private void randomBlock() {
+    private int randomBlock() {
+    	
     	int randomNum = ThreadLocalRandom.current().nextInt(1, 8);
     	
     	switch(randomNum) {
         case 1:
-        	preBlock = new IBlock();
+        	nextBlock = new IBlock();
             break;
         case 2:
-        	preBlock = new JBlock();
+        	nextBlock = new JBlock();
             break;
         case 3:
-        	preBlock = new LBlock();
+        	nextBlock = new LBlock();
             break;
         case 4:
-        	preBlock = new OBlock();
+        	nextBlock = new OBlock();
             break;
         case 5:
-        	preBlock = new SBlock();
+        	nextBlock = new SBlock();
             break;
         case 6:
-        	preBlock = new TBlock();
+        	nextBlock = new TBlock();
             break;
         case 7:
-        	preBlock = new ZBlock();
+        	nextBlock = new ZBlock();
             break;
         default:
             System.out.print("System Error: randomNum");
             break;
     	}
     	
+    	return randomNum;
+    	
 	}
     
     
     // 블럭 생성 위치 지정
     public boolean initialiBlock() {
-    	block = preBlock;
+    	block = nextBlock;
     	randomBlock();
     	currentX = BoardWidth / 2; // 블록을 중앙 상단에 위치
         currentY = 0; // 블록을 게임 보드 상단에 위치
@@ -166,6 +166,7 @@ public class Tetris {
         }
         return true;
     }
+    
     
     // 블럭 시계방향 90도 회전
     public boolean rotateBlock() {
@@ -267,8 +268,8 @@ public class Tetris {
 	}
     
     // preBlock 출력
-    public Block getPreBlock() {
-		return preBlock;
+    public Block getNextBlock() {
+		return nextBlock;
 	}
     
 }
