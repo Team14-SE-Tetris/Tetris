@@ -122,17 +122,16 @@ public class StartMenu extends Application {
 			ScoreBoard.showSettingDialog(score,primaryStage);
         } 
         else if (selectedItem.equals("Setting")) {
-        	if(a==true) {
+        	/*if(a==true) {
             	changeSize(700, 1000);
             	a=false;
             }
             else {
             	changeSize(400, 800);
             	a=true;
-            }
-        	//board=new Board();
-        	//primaryStage.setScene(board.createScene(primaryStage));
-        	//board.start(primaryStage);
+            }*/
+        	board=new Board();
+        	primaryStage.setScene(board.createScene(primaryStage));
         } 
         else if (selectedItem.equals("Score Board")) {
             primaryStage.setScene(ScoreBoard.createScene(primaryStage));
