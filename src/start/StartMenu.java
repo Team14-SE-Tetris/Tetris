@@ -1,3 +1,5 @@
+package start;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,18 +18,24 @@ public class StartMenu extends Application {
     public static Scene scene;
     public static Text[] menuItems = new Text[4];
     private int selectedIndex = 0;
-    private Stage primaryStage;
+    private static Stage primaryStage;
+    
+    Text menuTitle = new Text("Tetris by 14 Team");
+    VBox menuTitleBox;
+    VBox menuItemsBox;
+    VBox menuBox;
+    Board board;
     
     public static void main(String[] args) {
         launch(args);
     }
-
+    
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Tetris");
 
-        Text menuTitle = new Text("Tetris by 14 Team");
+        menuTitle = new Text("Tetris by 14 Team");
         menuTitle.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
 
         menuItems[0] = createMenuItem("Game Start"); //메뉴 종류
@@ -35,16 +43,17 @@ public class StartMenu extends Application {
         menuItems[2] = createMenuItem("Score Board");
         menuItems[3] = createMenuItem("Exit");
 
-        VBox menuTitleBox = new VBox(menuTitle);
+        menuTitleBox = new VBox(menuTitle);
         menuTitleBox.setAlignment(Pos.CENTER);
-
-        VBox menuItemsBox = new VBox(30);
+        
+        menuItemsBox = new VBox(30);
         menuItemsBox.getChildren().addAll(menuItems);
         menuItemsBox.setAlignment(Pos.CENTER);
 
-        VBox menuBox = new VBox(100, menuTitleBox, menuItemsBox);
+        menuBox = new VBox(100, menuTitleBox, menuItemsBox);
         menuBox.setAlignment(Pos.CENTER);
-
+        //menuBox.setStyle("-fx-border-style: solid; -fx-border-width: 5px; -fx-border-color: black;");
+        
         scene = new Scene(menuBox, XSIZE, YSIZE);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.DOWN) {
@@ -57,17 +66,17 @@ public class StartMenu extends Application {
                 executeSelectedMenuItem();
             }
         });
-        
+        //scene.setFill(Color.BLACK);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
     
     //화면 크기 변경 함수
-    public void changeSize(int xsize, int ysize) {
-        this.XSIZE = xsize;
-        this.YSIZE = ysize;
-        primaryStage.setWidth(xsize);
-        primaryStage.setHeight(ysize);
+    public static void changeSize(int xsize, int ysize) {
+        XSIZE = xsize;
+        YSIZE = ysize;
+        primaryStage.setWidth(XSIZE);
+        primaryStage.setHeight(YSIZE);
     }
 
     private Text createMenuItem(String label) {
@@ -113,16 +122,17 @@ public class StartMenu extends Application {
 			ScoreBoard.showSettingDialog(score,primaryStage);
         } 
         else if (selectedItem.equals("Setting")) {
-        	/*if(a==true) {
-            	changeSize(200, 400);
+        	if(a==true) {
+            	changeSize(700, 1000);
             	a=false;
             }
             else {
             	changeSize(400, 800);
             	a=true;
-            }*/
-        	Board board=new Board();
-        	board.start(primaryStage);
+            }
+        	//board=new Board();
+        	//primaryStage.setScene(board.createScene(primaryStage));
+        	//board.start(primaryStage);
         } 
         else if (selectedItem.equals("Score Board")) {
             primaryStage.setScene(ScoreBoard.createScene(primaryStage));
