@@ -32,8 +32,15 @@ public class StartMenu extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        primaryStage.setTitle("Tetris");
+    	this.primaryStage=primaryStage;
+        scene=createScene(primaryStage);
+        //scene.setFill(Color.BLACK);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    
+    public Scene createScene(Stage primaryStage) {
+    	primaryStage.setTitle("Tetris");
 
         menuTitle = new Text("Tetris by 14 Team");
         menuTitle.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
@@ -66,17 +73,15 @@ public class StartMenu extends Application {
                 executeSelectedMenuItem();
             }
         });
-        //scene.setFill(Color.BLACK);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        return scene;
     }
     
     //화면 크기 변경 함수
     public static void changeSize(int xsize, int ysize) {
         XSIZE = xsize;
         YSIZE = ysize;
-        primaryStage.setWidth(XSIZE);
-        primaryStage.setHeight(YSIZE);
+        //primaryStage.setWidth(XSIZE);
+        //primaryStage.setHeight(YSIZE);
     }
 
     private Text createMenuItem(String label) {

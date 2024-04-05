@@ -25,15 +25,12 @@ import java.util.Optional;
 public class ScoreBoard {
 	public static VBox scoreBox;
 	public static Scene scene;
+	public static StartMenu startMenu=new StartMenu();
 	//scoreBoard scene 생성
 	public static Scene createScene(Stage primaryStage) {	
 		scoreBox = new VBox(20);
-		scene = new Scene(scoreBox, primaryStage.getWidth()-100, primaryStage.getHeight()-100);
-		//scene= new Scene(scoreBox, StartMenu.XSIZE, StartMenu.YSIZE);
+		scene = new Scene(scoreBox, StartMenu.XSIZE, StartMenu.YSIZE);
 		
-		//System.out.println(scene.getWidth()+" "+ scene.getHeight());
-		//System.out.println(primaryStage.getWidth()+" "+ primaryStage.getHeight());
-		//scoreBox.setStyle("-fx-background-color: brown;");
 	    scoreBox.setStyle("-fx-background-color: #FFFFFF;");
 	    scoreBox.setAlignment(Pos.CENTER);
       
@@ -63,12 +60,10 @@ public class ScoreBoard {
 	    // 뒤로 가기 버튼 추가
 	    Button backButton = new Button("Back");
 	    backButton.setOnAction(event -> {
-	    	//StartMenu.changeSize(700, 1000);
 	        primaryStage.setScene(StartMenu.scene);
 	    });
 	    scoreBox.getChildren().add(backButton);
-	    //scoreBox.setStyle("-fx-border-style: solid; -fx-border-width: 20px; -fx-border-color: black;");
-	    //return new Scene(scoreBox, StartMenu.XSIZE,StartMenu.YSIZE);
+	    
 	    return scene;
 	}
 	
@@ -120,7 +115,6 @@ public class ScoreBoard {
 	    scoreBox.getChildren().add(backButton);
 	    scoreBox.getChildren().add(exitButton);
 	    
-	    // StartMenu의 XSIZE와 YSIZE로 scene을 return
 	    return scene;
 	}
 	
