@@ -14,27 +14,31 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-
+import start.ScoreBoard;
+import start.StartMenu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
 
 import tetris.BlockData;
 import tetris.Tetris;
 
-public class Board extends Application {
+public class Board{
     
     public static final int SIZE = 25;
     public static final int XMAX = SIZE * 20;
     public static final int YMAX = SIZE * (26);
-    final public static Pane pane = new Pane();
-    public static Scene scene = new Scene(pane, XMAX + 150, YMAX - SIZE);
+    public static Pane pane;
+    public static Scene scene;
     
     private static final int BOARD_WIDTH = 12;
     private static final int BOARD_HEIGHT = 22;
     
     private static int level = 1;
-    private static int score = 1;
+
+    private int score = 1;
+
     
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
@@ -57,10 +61,17 @@ public class Board extends Application {
     
     public static Text Title = new Text("board");
     
-    public Tetris inGame = new Tetris(level);
 
-    @Override
-	public void start(Stage primaryStage) {
+    public Tetris inGame;
+    
+    public Board() {
+    	pane = new Pane();
+		scene = new Scene(pane, XMAX + 150, YMAX - SIZE);
+		inGame = new Tetris(level);
+    }
+
+	public Scene createScene(Stage primaryStage) {
+
 		//initializeBoard(); -> inGame 객체 내부 시작
     	inGame.initialiBlock();
     	
@@ -82,6 +93,29 @@ public class Board extends Application {
         
         //MoveDown(x, y);
         
+        AnimationTimer timer = new AnimationTimer() {
+        	private long lastUpdate = 0;
+            private long interval = inGame.getDropSpeed(); // 1초마다 이동
+        	
+            @Override
+            public void handle(long now) {
+            	
+            	if (now - lastUpdate >= interval) {
+            		if(!(inGame.moveDown())) {
+            			if(!(inGame.initialiBlock())) {
+            				// Game over 시 작동
+            			}
+            		}
+            		//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
+                    lastUpdate = now;
+                }
+            	
+                // 화면 업데이트 로직을 작성
+            	drawBoard();
+                deadLine();
+                drawScore();
+            }
+        };
         // 키 이벤트 핸들러 등록
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -107,41 +141,19 @@ public class Board extends Application {
         			}
         		} else if (keyCode == KeyCode.ALT) {
         			inGame.rotateBlock();
+        		} else if (keyCode == KeyCode.ESCAPE) {
+        			timer.stop();
+        			primaryStage.setScene(StartMenu.scene);
         		}
             }
         });
         
         
         
-        AnimationTimer timer = new AnimationTimer() {
-        	private long lastUpdate = 0;
-            private long interval = inGame.getDropSpeed(); // 1초마다 이동
-        	
-            @Override
-            public void handle(long now) {
-            	
-            	if (now - lastUpdate >= interval) {
-            		if(!(inGame.moveDown())) {
-            			if(!(inGame.initialiBlock())) {
-            				// Game over 시 작동
-            			}
-            		}
-            		//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
-                    lastUpdate = now;
-                }
-            	
-                // 화면 업데이트 로직을 작성
-            	drawBoard();
-                deadLine();
-                drawScore();
-            }
-        };
+        
         timer.start(); // AnimationTimer 시작
         
-        
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Text Tetris");
-        primaryStage.show();
+        return scene;
         
 
     }
@@ -207,11 +219,12 @@ public class Board extends Application {
 	
 	private void Styleset() {
 		
-		scene.setFill(Color.BLACK);
+		pane.setStyle("-fx-background-color: black;");
 		
 	}
 	
 	private void drawScore() {
+		score=1;
 		Text lv = new Text("Level  :  " + String.valueOf(level));
 		lv.setX(endpointX + 30);
 		lv.setY(startpointY);
@@ -385,6 +398,7 @@ public class Board extends Application {
 //	    return true;
 //	}
 	
+
 //	private void MoveRight(int x[], int y[]) {
 //		for(int j=1; j>=0; j--) {
 //			

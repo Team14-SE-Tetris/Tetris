@@ -1,3 +1,5 @@
+package start;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -21,12 +23,20 @@ import java.util.List;
 import java.util.Optional;
 
 public class ScoreBoard {
+	public static VBox scoreBox;
+	public static Scene scene;
 	//scoreBoard scene 생성
 	public static Scene createScene(Stage primaryStage) {	
-	    VBox scoreBox = new VBox(20);
+		scoreBox = new VBox(20);
+		scene = new Scene(scoreBox, primaryStage.getWidth()-100, primaryStage.getHeight()-100);
+		//scene= new Scene(scoreBox, StartMenu.XSIZE, StartMenu.YSIZE);
+		
+		//System.out.println(scene.getWidth()+" "+ scene.getHeight());
+		//System.out.println(primaryStage.getWidth()+" "+ primaryStage.getHeight());
+		//scoreBox.setStyle("-fx-background-color: brown;");
 	    scoreBox.setStyle("-fx-background-color: #FFFFFF;");
 	    scoreBox.setAlignment(Pos.CENTER);
-
+      
 	    List<String> scores = readScoresFromFile();//txt 파일에서 score들을 읽어옴
 	    
 	    Text text = new Text("   순위   이름  점수");
@@ -53,17 +63,18 @@ public class ScoreBoard {
 	    // 뒤로 가기 버튼 추가
 	    Button backButton = new Button("Back");
 	    backButton.setOnAction(event -> {
+	    	//StartMenu.changeSize(700, 1000);
 	        primaryStage.setScene(StartMenu.scene);
 	    });
-	    
 	    scoreBox.getChildren().add(backButton);
-	
-	    return new Scene(scoreBox, StartMenu.XSIZE,StartMenu.YSIZE);
+	    //scoreBox.setStyle("-fx-border-style: solid; -fx-border-width: 20px; -fx-border-color: black;");
+	    //return new Scene(scoreBox, StartMenu.XSIZE,StartMenu.YSIZE);
+	    return scene;
 	}
 	
 	//오버로딩 게임 끝났을 때 방금 기록 강조효과와 스코어 보드에 게임종료 버튼 추가를 위해 사용 , 위의 기본함수는 scoreBoard판 확인했을 때 용도임 -> 빨간색 강조효과 없음
 	public static Scene createScene(Stage primaryStage,int score,String name) {
-	    VBox scoreBox = new VBox(20);
+		scoreBox.getChildren().clear();
 	    scoreBox.setStyle("-fx-background-color: #FFFFFF;");
 	    scoreBox.setAlignment(Pos.CENTER);
 
@@ -110,7 +121,7 @@ public class ScoreBoard {
 	    scoreBox.getChildren().add(exitButton);
 	    
 	    // StartMenu의 XSIZE와 YSIZE로 scene을 return
-	    return new Scene(scoreBox, StartMenu.XSIZE,StartMenu.YSIZE);
+	    return scene;
 	}
 	
 
