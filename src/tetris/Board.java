@@ -1,6 +1,7 @@
 package tetris;
 
 import javafx.application.Application;
+import blocks.*;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -14,31 +15,31 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-import start.ScoreBoard;
-import start.StartMenu;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Modality;
+import javafx.scene.layout.StackPane;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Timer;
-
-import tetris.BlockData;
 import tetris.Tetris;
 
-public class Board{
+public class Board extends Application {
     
     public static final int SIZE = 25;
     public static final int XMAX = SIZE * 20;
     public static final int YMAX = SIZE * (26);
-    public static Pane pane;
-    public static Scene scene;
+    final public static Pane pane = new Pane();
+    public static Scene scene = new Scene(pane, XMAX + 150, YMAX - SIZE);
     
     private static final int BOARD_WIDTH = 12;
     private static final int BOARD_HEIGHT = 22;
     
     private static int level = 1;
-
-    private int score = 1;
-
+    private static int score = 1;
     
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
@@ -61,17 +62,13 @@ public class Board{
     
     public static Text Title = new Text("board");
     
-
-    public Tetris inGame;
+    public Tetris inGame = new Tetris(level);
     
-    public Board() {
-    	pane = new Pane();
-		scene = new Scene(pane, XMAX + 150, YMAX - SIZE);
-		inGame = new Tetris(level);
-    }
+    private boolean gamePaused;
 
-	public Scene createScene(Stage primaryStage) {
-
+    @Override
+	public void start(Stage primaryStage) {
+    	
 		//initializeBoard(); -> inGame 객체 내부 시작
     	inGame.initialiBlock();
     	
@@ -84,14 +81,6 @@ public class Board{
         deadLine();
         
         Styleset();
-        
-        // addBlock(); -> inGame의 initialiBlock()에서 이미 배치 함 
-        
-        // MoveLeft(x, y);
-        // MoveLeft(x, y);
-
-        
-        //MoveDown(x, y);
         
         AnimationTimer timer = new AnimationTimer() {
         	private long lastUpdate = 0;
@@ -106,7 +95,6 @@ public class Board{
             				// Game over 시 작동
             			}
             		}
-            		//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
                     lastUpdate = now;
                 }
             	
@@ -114,26 +102,26 @@ public class Board{
             	drawBoard();
                 deadLine();
                 drawScore();
+                Styleset();
             }
         };
-        // 키 이벤트 핸들러 등록
+        timer.start(); // AnimationTimer 시작
+        
+     // 키 이벤트 핸들러 등록
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 KeyCode keyCode = event.getCode();
-                if (keyCode == KeyCode.LEFT /* && x[0] > 1 */) {
-                    // MoveLeft(x, y); // 왼쪽으로 이동
-                	inGame.moveLeft();
-                } else if (keyCode == KeyCode.RIGHT /*&& x[2] < BOARD_WIDTH - 2*/) {
-                    inGame.moveRight();
-                	//MoveRight(x, y); // 오른쪽으로 이동
-                } else if (keyCode == KeyCode.DOWN /*&& y[1] <= BOARD_HEIGHT - 2*/) {
+                if (keyCode == KeyCode.LEFT) {
+                	inGame.moveLeft(); // 왼쪽으로 이동
+                } else if (keyCode == KeyCode.RIGHT) {
+                    inGame.moveRight(); // 오른쪽으로 이동
+                } else if (keyCode == KeyCode.DOWN) {
                 	if(!(inGame.moveDown())) {
             			if(!(inGame.initialiBlock())) {
             				// Game over 시 작동
             			}
             		}
-                	//MoveDown(x, y); // 아래로 이동
                 } else if (keyCode == KeyCode.UP) {
         			inGame.moveBottom(); // 맨 아래로 이동
         			if(!(inGame.initialiBlock())) {
@@ -141,19 +129,18 @@ public class Board{
         			}
         		} else if (keyCode == KeyCode.ALT) {
         			inGame.rotateBlock();
-        		} else if (keyCode == KeyCode.ESCAPE) {
-        			timer.stop();
-        			primaryStage.setScene(StartMenu.scene);
+        		}
+        		else if(keyCode == KeyCode.SPACE) {
+        			pauseGame();
+        			//timer.stop();
         		}
             }
         });
         
         
-        
-        
-        timer.start(); // AnimationTimer 시작
-        
-        return scene;
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Text Tetris");
+        primaryStage.show();
         
 
     }
@@ -168,12 +155,10 @@ public class Board{
             	Text cellText = new Text(String.valueOf(board[i][j]));
                 
                 if(i == 0 || i == 21) {
-                	cellText.setText("□");
                 	cellText.setFill(Color.WHITE);
                 	
                 }
                 else if(j == 0 || j == 11) {
-                	cellText.setText("□");
                 	cellText.setFill(Color.WHITE);
                 }
                 
@@ -215,30 +200,46 @@ public class Board{
              }
         }
         
+        printnext();
+        
     }
 	
 	private void Styleset() {
 		
-		pane.setStyle("-fx-background-color: black;");
+		scene.setFill(Color.BLACK);
 		
 	}
 	
 	private void drawScore() {
-		score=1;
 		Text lv = new Text("Level  :  " + String.valueOf(level));
 		lv.setX(endpointX + 30);
 		lv.setY(startpointY);
 		lv.setFill(Color.WHITE);
 		lv.setFont(Font.font(scoresize));
 		score = inGame.getScore(); // inGame 에서 score 가져옴
+		
 		Text sc = new Text("Score  :  " + String.valueOf(score));
 		sc.setX(endpointX + 30);
 		sc.setY(startpointY + 60);
 		sc.setFill(Color.WHITE);
 		sc.setFont(Font.font(scoresize));
 		
+		Text nb = new Text("""
+    ++-  N E X T  -++
+    |                           |
+    |                           |
+    |                           |
+    |                           |
+    +-- -  -  -   -  -  --+
+    """);
+		nb.setX(endpointX + 60);
+		nb.setY(startpointY + 120);
+		nb.setFill(Color.WHITE);
+		nb.setFont(Font.font(scoresize));
+		
 		pane.getChildren().add(lv);
 		pane.getChildren().add(sc);
+		pane.getChildren().add(nb);
 		
 	}
 	
@@ -257,190 +258,72 @@ public class Board{
 		
 	}
 	
-//	private void initializeBoard() {
-//  for (int i = 0; i < BOARD_HEIGHT ; i++) {
-//      for (int j = 0; j < BOARD_WIDTH ; j++) {
-//          board[i][j] = ' ';
-//          
-//      }
-//  }
-// 
-//}
+	public void printnext() {
 	
-//	private void addBlock() {
-//		
-//		int k = 0;
-//		
-//		for(int i=0; i < 2; i++) {
-//			for(int j=0; j < 3; j++) {
-//				
-//				int row = 1 + i; // 시작 행
-//	            int col = BOARD_WIDTH / 2 + j - 1; // 시작 열
-//				
-//	            if (BlockData.JBlock[i][j] == 1 && row < BOARD_HEIGHT && col < BOARD_WIDTH) {
-//	                // 현재 위치에 블록이 없을 경우에만 블록 추가
-//	                if (board[row][col] == ' ') {
-//	                    board[row][col] = '■';
-//	                    x[j] = col;
-//	                    
-//	                    
-//	                }
-//	            }
-//				
-//				
-//			}
-//			
-//			y[i] = i+1;
-//			
-//		}
-//		
-//	}
-//	
-//	private void MoveDown(int x[], int y[]) {
-//		
-//		int check = 0;
-//		
-//		for(int i=0; i<3; i++) {
-//			for(int j=0; j<2; j++) {
-//				if(board[y[j]][x[i]] == '■') {
-//					check += 1;
-//				}
-//			}
-//		}
-//		if (check == 6) {
-//			addBlock();
-//			return;
-//			}
-//		
-//		for(int j=1; j>=0; j--) {
-//			
-//			for(int i=0; i < 3; i++) {
-//				
-//				int nextY = y[j] + 1;
-//				if(board[y[j]][x[i]] != ' ') {
-//					if (isValidMove(x[i], nextY)) {
-//		        			// 이동 가능하다면 블록 이동
-//						
-//		        			board[y[j]][x[i]] = ' '; // 이동 전 위치에서 블록 제거
-//		        			board[y[j]+1][x[i]] = '■'; // 새 위치에 블록 추가
-//						}
-//		        			
-//					
-//					else {
-//						return;
-//					}
-//				}
-//		    }
-//			//y[j] = y[j] + 1; // 블록의 y 좌표 업데이트
-//		}
-//		
-//		y[1] = y[1] + 1;
-//		y[0] = y[0] + 1;
-//		
-//	}
+		Block nextBlock = inGame.getNextBlock();
+		
+		int[][] next = nextBlock.getShapeDetail();
+		
+        for(int i=0; i<next.length; i++) {
+        	for(int j=0; j<next[i].length; j++) {
+        		
+        		Text nbText = new Text();
+        		if(next[i][j] != 0) {
+                	nbText.setText("■");
+                	pane.getChildren().add(nbText);
+                	
+        		}
+        		
+        		nbText.setX(j * interver + endpointX + 90);
+            	nbText.setY(i * interver + startpointY + 180);
+            	nbText.setFill(Color.WHITE);
+            	nbText.setFont(Font.font(boardsize));
+            	
+            	switch (next[i][j]) {
+    			case 1:
+    				nbText.setFill(Color.CYAN);
+    				break;
+    			case 2:		
+    				nbText.setFill(Color.BLUE);
+    				break;
+    			case 3:
+    				nbText.setFill(Color.ORANGE);
+    				break;
+    			case 4:
+    				nbText.setFill(Color.YELLOW);
+    				break;
+    			case 5:
+    				nbText.setFill(Color.GREEN);
+    				break;
+    			case 6:
+    				nbText.setFill(Color.MAGENTA);
+    				break;
+    			case 7:
+    				nbText.setFill(Color.RED);
+    				break;
+    			default:
+    			
+    			}
+        	}
+        }
+		
+	}
 	
-//	private boolean isValidMove(int x, int y) {
-//	    // 블록이 보드를 벗어나는지 확인
-//	    if (x < 1 || x >= BOARD_WIDTH-1 || y >= BOARD_HEIGHT-1) {
-//	    	addBlock();
-//	        return false;
-//	    }
-//
-//	    // 블록이 다른 블록 위에 있는지 확인
-//	    if (board[y][x] != ' ') {
-//	    	addBlock();
-//	        return false;
-//	    }
-//
-//	    return true;
-//	}
-//	
-//	private void MoveLeft(int x[], int y[]) {
-//		for(int j=1; j>=0; j--) {
-//			
-//			for(int i=0; i < 3; i++) {
-//				
-//				int nextX = x[i] - 1;
-//				
-//				if(board[y[j]][x[i]] != ' ') {
-//					if (isValidMoveL(nextX, y[j])) {
-//		        			// 이동 가능하다면 블록 이동
-//						
-//		        			board[y[j]][x[i]] = ' '; // 이동 전 위치에서 블록 제거
-//		        			board[y[j]][x[i]-1] = '■'; // 새 위치에 블록 추가
-//					}
-//					else {
-//						
-//					}
-//		        			
-//		    	}
-//			//y[j] = y[j] + 1; // 블록의 y 좌표 업데이트
-//			}
-//		
-//		}
-//		
-//		x[2] = x[2] - 1;
-//		x[1] = x[1] - 1;
-//		x[0] = x[0] - 1;
-//	}
-	
-//	private boolean isValidMoveL(int x, int y) {
-//	    // 블록이 보드를 벗어나는지 확인
-//	    if (x < 1 || x >= BOARD_WIDTH-1 || y >= BOARD_HEIGHT-1) {
-//	        return false;
-//	    }
-//
-//	    // 블록이 다른 블록 위에 있는지 확인
-//	    if (board[y][x] != ' ') {
-//	        return false;
-//	    }
-//
-//	    return true;
-//	}
-	
+	private void pauseGame() {
+		
+		// 다이얼로그를 생성하고 표시하는 코드 작성
+	    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+	    alert.setTitle("Paused");
+	    alert.setHeaderText(null);
+	    alert.setContentText("Game Paused");
 
-//	private void MoveRight(int x[], int y[]) {
-//		for(int j=1; j>=0; j--) {
-//			
-//			for(int i=3; i >= 0; i--) {
-//				
-//				int nextX = x[i] + 1;
-//				
-//				if(board[y[j]][x[i]] != ' ') {
-//					if (isValidMoveR(nextX, y[j])) {
-//		        			// 이동 가능하다면 블록 이동
-//						
-//		        			board[y[j]][x[i]] = ' '; // 이동 전 위치에서 블록 제거
-//		        			board[y[j]][x[i]+1] = '■'; // 새 위치에 블록 추가
-//					}
-//					else {
-//						
-//					}
-//		        			
-//		    	}
-//			//y[j] = y[j] + 1; // 블록의 y 좌표 업데이트
-//			}
-//		
-//		}
-//		
-//		x[2] = x[2] + 1;
-//		x[1] = x[1] + 1;
-//		x[0] = x[0] + 1;
-//	}
-//	
-//	private boolean isValidMoveR(int x, int y) {
-//	    // 블록이 보드를 벗어나는지 확인
-//	    if (x < 1 || x >= BOARD_WIDTH-1 || y >= BOARD_HEIGHT-1) {
-//	        return false;
-//	    }
-//
-//	    // 블록이 다른 블록 위에 있는지 확인
-//	    if (board[y][x] != ' ') {
-//	        return false;
-//	    }
-//
-//	    return true;
-//	}
+	    // 확인 버튼 추가
+	    ButtonType buttonTypeOk = new ButtonType("OK");
+	    alert.getButtonTypes().setAll(buttonTypeOk);
+
+	    // 다이얼로그를 표시하고 사용자 입력을 기다림
+	    alert.showAndWait();
+    }
 
 
 //	public static void main(String[] args) {
