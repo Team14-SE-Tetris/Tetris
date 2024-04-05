@@ -25,9 +25,12 @@ import javafx.scene.control.DialogPane;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import application.ScoreBoard;
+import application.StartMenu;
 import tetris.Tetris;
 
-public class Board extends Application {
+public class Board {
     
     public static final int SIZE = 25;
     public static final int XMAX = SIZE * 20;
@@ -66,8 +69,7 @@ public class Board extends Application {
     
     private boolean gamePaused;
 
-    @Override
-	public void start(Stage primaryStage) {
+    public Scene createScene(Stage primaryStage) {
     	
 		//initializeBoard(); -> inGame 객체 내부 시작
     	inGame.initialiBlock();
@@ -131,17 +133,15 @@ public class Board extends Application {
         			inGame.rotateBlock();
         		}
         		else if(keyCode == KeyCode.SPACE) {
-        			pauseGame();
-        			//timer.stop();
+        			timer.stop();
+        			primaryStage.setScene(StartMenu.scene);
         		}
             }
         });
         
         
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Text Tetris");
-        primaryStage.show();
-        
+        timer.start(); // AnimationTimer 시작
+        return scene;
 
     }
 	

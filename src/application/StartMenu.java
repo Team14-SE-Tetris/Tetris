@@ -1,4 +1,4 @@
-package start;
+package application;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
