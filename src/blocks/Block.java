@@ -20,7 +20,9 @@ public abstract class Block {
 	public int getShape(int x, int y) {
 		return shape[y][x];
 	}
-	
+	public int[][] getShapeDetail() {
+		return shape;
+	}
 	public Color getColor() {
 		return color;
 	}
