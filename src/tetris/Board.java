@@ -167,6 +167,8 @@ public class Board {
         		}
         		else if(keyCode == KeyCode.SPACE) {
         			timer.stop();
+        			inGame.resetSpeedScore();
+        			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
         			primaryStage.setScene(StartMenu.scene);
         		}
             }

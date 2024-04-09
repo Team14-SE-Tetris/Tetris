@@ -62,6 +62,12 @@ public class Tetris {
     	dropSpeed = Math.max(200_000_000, dropSpeed - (score*1000)); 
     }
     
+    //dropSpeed와 score초기화 함수
+    public void resetSpeedScore(){
+    	dropSpeed = 1_000_000_000;
+    	score = 0;
+    }
+    
     // 블럭 이동
     private boolean moveBlock(int deltaX, int deltaY) {
         int newX = currentX + deltaX;
