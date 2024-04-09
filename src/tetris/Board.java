@@ -80,7 +80,7 @@ public int gameSize = 2; //게임 사이즈
     
     public static Text Title = new Text("board");
     
-    public Tetris inGame = new Tetris(level);
+    public Tetris inGame;
     
     private boolean gamePaused;
     
@@ -95,10 +95,15 @@ public int gameSize = 2; //게임 사이즈
 		//위에 정의함, gameSize변수
 		//색맹모드
 	private int colorBlindMode = 0;
+		//게임 난이도
+	private int difficulty = 2;
+	
+	private String difficultyText = "normal";
     
     public Board() {
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
-        pane = new Pane();
+    	inGame = new Tetris(difficulty);
+    	pane = new Pane();
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
     }
@@ -223,26 +228,67 @@ public int gameSize = 2; //게임 사이즈
                 if(board[i][j] != ' ') {
                 	cellText.setText("■");
                 	switch (board[i][j]) {
-        			case 1:
-        				cellText.setFill(Color.CYAN);
+                	case 1:
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.CYAN);
+        				}
+        				else {//색맹모드 on일 때
+        		            cellText.setFill(Color.rgb(0, 255, 255));
+        					//하늘색 => 밝은 청록
+        				}
         				break;
         			case 2:		
-        				cellText.setFill(Color.BLUE);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.BLUE);
+        				}
+        				else {//색맹모드 on일 때
+        		            cellText.setFill(Color.rgb(153, 102, 255));
+        					//파란색 => 밝은 청보라
+        				}
         				break;
         			case 3:
-        				cellText.setFill(Color.ORANGE);
+        				if(colorBlindMode == 0) {//색맹모드 on일 때
+        		            cellText.setFill(Color.ORANGE);
+        		        } else {//색맹모드 off일
+        		            // 주황색(ORANGE) => 밝은 주황색 유지
+        		            cellText.setFill(Color.ORANGE);
+        		        }
         				break;
         			case 4:
-        				cellText.setFill(Color.YELLOW);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.YELLOW);
+        				}
+        				else {//색맹모드 on일 때
+        					cellText.setFill(Color.rgb(255, 255, 102)); 
+        					//노란색 => 밝은 노란
+        				}
         				break;
         			case 5:
-        				cellText.setFill(Color.GREEN);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.GREEN);
+        				}
+        				else {//색맹모드 on일 때
+        					cellText.setFill(Color.rgb(0, 255, 204));
+        					//초록색 =>청록색 
+        				}
         				break;
         			case 6:
-        				cellText.setFill(Color.MAGENTA);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.MAGENTA);
+        				}
+        				else {//색맹모드 on일 때
+        					cellText.setFill(Color.rgb(204, 0, 204)); 
+        					//자주색 => 진보라
+        				}
         				break;
         			case 7:
-        				cellText.setFill(Color.RED);
+        				if(colorBlindMode == 0) {//색맹모드 off일 때
+            				cellText.setFill(Color.RED);
+        				}
+        				else {//색맹모드 on일 때
+        		            cellText.setFill(Color.rgb(210, 105, 30));
+        					//빨간색 => 주황
+        				}
         				break;
         			default:
         			
@@ -262,13 +308,26 @@ public int gameSize = 2; //게임 사이즈
 	}
 	
 	private void drawScore() {
-		Text lv = new Text("Level  :  " + String.valueOf(level));
+		
+		switch(difficulty) { //difficulty 값에 따른 난이도 텍스트 설정
+    	case 1:
+    	    difficultyText = "easy";
+    		break;
+    	case 2:
+    	    difficultyText = "normal";
+    		break;
+    	case 3:
+    	    difficultyText = "hard";
+    		break;
+    	}
+		
+		Text lv = new Text("Level  :  " + difficultyText);
 		lv.setX(boardsize*14);
 		lv.setY(boardsize*9);
 		lv.setFill(Color.WHITE);
 		lv.setFont(Font.font(scoresize*0.8));
-		score = inGame.getScore(); // inGame 에서 score 가져옴
 		
+		score = inGame.getScore(); // inGame 에서 score 가져옴
 		Text sc = new Text("Score  :  " + String.valueOf(score));
 		sc.setX(boardsize*14);
 		sc.setY(boardsize*10);
@@ -468,6 +527,9 @@ public int gameSize = 2; //게임 사이즈
                     case "colorBlindMode":
                     	colorBlindMode = Integer.parseInt(value);
                     	break;
+                    case "difficulty" :
+                    	difficulty = Integer.parseInt(value);
+                    	break;
                 }
             }
         } catch (IOException e) {
@@ -484,10 +546,10 @@ public int gameSize = 2; //게임 사이즈
         XMAX = SIZE * xPoint; //윈도우의 실제 가로 크기
         YMAX = SIZE * yPoint; //윈도우의 실제 세로 크기
         boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
-        blocksize = 1.18* boardsize + 15; //테트리스 블럭 크기
+        blocksize = 1.9*boardsize; //테트리스 블럭 크기
         interver = boardsize;
         dlsize = boardsize;
-        scoresize = blocksize - 15;
+        scoresize = blocksize*0.6;
 	}
 
 //	public static void main(String[] args) {

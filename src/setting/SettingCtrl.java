@@ -32,7 +32,7 @@ public class SettingCtrl {
     
     @FXML private ChoiceBox<String> screenSizeChoice, difficultyChoice;
     
-    private String[] difficultyList = {"쉬움","보통","어려움"};
+    private String[] difficultyList = {"easy","normal","hard"};
     private String[] screenSizeList = {"작게","보통","크게"};
     
     //설정파일 변수
@@ -108,13 +108,13 @@ public class SettingCtrl {
     public void getDifficulty(ActionEvent event) {
     	String difficulty = difficultyChoice.getValue();
     	switch(difficulty) {
-    	case "쉬움":
+    	case "easy":
     		gameDifficulty = 1;
     		break;
-    	case "보통":
+    	case "normal":
     		gameDifficulty = 2;
     		break;
-    	case "어려움":
+    	case "hard":
     		gameDifficulty = 3;
     		break;
     	}
@@ -190,15 +190,15 @@ public class SettingCtrl {
     	}
         
         switch(gameDifficulty) {
-    	case 1:
-    		difficultyChoice.setValue("쉬움");
+        case 1:
+    		difficultyChoice.setValue("easy");
     		break;
     	case 2:
-    		difficultyChoice.setValue("보통");
+    		difficultyChoice.setValue("normal");
     		break;
     	case 3:
-    		difficultyChoice.setValue("어려움");
-    		break;
+    		difficultyChoice.setValue("hard");
+    		break;  	
     	}
     }
 	
@@ -407,7 +407,7 @@ public class SettingCtrl {
         rotateButton.setText(KeyCode.U.toString());
         teleportButton.setText(KeyCode.T.toString());     
         colorBlind.setSelected(false);
-        difficultyChoice.setValue("보통");
+        difficultyChoice.setValue("normal");
         screenSizeChoice.setValue("보통");
     }   
 }
