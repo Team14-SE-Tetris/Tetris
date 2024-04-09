@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SettingCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SettingCtrl">
    <children>
       <Button fx:id="closeButton" layoutX="476.0" layoutY="342.0" mnemonicParsing="false" onAction="#back" prefHeight="26.0" prefWidth="89.0" text="닫기" />
       <Line endY="-148.0" layoutX="300.0" layoutY="148.0" startY="252.0" />

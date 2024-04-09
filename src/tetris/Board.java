@@ -47,7 +47,7 @@ public class Board {
     
     //윈도우 창 좌표 한칸과 pane 좌표에서의 한칸의 크기를 동기화시킴 
     public double boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
-    public double blocksize = 1.18*boardsize; //테트리스 블럭 크기
+    public double blocksize = 1.8*boardsize; //테트리스 블럭 크기
     public double interver = boardsize;
     public double dlsize = boardsize;
     public double scoresize = blocksize;
@@ -80,7 +80,7 @@ public class Board {
     
     public static Text Title = new Text("board");
     
-    public Tetris inGame = new Tetris(level);
+    public Tetris inGame;
     
     private boolean gamePaused;
     
@@ -92,12 +92,17 @@ public class Board {
 			downKey = KeyCode.DOWN, 
 			rightKey = KeyCode.RIGHT;
 		//화면 크기
-		//위에 정의함, gameSize변수
+			//위에 정의함, gameSize변수
 		//색맹모드
 	private int colorBlindMode = 0;
+		//게임 난이도
+	private int difficulty = 2;
+	
+	private String difficultyText = "normal";
 	
 	public Board() {
         settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
+        inGame = new Tetris(difficulty);
         pane = new Pane();
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
@@ -120,11 +125,10 @@ public class Board {
         
         AnimationTimer timer = new AnimationTimer() {
         	private long lastUpdate = 0;
-            private long interval = inGame.getDropSpeed(); // 1초마다 이동
         	
             @Override
             public void handle(long now) {
-            	
+            	long interval = inGame.getDropSpeed();
             	if (now - lastUpdate >= interval) {
             		if(!(inGame.moveDown())) {
             			if(!(inGame.initialiBlock())) {
@@ -287,13 +291,24 @@ public class Board {
 	}
 	
 	private void drawScore() {
-		Text lv = new Text("Level  :  " + String.valueOf(level));
+		switch(difficulty) { //difficulty 값에 따른 난이도 텍스트 설정
+    	case 1:
+    	    difficultyText = "easy";
+    		break;
+    	case 2:
+    	    difficultyText = "normal";
+    		break;
+    	case 3:
+    	    difficultyText = "hard";
+    		break;
+    	}
+		Text lv = new Text("Level  :  " + difficultyText);
 		lv.setX(boardsize*14);
 		lv.setY(boardsize*9);
 		lv.setFill(Color.WHITE);
 		lv.setFont(Font.font(scoresize*0.8));
-		score = inGame.getScore(); // inGame 에서 score 가져옴
 		
+		score = inGame.getScore(); // inGame 에서 score 가져옴
 		Text sc = new Text("Score  :  " + String.valueOf(score));
 		sc.setX(boardsize*14);
 		sc.setY(boardsize*10);
@@ -494,6 +509,9 @@ public class Board {
                     case "colorBlindMode":
                     	colorBlindMode = Integer.parseInt(value);
                     	break;
+                    case "difficulty" :
+                    	difficulty = Integer.parseInt(value);
+                    	break;
                 }
             }
         } catch (IOException e) {
@@ -510,10 +528,10 @@ public class Board {
         XMAX = SIZE * xPoint; //윈도우의 실제 가로 크기
         YMAX = SIZE * yPoint; //윈도우의 실제 세로 크기
         boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
-        blocksize = 1.18*boardsize; //테트리스 블럭 크기
+        blocksize = 1.9*boardsize; //테트리스 블럭 크기
         interver = boardsize;
         dlsize = boardsize;
-        scoresize = blocksize;
+        scoresize = blocksize*0.6;
 	}
 
 //	public static void main(String[] args) {
