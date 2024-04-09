@@ -46,7 +46,7 @@ public class Board {
     public Pane pane = new Pane();
     //final public static Pane으로 하면 메인화면 => gamestart => 메인화면 후 다시 gamestart를 눌렀을때 오류가 발생
     //gamestart후 게임을 하다가 메인으로 다시 돌아가서 다시 gamestart를 누르면 
-    //게임 내의 점수, 블록 떨어지는 속도,다음에 내려올 블럭이 초기화가 안되는 현상발생 
+    //게임 내의 점수, 블록 떨어지는 속도가 안되는 현상발생 
     public Scene scene = new Scene(pane, XMAX, YMAX);
     
     private static final int BOARD_WIDTH = 12;
