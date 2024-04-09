@@ -31,7 +31,6 @@ public class SettingMenu {
             Parent root = loader.load();
             SettingCtrl controller = loader.getController();
             controller.setStageAndScene(primaryStage, previousScene); // 컨트롤러에 스테이지와 이전 씬 설정
-            controller.settingConfigLoader();
             
             Scene settingsScene = new Scene(root);
             primaryStage.setScene(settingsScene);

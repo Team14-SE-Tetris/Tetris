@@ -1,17 +1,20 @@
 package application;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
@@ -28,6 +31,11 @@ public class SettingCtrl {
     @FXML
     private CheckBox colorBlind; // FXML 파일에서 정의한 체크박스와 연결
     
+    @FXML private ChoiceBox<String> screenSizeChoice, difficultyChoice;
+    
+    private String[] difficultyList = {"쉬움","보통","어려움"};
+    private String[] screenSizeList = {"작게","보통","크게"};
+    
     //설정파일 변수
     	//키코드
     private KeyCode rotateKey = KeyCode.U, 
@@ -36,15 +44,83 @@ public class SettingCtrl {
     		downKey = KeyCode.DOWN, 
     		rightKey = KeyCode.RIGHT;
     	//화면 크기
-    private int screenSize = 2;
+    private int gameSize = 2;
     	//색맹모드
     private int colorBlindMode = 0;
+    	//난이도
+    private int gameDifficulty = 2;
     
     //Setting.txt 파일로부터 설정을 읽어들어서 Key 변수들에 KeyCode설정
     	//설정파일의 위치는 src/Settings.txt
     	//현재 SettingCtrl.java의 위치는 src/application/SettingCtrl.java
     	//설정파일로부터 값을 읽어와서 KeyCode 5개 초기화하기
     	//Button 5개의 텍스트 KeyCode의 키 텍스트로 변경하기
+    
+    @FXML
+    private void initialize() {
+        // 난이도 ChoiceBox에 항목 추가
+        difficultyChoice.getItems().addAll(difficultyList);
+        difficultyChoice.setOnAction(this::getDifficulty);
+
+        // 화면 크기 ChoiceBox에 항목 추가
+        screenSizeChoice.getItems().addAll(screenSizeList);
+        screenSizeChoice.setOnAction(this::getScreenSize);
+        
+        // 설정값들 불러와서 저장
+        settingConfigLoader(); 
+
+        // ChoiceBox에 대한 키 이벤트 처리
+        setupChoiceBoxKeyEvents(difficultyChoice);
+        setupChoiceBoxKeyEvents(screenSizeChoice);
+    }
+    
+    private void setupChoiceBoxKeyEvents(ChoiceBox<String> choiceBox) {
+        choiceBox.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    // 엔터키가 눌리면 ChoiceBox를 열도록 시뮬레이션
+                    if (!choiceBox.isShowing()) {
+                        choiceBox.show();
+                    } else {
+                        choiceBox.hide();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+    
+    public void getScreenSize(ActionEvent event) {
+    	String screenSize = screenSizeChoice.getValue();
+    	switch(screenSize) {
+    	case "작게":
+    		gameSize = 1;
+    		break;
+    	case "보통":
+    		gameSize = 2;
+    		break;
+    	case "크게":
+    		gameSize = 3;
+    		break;
+    	}
+    }
+    
+    public void getDifficulty(ActionEvent event) {
+    	String difficulty = difficultyChoice.getValue();
+    	switch(difficulty) {
+    	case "쉬움":
+    		gameDifficulty = 1;
+    		break;
+    	case "보통":
+    		gameDifficulty = 2;
+    		break;
+    	case "어려움":
+    		gameDifficulty = 3;
+    		break;
+    	}
+    }
+    
     
     public void settingConfigLoader() {
         // 설정파일의 위치 설정
@@ -83,11 +159,14 @@ public class SettingCtrl {
                         rightKey = KeyCode.valueOf(value);
                         rightButton.setText(value);
                         break;
-                    case "screenSize":
-                    	screenSize = Integer.parseInt(value);
+                    case "gameSize":
+                    	gameSize = Integer.parseInt(value);
                     	break;
                     case "colorBlindMode":
                     	colorBlindMode = Integer.parseInt(value);
+                    	break;
+                    case "difficulty":
+                    	gameDifficulty = Integer.parseInt(value);
                     	break;
                 }
             }
@@ -97,7 +176,32 @@ public class SettingCtrl {
         }
         
         colorBlindSet();
-        //색맹모드 체크박스 설정하고 동기
+        //색맹모드 체크박스 동기화
+        
+        //Choice 박스 초기화
+        switch(gameSize) {
+    	case 1:
+            screenSizeChoice.setValue("작게");
+    		break;
+    	case 2:
+            screenSizeChoice.setValue("보통");
+    		break;
+    	case 3:
+            screenSizeChoice.setValue("크게");
+    		break;
+    	}
+        
+        switch(gameDifficulty) {
+    	case 1:
+    		difficultyChoice.setValue("쉬움");
+    		break;
+    	case 2:
+    		difficultyChoice.setValue("보통");
+    		break;
+    	case 3:
+    		difficultyChoice.setValue("어려움");
+    		break;
+    	}
     }
 	
 	public void setStageAndScene(Stage stage, Scene scene) {
@@ -244,8 +348,9 @@ public class SettingCtrl {
             settingsMap.put("leftKey", "\"" + leftKey.toString() + "\"");
             settingsMap.put("downKey", "\"" + downKey.toString() + "\"");
             settingsMap.put("rightKey", "\"" + rightKey.toString() + "\"");
-            settingsMap.put("screenSize", "\"" + Integer.toString(screenSize) + "\"");
+            settingsMap.put("gameSize", "\"" + Integer.toString(gameSize) + "\"");
             settingsMap.put("colorBlindMode", "\"" + Integer.toString(colorBlindMode) + "\"");
+            settingsMap.put("difficulty", "\"" + Integer.toString(gameDifficulty) + "\"");
 
             
             // 맵의 내용을 기반으로 새로운 설정 문자열 생성
@@ -276,6 +381,7 @@ public class SettingCtrl {
         }
     }
     
+    
     public void resetSettingFile() {
         String filePath = "src/Settings.txt"; // 설정 파일 경로
         
@@ -284,8 +390,9 @@ public class SettingCtrl {
         leftKey = KeyCode.LEFT; 
         downKey = KeyCode.DOWN; 
         rightKey = KeyCode.RIGHT;
-        screenSize = 2;
+        gameSize = 2;
         colorBlindMode = 0;
+        gameDifficulty = 2;
         //변수들 기본값으로 초기화 
         
         downButton.setText(KeyCode.DOWN.toString());
@@ -294,27 +401,8 @@ public class SettingCtrl {
         rotateButton.setText(KeyCode.U.toString());
         teleportButton.setText(KeyCode.T.toString());     
         colorBlind.setSelected(false);
-        //화면크기
-        //설정화면의 버튼들 표기를 기본값으로 초기
-        
-       
-        
-//        try {//파일 초기화
-//            // 기본 설정을 문자열로 준비
-//            String defaultSettings = "rotateKey = \"R\"\n"
-//                    + "teleportKey = \"T\"\n"
-//                    + "leftKey = \"LEFT\"\n"
-//                    + "downKey = \"DOWN\"\n"
-//                    + "rightKey = \"RIGHT\"\n"
-//                    + "screenSize = \"2\"\n"
-//                    + "colorBlindMode = \"0\"\n";
-//
-//            // 설정 파일에 기본 설정 쓰기
-//            Files.write(Paths.get(filePath), defaultSettings.getBytes());
-//            System.out.println("설정 파일이 초기화되었습니다.");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            System.out.println("설정 파일 초기화 중 오류가 발생했습니다.");
-//        }
+        difficultyChoice.setValue("보통");
+        screenSizeChoice.setValue("보통");
     }
+    
 }

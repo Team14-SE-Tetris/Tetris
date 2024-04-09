@@ -36,18 +36,27 @@ import tetris.Tetris;
 
 public class Board {
     
-	public int gameSize = 2;
+	public int gameSize = 2; //게임 사이즈
+	
 	//윈도우를 (xPoint)x(Ypoint)칸의 좌표 나누었다.
 	public int SIZE = gameSize*5 + 20; //윈도우 창 한 칸의 크기    public static final int XMAX = SIZE * 20;
-    public int xPoint = 21; //가로 칸 수
-    public int yPoint = 24; //세로 칸 수
+    public int xPoint = 22; //가로 칸 수 21
+    public int yPoint = 24; //세로 칸 수 24
     public int XMAX = SIZE * xPoint; //윈도우의 실제 가로 크기
     public int YMAX = SIZE * yPoint; //윈도우의 실제 세로 크기
-    public Pane pane = new Pane();
+    
+    //윈도우 창 좌표 한칸과 pane 좌표에서의 한칸의 크기를 동기화시킴 
+    public double boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
+    public double blocksize = 1.18*boardsize; //테트리스 블럭 크기
+    public double interver = boardsize;
+    public double dlsize = boardsize;
+    public double scoresize = blocksize;
+    
     //final public static Pane으로 하면 메인화면 => gamestart => 메인화면 후 다시 gamestart를 눌렀을때 오류가 발생
     //gamestart후 게임을 하다가 메인으로 다시 돌아가서 다시 gamestart를 누르면 
     //게임 내의 점수, 블록 떨어지는 속도가 안되는 현상발생 
-    public Scene scene = new Scene(pane, XMAX, YMAX);
+    public Pane pane;
+    public Scene scene;
     
     private static final int BOARD_WIDTH = 12;
     private static final int BOARD_HEIGHT = 22;
@@ -58,18 +67,12 @@ public class Board {
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
     
-    public double boardsize = 0.95 * SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
     //윈도우 창 좌표 한칸과 pane 좌표에서의 한칸의 크기를 동기화시킴 
-    public double startpointX = 0 + boardsize*1;//pane에서의 x좌표 1
-    public double startpointY = 5 + boardsize*2;//pane에서의 y좌표 2
-    public int endpointX = xPoint * 16; 
+//    public double startpointX = boardsize*1;//pane에서의 x좌표 1
+//    public double startpointY = boardsize*2;//pane에서의 y좌표 2
+//    public int endpointX = xPoint * 16; 
     
-    public int deadlinenum = 9;
-    
-    public double blocksize = 1.3* SIZE;
-    public double interver = 0.75* blocksize;
-    public int dlsize = 20;
-    public int scoresize = 20;
+    public int deadlinenum = 10;
     
     public int BlockType = 0;
     
@@ -89,9 +92,16 @@ public class Board {
 			downKey = KeyCode.DOWN, 
 			rightKey = KeyCode.RIGHT;
 		//화면 크기
-	private int screenSize = 0;
+		//위에 정의함, gameSize변수
 		//색맹모드
 	private int colorBlindMode = 0;
+	
+	public Board() {
+        settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
+        pane = new Pane();
+        pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
+        scene = new Scene(pane, XMAX, YMAX);
+	}
 	
     public Scene createScene(Stage primaryStage) {
     	
@@ -107,8 +117,6 @@ public class Board {
         deadLine();
         
         Styleset();
-        
-        settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
         
         AnimationTimer timer = new AnimationTimer() {
         	private long lastUpdate = 0;
@@ -188,8 +196,8 @@ public class Board {
                 }
                 
                 cellText.setFont(Font.font(blocksize));
-                cellText.setX(j * interver + startpointX);
-                cellText.setY(i * interver + startpointY);
+                cellText.setX(j * interver + boardsize*1);
+                cellText.setY(i * interver + boardsize*2);
                 pane.getChildren().add(cellText);
                 int[][] board = inGame.boardPrint();
                 if(board[i][j] != ' ') {
@@ -278,43 +286,56 @@ public class Board {
 	
 	private void drawScore() {
 		Text lv = new Text("Level  :  " + String.valueOf(level));
-		lv.setX(endpointX + 30);
-		lv.setY(startpointY);
+		lv.setX(boardsize*14);
+		lv.setY(boardsize*9);
 		lv.setFill(Color.WHITE);
-		lv.setFont(Font.font(scoresize));
+		lv.setFont(Font.font(scoresize*0.8));
 		score = inGame.getScore(); // inGame 에서 score 가져옴
 		
 		Text sc = new Text("Score  :  " + String.valueOf(score));
-		sc.setX(endpointX + 30);
-		sc.setY(startpointY + 60);
+		sc.setX(boardsize*14);
+		sc.setY(boardsize*10);
 		sc.setFill(Color.WHITE);
-		sc.setFont(Font.font(scoresize));
+		sc.setFont(Font.font(scoresize*0.8));
 		
-		Text nb = new Text("""
-    ++-  N E X T  -++
-    |                           |
-    |                           |
-    |                           |
-    |                           |
-    +-- -  -  -   -  -  --+
-    """);
-		nb.setX(endpointX + 60);
-		nb.setY(startpointY + 120);
-		nb.setFill(Color.WHITE);
-		nb.setFont(Font.font(scoresize));
+		//다음블럭 나타날 텍스트 테두리
+		//가로 7칸 세로 5칸
+		for(int i=0; i<7; i++) {
+			for(int j=0; j<6; j++) {
+				Text nextblock = new Text("");
+				
+				if(i==0 || i==6 || j==0 || j==5) {//테두리, 텍스트 설정
+					if(j==0&& i<=4&& i>=2) {//제목위치
+						nextblock = new Text(""); // NEXT 들어갈 자리 비우기
+						if(i==2 && j==0) {
+							nextblock = new Text("NEXT");//비운자리에 NEXT 넣기
+							nextblock.setFont(Font.font(scoresize));//NEXT텍스트 크기조절
+						}
+					}
+					else {
+						nextblock = new Text("="); //테두리 텍스트 설정
+						nextblock.setFont(Font.font(scoresize*1.3));//테두리 텍스트 크기조절
+					}
+				}
+				
+				//텍스트 기본 설정
+				nextblock.setX(i*interver + boardsize*14);
+				nextblock.setY(j*interver + boardsize*3);
+				nextblock.setFill(Color.WHITE);
+				pane.getChildren().add(nextblock);
+			}
+		}
 		
 		pane.getChildren().add(lv);
 		pane.getChildren().add(sc);
-		pane.getChildren().add(nb);
-		
 	}
 	
 	private void deadLine() {
 		
 		for(int i=0; i < deadlinenum; i++) {
-			Text line = new Text("-");
-			line.setX(startpointX - 5 + i*interver);
-			line.setY(startpointY + interver*3);
+			Text line = new Text(" -");
+			line.setX(boardsize*2 + i*interver);
+			line.setY(boardsize*4);
 			line.setFont(Font.font(dlsize));
 			line.setFill(Color.WHITE);
 			
@@ -340,35 +361,77 @@ public class Board {
                 	
         		}
         		
-        		nbText.setX(j * interver + endpointX + 90);
-            	nbText.setY(i * interver + startpointY + 180);
+        		nbText.setX(j * interver + boardsize*16);
+            	nbText.setY(i * interver + boardsize*5);
             	nbText.setFill(Color.WHITE);
-            	nbText.setFont(Font.font(boardsize));
+            	nbText.setFont(Font.font(blocksize));
             	
-            	switch (next[i][j]) {
-    			case 1:
-    				nbText.setFill(Color.CYAN);
+            	
+            	switch (nextBlock.getColorNum()) {
+            	case 1:
+    				if(colorBlindMode == 0) {//색맹모드 off일 때
+    					nbText.setFill(Color.CYAN);
+    				}
+    				else {//색맹모드 on일 때
+    					nbText.setFill(Color.rgb(0, 255, 255));
+    					//하늘색 => 밝은 청록
+    				}
     				break;
     			case 2:		
-    				nbText.setFill(Color.BLUE);
+    				if(colorBlindMode == 0) {//색맹모드 off일 때
+    					nbText.setFill(Color.BLUE);
+    				}
+    				else {//색맹모드 on일 때
+    					nbText.setFill(Color.rgb(153, 102, 255));
+    					//파란색 => 밝은 청보라
+    				}
     				break;
     			case 3:
-    				nbText.setFill(Color.ORANGE);
+    				if(colorBlindMode == 0) {//색맹모드 on일 때
+    					nbText.setFill(Color.ORANGE);
+    		        } else {//색맹모드 off일
+    		            // 주황색(ORANGE) => 밝은 주황색 유지
+    		        	nbText.setFill(Color.ORANGE);
+    		        }
     				break;
     			case 4:
-    				nbText.setFill(Color.YELLOW);
+    				if(colorBlindMode == 0) {//색맹모드 off일 때
+    					nbText.setFill(Color.YELLOW);
+    				}
+    				else {//색맹모드 on일 때
+    					nbText.setFill(Color.rgb(255, 255, 102)); 
+    					//노란색 => 밝은 노란
+    				}
     				break;
     			case 5:
-    				nbText.setFill(Color.GREEN);
+    				if(colorBlindMode == 0) {//색맹모드 off일 때
+    					nbText.setFill(Color.GREEN);
+    				}
+    				else {//색맹모드 on일 때
+    					nbText.setFill(Color.rgb(0, 255, 204));
+    					//초록색 =>청록색 
+    				}
     				break;
     			case 6:
-    				nbText.setFill(Color.MAGENTA);
+    				if(colorBlindMode == 0) {//색맹모드 off일 때
+    					nbText.setFill(Color.MAGENTA);
+    				}
+    				else {//색맹모드 on일 때
+    					nbText.setFill(Color.rgb(204, 0, 204)); 
+    					//자주색 => 진보라
+    				}
     				break;
     			case 7:
-    				nbText.setFill(Color.RED);
+    				if(colorBlindMode == 0) {//색맹모드 off일 때
+    					nbText.setFill(Color.RED);
+    				}
+    				else {//색맹모드 on일 때
+    					nbText.setFill(Color.rgb(210, 105, 30));
+    					//빨간색 => 주황
+    				}
     				break;
     			default:
-    			
+    				
     			}
         	}
         }
@@ -423,8 +486,8 @@ public class Board {
                     case "rightKey":
                         rightKey = KeyCode.valueOf(value);
                         break;
-                    case "screenSize":
-                    	screenSize = Integer.parseInt(value);
+                    case "gameSize":
+                    	gameSize = Integer.parseInt(value);
                     	break;
                     case "colorBlindMode":
                     	colorBlindMode = Integer.parseInt(value);
@@ -435,6 +498,20 @@ public class Board {
             e.printStackTrace();
             // 파일 읽기 실패 시, 적절한 예외 처리나 사용자 알림이 필요할 수 있습니다.
         }
+   
+        
+        //화면 관련 변수 초기화
+        
+        SIZE = gameSize*5 + 20; //윈도우 창 한 칸의 크기
+        xPoint = 22; //가로 칸 수 21
+        yPoint = 24; //세로 칸 수 24
+        XMAX = SIZE * xPoint; //윈도우의 실제 가로 크기
+        YMAX = SIZE * yPoint; //윈도우의 실제 세로 크기
+        boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
+        blocksize = 1.18*boardsize; //테트리스 블럭 크기
+        interver = boardsize;
+        dlsize = boardsize;
+        scoresize = blocksize;
 	}
 
 //	public static void main(String[] args) {
