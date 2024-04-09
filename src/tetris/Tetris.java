@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import blocks.*;
 
 public class Tetris {
-	private static final int BoardWidth = 10;
+    private static final int BoardWidth = 10;
     private static final int BoardHeight = 20;
     private static int[][] board = new int[BoardHeight][BoardWidth];
     private static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
@@ -23,6 +23,8 @@ public class Tetris {
     	this.level = level;
         clearBoard();
         randomBlock();
+	dropSpeed = 1_000_000_000;
+        score=0;
     }
     
     
