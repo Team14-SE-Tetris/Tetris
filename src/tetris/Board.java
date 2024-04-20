@@ -84,6 +84,12 @@ public int gameSize = 2; //게임 사이즈
     
     private boolean gamePaused;
     
+    private int liney = 0;
+    private int gradation = 1;
+    private int removedelay = 0;
+    private boolean removeflag = false;
+    private int removestep = 0;
+    
 	//설정파일 변수
 		//키코드
 	private KeyCode rotateKey = KeyCode.U, 
@@ -134,31 +140,70 @@ public int gameSize = 2; //게임 사이즈
         AnimationTimer timer = new AnimationTimer() {
         	private long lastUpdate = 0;
             private long interval = inGame.getDropSpeed(); // 1초마다 이동
-        	
+            private long delay = 300_000_000;    
+            
             @Override
             public void handle(long now) {
             	
-            	if (now - lastUpdate >= interval) {
-            		if(!(inGame.moveDown())) {
-            			if(!(inGame.initialiBlock())) {
-            				this.stop();
-            				// Game over 시 작동
-            				Platform.runLater(() -> {
-            				
-            		            ScoreBoard scoreBoard = new ScoreBoard();
-            		            // UI 블로킹 메서드 실행
-            		            scoreBoard.showSettingDialog(score, primaryStage,"Standard Mode"); //이건 기본모드에서 점수 기록 아래는 아이템모드에서 점수기록
-            		            //scoreBoard.showSettingDialog(score, primaryStage,"Item Mode");
-            		        });
-            			       
-            			}
+            	if(inGame.checkLines()>0 && inGame.checkLines()<22) {
+            		
+            		removeflag = false;
+            		
+            		liney = inGame.checkLines();
+            		
+            		if (removestep == 0) {
+
+            				drawBoard();
+            				lastUpdate = now;
+
             		}
-            		//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
-                    lastUpdate = now;
-                }
+            		else if(removestep == 1) {
+
+            				drawBoard();
+
+            		}
+            		else if(removestep == 2) {
+
+            			if(now - lastUpdate >= delay) {
+            				drawBoard();
+                    		inGame.removeLine(liney);
+                    		removestep = 0;
+            			}
+            			
+            			removestep--;
+            		}
+            		
+            		removeflag = true;
+            		removestep++;
+
+            	}
+            	
+            	else {
+            	
+            		if (now - lastUpdate >= interval) {
+            			if(!(inGame.moveDown())) {
+            				if(!(inGame.initialiBlock())) {
+            					this.stop();
+            					// Game over 시 작동
+            					Platform.runLater(() -> {
+            				
+            						ScoreBoard scoreBoard = new ScoreBoard();
+            						// UI 블로킹 메서드 실행
+            						scoreBoard.showSettingDialog(score, primaryStage,"Standard Mode"); //이건 기본모드에서 점수 기록 아래는 아이템모드에서 점수기록
+            						//scoreBoard.showSettingDialog(score, primaryStage,"Item Mode");
+            					});
+            			       
+            				}
+            			}
+            			//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
+            			lastUpdate = now;
+            		}
+            		
+            		drawBoard();
+            	}
             	
                 // 화면 업데이트 로직을 작성
-            	drawBoard();
+            	
                 deadLine();
                 drawScore();
                 Styleset();
@@ -188,11 +233,21 @@ public int gameSize = 2; //게임 사이즈
         		} else if (keyCode == rotateKey) {
         			inGame.rotateBlock();
         		}
-        		else if(keyCode == KeyCode.SPACE) {
+        		else if(keyCode == KeyCode.Q) {
         			timer.stop();
         			inGame.resetSpeedScore();
         			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
         			primaryStage.setScene(StartMenu.scene);
+        		}
+        		else if(keyCode == KeyCode.SPACE) {
+        			if(gamePaused == false) {
+        				timer.stop();
+        			}
+        			else {
+        				timer.start();
+        			}
+        			pauseGame(pane);
+        			
         		}
             }
         });
@@ -227,6 +282,20 @@ public int gameSize = 2; //게임 사이즈
                 int[][] board = inGame.boardPrint();
                 if(board[i][j] != ' ') {
                 	cellText.setText("■");
+                	
+                	if(0<liney && liney < 22) {
+                		if(j !=0 && j !=11) {
+                			
+                			if(removeflag == false) {
+
+                				board[liney+1][j] = 8;
+
+
+                			}
+
+                		}
+                	}
+                	
                 	switch (board[i][j]) {
                 	case 1:
         				if(colorBlindMode == 0) {//색맹모드 off일 때
@@ -290,9 +359,13 @@ public int gameSize = 2; //게임 사이즈
         					//빨간색 => 주황
         				}
         				break;
-        			default:
-        			
-        			}
+        			case 8:
+            			cellText.setFill(Color.GRAY);
+            			break;
+            			
+            		default:
+    			
+            		}
 
                 }
                 
@@ -473,20 +546,35 @@ public int gameSize = 2; //게임 사이즈
 		
 	}
 	
-	private void pauseGame() {
-		
-		// 다이얼로그를 생성하고 표시하는 코드 작성
-	    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-	    alert.setTitle("Paused");
-	    alert.setHeaderText(null);
-	    alert.setContentText("Game Paused");
+	private void pauseGame(Pane pane) {
+		if(gamePaused == true) {
+			
+			pane.setStyle("-fx-background-color: #000000;");
+			
+			gamePaused = false;
+		}
+		else {
+			
+			 pane.setStyle("-fx-background-color: rgb(211, 211, 211);");
+			 Text pause1 = new Text("Paused");
+			 Text pause2 = new Text("Press space again to resume");
+			 
+			 pause1.setX(XMAX/2/1.25);
+			 pause1.setY(YMAX/2/1.12);
+			 pause1.setFont(Font.font(boardsize));
+			 
+			 pause2.setX(XMAX/2/1.7);
+			 pause2.setY(1.12*YMAX/2/1.12);
+			 pause2.setFont(Font.font(boardsize - 10));
+			 
+			 
+			 pane.getChildren().add(pause1);
+			 pane.getChildren().add(pause2);
+			
+			gamePaused = true;
+		}
 
-	    // 확인 버튼 추가
-	    ButtonType buttonTypeOk = new ButtonType("OK");
-	    alert.getButtonTypes().setAll(buttonTypeOk);
-
-	    // 다이얼로그를 표시하고 사용자 입력을 기다림
-	    alert.showAndWait();
+	    
     }
 	
 	public void settingConfigLoader() {

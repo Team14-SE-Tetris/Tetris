@@ -16,7 +16,7 @@ public class Tetris {
     private static Block nextBlock;
     private static int level = 1;
     public int nextnum = 0;
-    
+    public int liney = 0;
     
     // 생성자
     public Tetris(int level) {
@@ -83,8 +83,8 @@ public class Tetris {
         return false;
     }
   
-    // 완성된 줄 있는지 확인후 제거
-    private void checkLines() {
+ // 완성된 줄 있는지 확인후 제거
+    public int checkLines() {
         for (int y = BoardHeight - 1; y >= 0; y--) {
             boolean lineComplete = true;
             for (int x = 0; x < BoardWidth; x++) {
@@ -93,12 +93,19 @@ public class Tetris {
                     break;
                 }
             }
+                 
             if (lineComplete) {
-                // 해당 줄 삭제 및 위에 있는 줄을 아래로 내림
-            	removeLine(y);
-                y++; // 삭제된 줄 아래에서부터 다시 검사하기 위해 y 값을 조정
+            	liney = y;
+            	break;
+            	
+            	// 해당 줄 삭제 및 위에 있는 줄을 아래로 내림
+            	//removeLine(y);
+                //y++; // 삭제된 줄 아래에서부터 다시 검사하기 위해 y 값을 조정
             }
         }
+        
+        return liney;
+        
     }
     
     // 보드에 블록을 그리는 메소드
@@ -112,8 +119,8 @@ public class Tetris {
         }
     }
     
-    // 선 지우는 메소드
-    private void removeLine(int line) {
+ // 선 지우는 메소드
+    public void removeLine(int line) {
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
                 board[y][x] = board[y - 1][x];
@@ -123,6 +130,8 @@ public class Tetris {
         for (int x = 0; x < BoardWidth; x++) {
             board[0][x] = ' ';
         }
+        
+        liney = 0;
     }
     
     // 블럭들 랜덤 생성
