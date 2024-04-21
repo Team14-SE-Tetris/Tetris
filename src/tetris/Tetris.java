@@ -1,6 +1,7 @@
 package tetris;
 
 import java.util.concurrent.ThreadLocalRandom;
+import tetris.RandomFunction;
 
 import blocks.*;
 
@@ -14,7 +15,10 @@ public class Tetris {
     private static int dropSpeed = 1_000_000_000;
     private static Block block;
     private static Block nextBlock;
-    private static int level = 1;
+    private static int deleteBar = 0;
+    private static int createBlockNum = 0;
+    private static int level = 1; // 레벨 기본값
+    private static int mode = 0; // 기본값 none item mode
     public int nextnum = 0;
     public int liney = 0;
     
@@ -23,7 +27,7 @@ public class Tetris {
     	this.level = level;
         clearBoard();
         randomBlock();
-	dropSpeed = 1_000_000_000;
+        dropSpeed = 1_000_000_000;
         score=0;
     }
     
@@ -59,9 +63,19 @@ public class Tetris {
         return false;
     }
     
-    // 최소 속도는 200ms로 제한 임의로 1번 내려올때마다 0.1ms씩 빨라지도록 설정 1000 은 1초임
+ // 최소 속도는 200ms로 제한 임의로 1번 내려올때마다 0.1ms씩 빨라지도록 설정 1_000_000_000 은 1초임
     private void adjustDropSpeed() {
-    	dropSpeed = Math.max(200_000_000, dropSpeed - (score*1000)); 
+    	int levelSpeed = 10; // default normal
+    	if (level == 1) {
+    		levelSpeed = 8;
+    	}
+    	else if (level == 2) {
+    		levelSpeed = 10;
+    	}
+    	else if (level == 3) {
+    		levelSpeed = 12;
+    	}
+    	dropSpeed = Math.max(100_000_000, dropSpeed - (deleteBar*100*levelSpeed + (createBlockNum/10)*500)); 
     }
     
     //dropSpeed와 score초기화 함수
@@ -83,7 +97,7 @@ public class Tetris {
         return false;
     }
   
- // 완성된 줄 있는지 확인후 제거
+    // 완성된 줄 있는지 확인후 제거
     public int checkLines() {
         for (int y = BoardHeight - 1; y >= 0; y--) {
             boolean lineComplete = true;
@@ -136,8 +150,15 @@ public class Tetris {
     
     // 블럭들 랜덤 생성
     private int randomBlock() {
+    	double basic = 0.14; // 1/7 반올림
+    	double[] fitness=  {basic,basic,basic,basic,basic,basic,basic};;
+    	if (level == 1) {
+    		fitness[0] = 0.168;
+    	} else if (level == 3) {
+    		fitness[0] = 0.112;
+    	}
     	
-    	int randomNum = ThreadLocalRandom.current().nextInt(1, 8);
+    	int randomNum = RandomFunction.randomFunction(fitness)+1;
     	
     	switch(randomNum) {
         case 1:
@@ -169,11 +190,62 @@ public class Tetris {
     	return randomNum;
     	
 	}
+
+    // 블럭들 랜덤 생성
+    private int randomItemBlock() {
+    	double basic = 0.2; // 1/7 반올림
+    	double[] fitness=  {basic,basic,basic,basic,basic};;
+    	
+    	int randomNum = RandomFunction.randomFunction(fitness)+1;
+    	int[][] shape;
+    	switch(randomNum) {
+        case 1: // 한개 블럭 삭제 색 하얀색 블럭크기 1개
+        	nextBlock = new IBlock();
+        	shape = new int[][] {{1}};
+        	nextBlock.changeShape(shape);
+        	nextBlock.changeItem();
+            break;
+        case 2: // 아래 2줄 삭제
+        	nextBlock = new JBlock();
+        	shape = new int[][] {{1,0,0,1},{1, 1, 1, 1}};
+        	nextBlock.changeShape(shape);
+        	nextBlock.changeItem();
+            break;
+        case 3: // 위아래 1줄 삭제
+        	nextBlock = new LBlock();
+        	shape = new int[][] {{1},{1},{1}};
+        	nextBlock.changeShape(shape);
+        	nextBlock.changeItem();
+            break;
+        case 4: // 줄삭제 아이템
+        	randomBlock();
+        	nextBlock.changeItem();
+            break;
+        case 5: // 무게추 아이템
+        	nextBlock = new SBlock();
+        	shape = new int[][] {{1, 1, 1, 1},{1, 1, 1, 1}};
+        	nextBlock.changeShape(shape);
+        	nextBlock.changeItem();
+            break;
+        default:
+            System.out.print("System Error: randomNum");
+            break;
+    	}
+    	
+    	return randomNum;
+    	
+	}
     
+    private void increaseDropScore() { // 떨어질때 점수추가
+    	score += 100;
+    	score += (deleteBar+createBlockNum/5)*100; // 증가된 속도만큼 주가점수
+    	
+    }
     
     // 블럭 생성 위치 지정
     public boolean initialiBlock() {
     	block = nextBlock;
+    	createBlockNum++;
     	randomBlock();
     	currentX = BoardWidth / 2; // 블록을 중앙 상단에 위치
         currentY = 0; // 블록을 게임 보드 상단에 위치
@@ -199,7 +271,7 @@ public class Tetris {
     
     // 블럭 아래로 이동
     public boolean moveDown() {
-    	score += 100; // 점수 증가
+    	increaseDropScore(); // 점수 증가
     	adjustDropSpeed();
     	if (moveBlock(0,1)) {
     		return true;
@@ -287,6 +359,11 @@ public class Tetris {
     // preBlock 출력
     public Block getNextBlock() {
 		return nextBlock;
+	}
+    
+ // Level 변경
+    public void changeLevel(int level) {
+    	this.level = level;
 	}
     
 }
