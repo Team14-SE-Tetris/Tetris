@@ -36,8 +36,8 @@ public abstract class Block {
 	}
 	public int[] whereBlock(int w) {
 		int[] result = new int[2];
-		for (int i = height()-1; i>=0; i-- ) {
-			for (int j=width()-1; j>=0;j--) {
+		for (int i = width()-1; i>=0; i-- ) {
+			for (int j=height()-1; j>=0;j--) {
 					if (shape[i][j]>0) {
 						w--;
 					}
