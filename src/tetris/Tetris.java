@@ -12,8 +12,8 @@ public class Tetris {
     private static int[][] board = new int[BoardHeight][BoardWidth];
     private static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
     private static int currentY = 0; // 현재 블록의 Y 위치
-    private static int score = 0;
-    private static int dropSpeed = 1_000_000_000;
+    private int score = 0;
+    private int dropSpeed = 1_000_000_000;
     private static Block block;
     private static Block nextBlock;
     private static int deleteBar = 0;
@@ -32,8 +32,8 @@ public class Tetris {
     	this.level = level;
         clearBoard();
         randomBlock();
-        dropSpeed = 1_000_000_000;
-        score=0;
+        this.dropSpeed = 1_000_000_000;
+        this.score=0;
     }
     
     
@@ -97,13 +97,13 @@ public class Tetris {
     	else if (level == 3) {
     		levelSpeed = 12;
     	}
-    	dropSpeed = Math.max(100_000_000, dropSpeed - (deleteBar*100*levelSpeed + (createBlockNum/10)*500)); 
+    	this.dropSpeed = Math.max(1_000_000, this.dropSpeed - (deleteBar*100*levelSpeed + (createBlockNum/10)*500)); 
     }
     
     //dropSpeed와 score초기화 함수
     public void resetSpeedScore(){
-    	dropSpeed = 1_000_000_000;
-    	score = 0;
+    	this.dropSpeed = 1_000_000_000;
+    	this.score = 0;
     }
     
     // 블럭 이동
@@ -474,7 +474,7 @@ public class Tetris {
     // score 출력
     public int getScore() {
     	adjustScore();
-		return score;
+		return this.score;
 	}
     public int changeMode() {
 		return this.mode=1;
@@ -491,7 +491,7 @@ public class Tetris {
     
     // 현재 속도
     public int getDropSpeed() {
-		return dropSpeed;
+		return this.dropSpeed;
 	}
     
     // preBlock 출력
