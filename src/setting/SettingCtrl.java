@@ -360,6 +360,7 @@ public class SettingCtrl {
             // 변경된 설정을 파일에 쓰기
             Files.write(Paths.get(filePath), sb.toString().getBytes());
             System.out.println("키 설정이 저장되었습니다.");
+	    StartMenu.updateKeyDescription.run();//이걸 실행하면 startMenu의 keyDescription text가 업데이트 된다.	 
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("키 설정 저장 중 오류가 발생했습니다.");
