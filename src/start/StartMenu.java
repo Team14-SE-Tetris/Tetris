@@ -155,11 +155,12 @@ public class StartMenu extends Application {
         String selectedItem = menuItems[selectedIndex].getText();
         System.out.println("Selected menu item: " + selectedItem);
         if (selectedItem.equals("Standard Game")) {
-			board=new Board();
+		board=new Board(0);
         	primaryStage.setScene(board.createScene(primaryStage));
         }
         else if(selectedItem.equals("Item Mode Game")) {
-        	
+        	board=new Board(1);
+        	primaryStage.setScene(board.createScene(primaryStage));
         }
         else if (selectedItem.equals("Setting")) {
         	new SettingMenu().display(primaryStage, scene);//설정화면 표시
