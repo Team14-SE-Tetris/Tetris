@@ -177,7 +177,7 @@ public class Tetris {
     // 블럭들 랜덤 생성
     private void randomBlock() {
     	double basic = 0.14; // 1/7 반올림
-    	double[] fitness=  {basic,basic,basic,basic,basic,basic,basic};;
+    	double[] fitness=  {basic,basic,basic,basic,basic,basic,basic};
     	if (level == 1) {
     		fitness[0] = 0.168;
     	} else if (level == 3) {
@@ -218,7 +218,9 @@ public class Tetris {
 
     // 블럭들 랜덤 생성
     private void randomItemBlock() {
-    	int randomNum = RandomFunction.randomFunction(new double[5])+1;
+	double basic = 0.14; // 1/7 반올림
+    	double[] fitness=  {basic,basic,basic,basic,basic,basic};
+    	int randomNum = RandomFunction.randomFunction(fitness) + 1;
     	int[][] shape;
     	switch(randomNum) {
         case 1: // 해당 블럭이 지워진 줄이 2배
