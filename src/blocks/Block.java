@@ -22,21 +22,58 @@ public abstract class Block {
 	public int getShape(int x, int y) {
 		return shape[y][x];
 	}
+	public int getBlockNums() {
+		int blockNums = 0;
+		for (int i = height()-1; i>=0; i-- ) {
+			for (int j=width()-1; j>=0;j--) {
+				if(shape[i][j]>0) {
+					blockNums++;
+				}
+			}
+		}
+			
+		return blockNums;
+	}
+	public int[] whereBlock(int w) {
+		int[] result = new int[2];
+		for (int i = height()-1; i>=0; i-- ) {
+			for (int j=width()-1; j>=0;j--) {
+					if (shape[i][j]>0) {
+						w--;
+					}
+					if(w==0) {
+						result[0]=i;
+						result[1]=j;
+					}
+			}
+		}
+			
+		return result;
+	}
 	public void changeShape(int[][] shape) {
 		this.shape = shape;
+	}
+	public void changeShapeDetail(int x, int y, int num) {
+		this.shape[x][y] = num;
+		if (num ==0) {
+			this.shape[x][y] = ' ';
+		}
 	}
 	public void changeColor(Color color, int color_num) {
 		this.color = color;
 		this.color_num = color_num;
 	}
-	public void changeItem() {
-		this.item = 1;
+	public void changeItem(int item) {
+		this.item = item;
 	}
 	public int[][] getShapeDetail() {
 		return shape;
 	}
 	public Color getColor() {
 		return color;
+	}
+	public int getItem() {
+		return item;
 	}
 	public int getColorNum() {
 		return color_num;

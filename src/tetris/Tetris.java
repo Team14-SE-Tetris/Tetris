@@ -1,5 +1,6 @@
 package tetris;
 
+import java.awt.Color;
 import java.util.concurrent.ThreadLocalRandom;
 import tetris.RandomFunction;
 
@@ -16,11 +17,15 @@ public class Tetris {
     private static Block block;
     private static Block nextBlock;
     private static int deleteBar = 0;
+    private static int dropBlocks = 0;
+    private static int deleteItem = 0;
     private static int createBlockNum = 0;
-    private static int level = 1; // 레벨 기본값
+    private int level = 1; // 레벨 기본값
     private static int mode = 0; // 기본값 none item mode
     public int nextnum = 0;
     public int liney = 0;
+    private int randomDelete = 0;
+    private boolean heavyFlag = true;
     
     // 생성자
     public Tetris(int level) {
@@ -57,6 +62,23 @@ public class Tetris {
                     if (board[newY][newX] != ' ') {
                         return true; // 이미 채워진 공간으로 이동하는 경우
                     }
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean checkCollisionBottom(int posX, int posY) {
+        for (int y = 0; y < block.height(); y++) {
+            for (int x = 0; x < block.width(); x++) {
+                if (block.getShape(x, y) != 0) {
+                    int newX = posX + x;
+                    int newY = posY + y;
+
+                    if (newX < 0 || newX >= BoardWidth || newY < 0 || newY >= BoardHeight) {
+                        return true; // 보드 바깥으로 나가는 경우
+                    }
+
                 }
             }
         }
@@ -135,8 +157,12 @@ public class Tetris {
     
  // 선 지우는 메소드
     public void removeLine(int line) {
+    	deleteBar++;
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
+            	if (board[line][x]==9) {
+            		deleteItem++;
+            	}
                 board[y][x] = board[y - 1][x];
             }
         }
@@ -149,7 +175,7 @@ public class Tetris {
     }
     
     // 블럭들 랜덤 생성
-    private int randomBlock() {
+    private void randomBlock() {
     	double basic = 0.14; // 1/7 반올림
     	double[] fitness=  {basic,basic,basic,basic,basic,basic,basic};;
     	if (level == 1) {
@@ -187,66 +213,68 @@ public class Tetris {
             break;
     	}
     	
-    	return randomNum;
     	
 	}
 
     // 블럭들 랜덤 생성
-    private int randomItemBlock() {
-    	double basic = 0.2; // 1/7 반올림
-    	double[] fitness=  {basic,basic,basic,basic,basic};;
-    	
-    	int randomNum = RandomFunction.randomFunction(fitness)+1;
+    private void randomItemBlock() {
+    	int randomNum = RandomFunction.randomFunction(new double[5])+1;
     	int[][] shape;
     	switch(randomNum) {
-        case 1: // 한개 블럭 삭제 색 하얀색 블럭크기 1개
-        	nextBlock = new IBlock();
-        	shape = new int[][] {{1}};
+        case 1: // 해당 블럭이 지워진 줄이 2배
+        	shape = new int[][] {{8}};
         	nextBlock.changeShape(shape);
-        	nextBlock.changeItem();
+        	nextBlock.changeItem(1);
+        	nextBlock.changeColor(Color.WHITE,9);
             break;
-        case 2: // 아래 2줄 삭제
-        	nextBlock = new JBlock();
-        	shape = new int[][] {{1,0,0,1},{1, 1, 1, 1}};
+        case 2: // 폭탄
+        	shape = new int[][] {{9, 9},{9, 9}};
         	nextBlock.changeShape(shape);
-        	nextBlock.changeItem();
+        	nextBlock.changeItem(2);
+        	nextBlock.changeColor(Color.WHITE,10);
             break;
-        case 3: // 위아래 1줄 삭제
-        	nextBlock = new LBlock();
+        case 3: // 1줄 랜덤 삭제
         	shape = new int[][] {{1},{1},{1}};
+        	randomDelete = RandomFunction.randomFunction(new double[3]);
+        	nextBlock.changeShapeDetail(randomDelete,0,10);
         	nextBlock.changeShape(shape);
-        	nextBlock.changeItem();
+        	nextBlock.changeItem(3);
+        	nextBlock.changeColor(Color.WHITE,10);
             break;
         case 4: // 줄삭제 아이템
-        	randomBlock();
-        	nextBlock.changeItem();
+        	randomDelete = RandomFunction.randomFunction(new double[nextBlock.getBlockNums()]);
+        	int[] where = nextBlock.whereBlock(randomDelete);
+        	nextBlock.changeShapeDetail(where[0],where[1],11);
+        	nextBlock.changeItem(4);
+        	
             break;
         case 5: // 무게추 아이템
-        	nextBlock = new SBlock();
-        	shape = new int[][] {{1, 1, 1, 1},{1, 1, 1, 1}};
+        	shape = new int[][] {{12, 12, 12, 12},{12, 12, 12, 12}};
         	nextBlock.changeShape(shape);
-        	nextBlock.changeItem();
+        	nextBlock.changeItem(5);
+        	nextBlock.changeColor(Color.WHITE,10);
             break;
         default:
             System.out.print("System Error: randomNum");
             break;
     	}
     	
-    	return randomNum;
     	
 	}
     
-    private void increaseDropScore() { // 떨어질때 점수추가
-    	score += 100;
-    	score += (deleteBar+createBlockNum/5)*100; // 증가된 속도만큼 주가점수
-    	
+    private void adjustScore() { // 떨어질때 점수추가
+    	score = (deleteBar+createBlockNum/5)*100+deleteItem*100+dropBlocks*10;
     }
     
     // 블럭 생성 위치 지정
     public boolean initialiBlock() {
     	block = nextBlock;
+    	heavyFlag = true;
     	createBlockNum++;
     	randomBlock();
+    	if(mode==1&&deleteBar%10==0) {
+    		randomItemBlock();
+    	}
     	currentX = BoardWidth / 2; // 블록을 중앙 상단에 위치
         currentY = 0; // 블록을 게임 보드 상단에 위치
         if(checkCollision(currentX,currentY)) {
@@ -271,17 +299,88 @@ public class Tetris {
     
     // 블럭 아래로 이동
     public boolean moveDown() {
-    	increaseDropScore(); // 점수 증가
+    	adjustScore(); // 점수 증가
     	adjustDropSpeed();
-    	if (moveBlock(0,1)) {
-    		return true;
+    	if (block.getItem()!=5) {
+	    	if (moveBlock(0,1)) {
+	    		dropBlocks++;
+	    		return true;
+	    	}
+	    	else {
+	    		int it = block.getItem();
+	    		if(mode==1&&it>1) {
+	    			switch(it) {
+	    			case 2: // 주변 블럭 삭제
+	    				
+	    				for (int y = 0; y < block.height(); y++) {
+	    		            for (int x = 0; x < block.width(); x++) {
+	    		            	for (int i = -1; i < 2; i++) {
+	    	    		            for (int j = -1; j < 2; j++){ 
+	    	    		            	int newX = currentX + x + i;
+	    			                    int newY = currentY + y + j;
+	
+	    			                    if (newX < 0 || newX >= BoardWidth || newY < 0 || newY >= BoardHeight) {
+	    			                         // 보드 바깥으로 나가는 경우
+	    			                    }
+	
+	    			                    else if (board[newY][newX] != ' ') {
+	    			                    	board[newY][newX]=' '; // 이미 채워진 공간으로 이동하는 경우
+	    			                    }
+	    	    		            }
+	    	    		        }
+	    		                
+	    		            }
+	    		        }
+	    				break;
+	    			case 3: // 1줄 랜덤 삭제
+	    				int[] where_3 = block.whereBlock(randomDelete);
+	    				for (int x = 0; x < BoardWidth; x++) {
+			                board[where_3[0]+currentY][x] = 10;
+			            }
+	    				break;
+	    			case 4: // 1줄 삭제
+	    				int[] where_4 = block.whereBlock(randomDelete);
+	    				for (int x = 0; x < BoardWidth; x++) {
+			                board[where_4[0]+currentY][x] = 10;
+			            }
+	    				block.changeShapeDetail(where_4[0],where_4[1],0);
+	    				placeBlock();
+	    				break;
+	    			default:
+	    				break;
+	    			}
+	    		}
+	    		else {
+	    			placeBlock();
+	    		}
+	    		currentX = BoardWidth / 2;
+	    		currentY = 0;
+	    		return false;
+	    	}
     	}
     	else {
-    		placeBlock();
-    		checkLines();
-    		currentX = BoardWidth / 2;
-    		currentY = 0;
-    		return false;
+    		if (moveBlock(0,1)) {
+	    		dropBlocks++;
+	    		return true;
+	    	}
+    		else if (!checkCollisionBottom(currentX, currentY+1)) {
+    			for (int y = 0; y < block.height(); y++) {
+		            for (int x = 0; x < block.width(); x++) {
+		            	int newX = currentX + x;
+	                    int newY = currentY + y+1;
+	                    board[newY][newX]=' ';
+		            }
+		        }
+    			moveBlock(0,1);
+    			dropBlocks++;
+	    		return true;
+    		} else {
+    			placeBlock();
+        		currentX = BoardWidth / 2;
+        		currentY = 0;
+        		return false;
+    		}
+    		
     	}
   
     }
@@ -299,20 +398,46 @@ public class Tetris {
     
     // 블럭 왼쪽으로 이동
     public boolean moveLeft() {
-    	if (moveBlock(-1,0)) {
+    	
+    	if(mode==1 && block.getItem()==5) {
+    		if(heavyFlag) {
+    			if (moveBlock(-1,0)) {
+    				return true;
+    			}else {
+    				heavyFlag = false;
+    	    		return false;
+    	    	}
+    		} else {
+    			return false;
+    		}
+    	} else if (moveBlock(-1,0)) {
+    		
     		return true;
     	}
     	else {
+    		
     		return false;
     	}
     }
     
     // 블럭 오른쪽으로 이동
     public boolean moveRight() {
-    	if (moveBlock(1,0)) {
+    	if(mode==1 && block.getItem()==5) {
+    		if(heavyFlag) {
+    			if (moveBlock(1,0)) {
+    				return true;
+    			}else {
+    				heavyFlag = false;
+    	    		return false;
+    	    	}
+    		} else {
+    			return false;
+    		}
+    	} else if (moveBlock(1,0)) {
     		return true;
     	}
     	else {
+    		heavyFlag = false;
     		return false;
     	}
     }
@@ -327,20 +452,29 @@ public class Tetris {
         }
     	for (int y = 0; y < block.height(); y++) {
             for (int x = 0; x < block.width(); x++) {
-                if (block.getShape(x, y) == 1) {
+                if (block.getShape(x, y) > 0) {
                 	printBoard[currentY + y + 1][currentX + x + 1] = block.getColorNum();
+                	
                 }
             }
         }
+    	if(mode==1&&block.getItem()==4) {
+    		int[] where = nextBlock.whereBlock(randomDelete);
+    		printBoard[currentY + where[0] + 1][currentX + where[1] + 1] = 11;
+    		
+    	}
     	return printBoard;
     	
     }
     
     // score 출력
     public int getScore() {
+    	adjustScore();
 		return score;
 	}
-    
+    public int changeMode() {
+		return this.mode=1;
+	}
     // 블록의 현재 x 좌표
     public int getCurrentY() {
 		return currentY;

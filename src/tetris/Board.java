@@ -362,6 +362,16 @@ public int gameSize = 2; //게임 사이즈
         			case 8:
             			cellText.setFill(Color.GRAY);
             			break;
+        			case 9: // item 1 용
+            			cellText.setFill(Color.WHITE);
+            			break;
+        			case 10: // item 색 맞추기
+            			cellText.setFill(Color.WHITE);
+            			break;
+        			case 11: // item 4 용
+        				cellText.setText("L");
+            			cellText.setFill(Color.WHITE);
+            			break;
             			
             		default:
     			
@@ -538,9 +548,22 @@ public int gameSize = 2; //게임 사이즈
     					//빨간색 => 주황
     				}
     				break;
+    			case 8:
+    				nbText.setFill(Color.GRAY);
+    				break;
+    			case 9: // item 1 용
+        			cellText.setFill(Color.WHITE);
+        			break;
+    			case 10: // item 색 맞추기
+        			cellText.setFill(Color.WHITE);
+        			break;
     			default:
     				
     			}
+            	if (next[i][j] == 11) {
+            		cellText.setText("L");
+            		cellText.setFill(Color.WHITE);
+            	}
         	}
         }
 		
