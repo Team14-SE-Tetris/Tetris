@@ -63,7 +63,7 @@ public int gameSize = 2; //게임 사이즈
     
     private static int level = 1;
     private static int score = 1;
-    
+    private int mode =0;
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
     
@@ -106,10 +106,11 @@ public int gameSize = 2; //게임 사이즈
 	
 	private String difficultyText = "normal";
     
-    public Board() {
+    public Board(int mode) {
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
     	pane = new Pane();
+	this.mode = mode;
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
     }
@@ -121,7 +122,9 @@ public int gameSize = 2; //게임 사이즈
     	
     	// board 내부 블럭은 inGame에서 가져옴
         drawBoard();
-        
+	if (mode ==1){
+		inGame.changeMode();
+	}
         // score inGame에서 가져옴
         drawScore();
         
