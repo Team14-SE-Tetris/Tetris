@@ -237,14 +237,16 @@ public class Tetris {
             break;
         case 3: // 1줄 랜덤 삭제
         	shape = new int[][] {{1},{1},{1}};
-        	randomDelete = RandomFunction.randomFunction(new double[3]);
+    		double[] fitness_3=  {basic,basic,basic};
+        	randomDelete = RandomFunction.randomFunction(fitness_3);
         	nextBlock.changeShapeDetail(randomDelete,0,10);
         	nextBlock.changeShape(shape);
         	nextBlock.changeItem(3);
         	nextBlock.changeColor(Color.WHITE,10);
             break;
         case 4: // 줄삭제 아이템
-        	randomDelete = RandomFunction.randomFunction(new double[nextBlock.getBlockNums()]);
+		double[] fitness_4=  {basic,basic,basic};
+        	randomDelete = RandomFunction.randomFunction(fitness_3);
         	int[] where = nextBlock.whereBlock(randomDelete);
         	nextBlock.changeShapeDetail(where[0],where[1],11);
         	nextBlock.changeItem(4);
@@ -265,7 +267,7 @@ public class Tetris {
 	}
     
     private void adjustScore() { // 떨어질때 점수추가
-    	score = (deleteBar+createBlockNum/5)*100+deleteItem*100+dropBlocks*10;
+    	this.score = (deleteBar+createBlockNum/5)*100+deleteItem*100+dropBlocks*10;
     }
     
     // 블럭 생성 위치 지정
