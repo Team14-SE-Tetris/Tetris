@@ -8,6 +8,13 @@ public abstract class Block {
 	protected Color color;
 	protected int color_num;
 	protected int item;
+	//item 변수 = 현재 블럭의 아이템 종류
+	//0 : 평범한 블럭
+	//1 : 해당 블럭이 지워진 줄이 2배
+	//2 : 폭탄
+	//3 : 1줄 랜덤 삭제
+	//4 : 줄삭제 아이템
+	//5 : 무게추 아이템
 	
 	public Block() {
 		shape = new int[][]{ 
@@ -47,7 +54,7 @@ public abstract class Block {
 					}
 			}
 		}
-			
+		//현재 블록의 오오른쪽 아래에서 시작하여 왼쪽 위로 올라가면서 n번째로 비어있지 않은 블럭위 위치를 반환
 		return result;
 	}
 	public void changeShape(int[][] shape) {
@@ -56,7 +63,7 @@ public abstract class Block {
 	public void changeShapeDetail(int x, int y, int num) {
 		this.shape[x][y] = num;
 		if (num ==0) {
-			this.shape[x][y] = ' ';
+			this.shape[x][y] = ' '; //?
 		}
 	}
 	public void changeColor(Color color, int color_num) {

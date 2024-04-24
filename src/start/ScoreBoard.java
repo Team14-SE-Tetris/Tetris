@@ -13,9 +13,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 
 import java.io.BufferedReader;
@@ -30,7 +32,7 @@ import java.util.Optional;
 
 public class ScoreBoard {
 	public static VBox scoreBox;
-	public static Scene scene;
+	public Scene scene;
 	public static StartMenu startMenu=new StartMenu();
 	//scoreBoard scene 생성
 	public static Scene createScene(Stage primaryStage) {	
@@ -67,6 +69,7 @@ public class ScoreBoard {
 	    Button backButton = new Button("Back");
 	    backButton.setOnAction(event -> {
 	        primaryStage.setScene(StartMenu.scene);
+        	centerStage(primaryStage);
 	    });
 	    
 	    // GridPane의 아래쪽 중앙에 버튼 추가
@@ -161,12 +164,13 @@ public class ScoreBoard {
 	    gridPane.setStyle("-fx-background-color: #FFFFFF;");
 	    
 	    // 뒤로 가기 버튼 추가
-	    Button backButton = new Button("Back");
+	    Button backButton = new Button("메인 화면");
 	    backButton.setOnAction(event -> {
 	        primaryStage.setScene(StartMenu.scene);
+        	centerStage(primaryStage);
 	    });
 	    
-	    Button exitButton = new Button("Exit");
+	    Button exitButton = new Button("게임 종료");
 	    exitButton.setOnAction(event -> {
 	    	System.exit(0);
 	    });
@@ -248,6 +252,7 @@ public class ScoreBoard {
 	            if (name.length() <= 8 && isValidName(name)) {//이름 길이가 8 이하, 특수문자 및 띄어쓰기가 없어야 함 
 	                addScoreToFile(name, score,mode); //이름과 해당 판의 score를 txt에 추가
 	                primaryStage.setScene(ScoreBoard.createScene(primaryStage,score,name,mode)); //스코어보드 scene으로 설정
+                	centerStage(primaryStage);
 	            } 
 	            else {
 	                Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -258,12 +263,16 @@ public class ScoreBoard {
 	                showSettingDialog(score,primaryStage,mode);
 	            }
 	        },
-	        ()->{primaryStage.setScene(ScoreBoard.createScene(primaryStage));}//랭킹 등록하기 싫어서 취소버튼누르면 
+	        ()->{
+	        	primaryStage.setScene(ScoreBoard.createScene(primaryStage));
+	        	centerStage(primaryStage);
+	        	}//랭킹 등록하기 싫어서 취소버튼누르면 
 	        );
 		}
 		else {
 			//기록 name 입력받는 프롬프트창 없이 바로 스코어보드 scene으로 설정
 			primaryStage.setScene(ScoreBoard.createScene(primaryStage));
+        	centerStage(primaryStage);
 			}
     }
 	
@@ -393,4 +402,12 @@ public class ScoreBoard {
             scores.subList(10, scores.size()).clear(); //만약 기록이 10개 이상이면 10개까지만 유지
         }
     }
+    
+    private static void centerStage(Stage stage) {
+	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
+	    
+	    // 스테이지의 크기를 고려하여 중앙에 배치
+	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
+	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
+	}
 }

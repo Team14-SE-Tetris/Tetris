@@ -3,6 +3,7 @@ import java.util.Random;
 
 public class RandomFunction {
 	public static int randomFunction(double[] fitness) {
+		//fitness 배열의 index중 하나를 랜덤 반환
         Random rand = new Random();
         
         // 1. 개체를 랜덤하게 하나 선택

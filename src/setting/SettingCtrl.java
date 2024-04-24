@@ -9,11 +9,13 @@ import java.util.Map;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import start.StartMenu;
@@ -209,6 +211,7 @@ public class SettingCtrl {
     
     public void back(ActionEvent e) {
         primaryStage.setScene(previousScene);
+        centerStage(primaryStage);
     }
     
     public void colorBlindOnOff() {
@@ -411,4 +414,12 @@ public class SettingCtrl {
         difficultyChoice.setValue("normal");
         screenSizeChoice.setValue("보통");
     }   
+    
+    private void centerStage(Stage stage) {
+	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
+	    
+	    // 스테이지의 크기를 고려하여 중앙에 배치
+	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
+	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
+	}
 }

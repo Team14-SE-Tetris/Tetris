@@ -3,6 +3,7 @@ package tetris;
 import javafx.application.Platform;
 import blocks.*;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -18,6 +19,7 @@ import javafx.util.Duration;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
@@ -62,7 +64,7 @@ public int gameSize = 2; //게임 사이즈
     private static final int BOARD_HEIGHT = 22;
     
     private static int level = 1;
-    private static int score = 1;
+    public int score = 1;
     private int mode =0;
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
@@ -110,7 +112,7 @@ public int gameSize = 2; //게임 사이즈
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
     	pane = new Pane();
-	this.mode = mode;
+    	this.mode = mode;
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
     }
@@ -119,7 +121,7 @@ public int gameSize = 2; //게임 사이즈
 
 		//initializeBoard(); -> inGame 객체 내부 시작
     	inGame.initialiBlock();
-    	
+   
     	// board 내부 블럭은 inGame에서 가져옴
         drawBoard();
 	if (mode ==1){
@@ -148,28 +150,28 @@ public int gameSize = 2; //게임 사이즈
             @Override
             public void handle(long now) {
             	
-            	if(inGame.checkLines()>0 && inGame.checkLines()<22) {
+            	if(inGame.checkLines()>0 && inGame.checkLines()<22) {//완성된 줄이 있는 경우
             		
             		removeflag = false;
             		
             		liney = inGame.checkLines();
             		
-            		if (removestep == 0) {
+            		if (removestep == 0) {//완성된 줄 확인 후 1번째 프레임
 
             				drawBoard();
-            				lastUpdate = now;
+            				lastUpdate = now;//완성된 줄 확인 후 1번째 프레임의 시간 기록
 
             		}
-            		else if(removestep == 1) {
+            		else if(removestep == 1) {//완성된 줄 확인 후 2번째 프레임
 
             				drawBoard();
 
             		}
-            		else if(removestep == 2) {
+            		else if(removestep == 2) {//완성된 줄 확인 후 3번째 프레임
 
-            			if(now - lastUpdate >= delay) {
+            			if(now - lastUpdate >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
             				drawBoard();
-                    		inGame.removeLine(liney);
+                    		inGame.removeLine(liney);//removeLine에서 checkline반환값이 0으로 변홤
                     		removestep = 0;
             			}
             			
@@ -181,9 +183,10 @@ public int gameSize = 2; //게임 사이즈
 
             	}
             	
-            	else {
+            	else {//완성된 블록이 없는 경우
             	
-            		if (now - lastUpdate >= interval) {
+            		if (now - lastUpdate >= interval) {//interval 간격마다 수행
+            			System.out.println(inGame.getDropSpeed());// 테스트
             			if(!(inGame.moveDown())) {
             				if(!(inGame.initialiBlock())) {
             					this.stop();
@@ -192,8 +195,12 @@ public int gameSize = 2; //게임 사이즈
             				
             						ScoreBoard scoreBoard = new ScoreBoard();
             						// UI 블로킹 메서드 실행
-            						scoreBoard.showSettingDialog(score, primaryStage,"Standard Mode"); //이건 기본모드에서 점수 기록 아래는 아이템모드에서 점수기록
-            						//scoreBoard.showSettingDialog(score, primaryStage,"Item Mode");
+            						if(mode == 0) {
+                						scoreBoard.showSettingDialog(score, primaryStage,"Standard Mode"); //이건 기본모드에서 점수 기록 아래는 아이템모드에서 점수기록
+            						}
+            						else {
+            							scoreBoard.showSettingDialog(score, primaryStage,"Item Mode");
+            						}
             					});
             			       
             				}
@@ -238,9 +245,13 @@ public int gameSize = 2; //게임 사이즈
         		}
         		else if(keyCode == KeyCode.Q) {
         			timer.stop();
-        			inGame.resetSpeedScore();
-        			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
         			primaryStage.setScene(StartMenu.scene);
+        			inGame.resetVariable();
+        			score = 0;
+        			System.out.println("점수: " + score);
+        			System.out.println("점수: " + inGame.getScore());
+        			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
+                	centerStage(primaryStage);
         		}
         		else if(keyCode == KeyCode.SPACE) {
         			if(gamePaused == false) {
@@ -262,42 +273,41 @@ public int gameSize = 2; //게임 사이즈
 	// 수정됨 -> inGame 객체 내부의 숫자로 색 구분
 	private void drawBoard() {
 		
-		pane.getChildren().clear();
+		pane.getChildren().clear(); //pane(게임화면) 비우기
 		
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
             	Text cellText = new Text(String.valueOf(board[i][j]));
                 
-                if(i == 0 || i == 21) {
+                if(i == 0 || i == 21) {//테트리스 벽 채우기
                 	cellText.setText("□");
                 	cellText.setFill(Color.WHITE);
                 	
                 }
-                else if(j == 0 || j == 11) {
+                else if(j == 0 || j == 11) {//테트리스 벽 채우기
                 	cellText.setText("□");
                 	cellText.setFill(Color.WHITE);
                 }
                 
-                cellText.setFont(Font.font(blocksize));
-                cellText.setX(j * interver + boardsize*1);
-                cellText.setY(i * interver + boardsize*2);
-                pane.getChildren().add(cellText);
-                int[][] board = inGame.boardPrint();
+                cellText.setFont(Font.font(blocksize));//블럭사이즈
+                cellText.setX(j * interver + boardsize*1);//블럭 X좌표
+                cellText.setY(i * interver + boardsize*2);//블럭 Y좌표
+                pane.getChildren().add(cellText);//블럭 pane에 추가
+                int[][] board = inGame.boardPrint();// 현재 Board 상태 출력
                 if(board[i][j] != ' ') {
                 	cellText.setText("■");
                 	
-                	if(0<liney && liney < 22) {
-                		if(j !=0 && j !=11) {
+                	if(0<liney && liney < 22) {//완성된 줄이 있는 경우
+                		if(j !=0 && j !=11) {//양쪽 끝 벽이 아닌경우
                 			
                 			if(removeflag == false) {
 
-                				board[liney+1][j] = 8;
-
+                				board[liney+1][j] = 8;//완성된 줄의 밑을 8로 채움
 
                 			}
-
                 		}
                 	}
+                	//줄 삭제 이펙트
                 	
                 	switch (board[i][j]) {
                 	case 1:
@@ -362,7 +372,7 @@ public int gameSize = 2; //게임 사이즈
         					//빨간색 => 주황
         				}
         				break;
-        			case 8:
+        			case 8://줄삭제 이벤트 색깔
             			cellText.setFill(Color.GRAY);
             			break;
         			case 9: // item 1 용
@@ -555,17 +565,17 @@ public int gameSize = 2; //게임 사이즈
     				nbText.setFill(Color.GRAY);
     				break;
     			case 9: // item 1 용
-        			cellText.setFill(Color.WHITE);
+    				nbText.setFill(Color.WHITE);
         			break;
     			case 10: // item 색 맞추기
-        			cellText.setFill(Color.WHITE);
+    				nbText.setFill(Color.WHITE);
         			break;
     			default:
     				
     			}
             	if (next[i][j] == 11) {
-            		cellText.setText("L");
-            		cellText.setFill(Color.WHITE);
+            		nbText.setText("L");
+            		nbText.setFill(Color.WHITE);
             	}
         	}
         }
@@ -673,5 +683,11 @@ public int gameSize = 2; //게임 사이즈
 //		launch(args);
 //
 //	}
-
+	private void centerStage(Stage stage) {
+	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
+	    
+	    // 스테이지의 크기를 고려하여 중앙에 배치
+	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
+	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
+	}
 }

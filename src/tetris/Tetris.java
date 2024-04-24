@@ -12,7 +12,7 @@ public class Tetris {
     private static int[][] board = new int[BoardHeight][BoardWidth];
     private static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
     private static int currentY = 0; // 현재 블록의 Y 위치
-    private static int score = 0;
+    public int score = 0;
     private static int dropSpeed = 1_000_000_000;
     private static Block block;
     private static Block nextBlock;
@@ -32,7 +32,7 @@ public class Tetris {
     	this.level = level;
         clearBoard();
         randomBlock();
-        resetSpeedScore();
+        resetVariable();
     }
     
     
@@ -99,10 +99,14 @@ public class Tetris {
     	dropSpeed = Math.max(1_000_000,dropSpeed - (deleteBar*100*levelSpeed + (createBlockNum/10)*500)); 
     }
     
-    //dropSpeed와 score초기화 함수
-    public void resetSpeedScore(){
-    	dropSpeed = 1_000_000_000;
-    	score = 0;
+    //score에 영향을주는 변수 초기화 함수
+    public void resetVariable(){
+    	this.dropSpeed = 1_000_000_000;
+    	this.score = 0;
+    	this.deleteBar = 0;
+    	this.createBlockNum = 0;
+    	this.deleteItem = 0;
+    	this.dropBlocks = 0;	
     }
     
     // 블럭 이동
@@ -118,7 +122,7 @@ public class Tetris {
         return false;
     }
   
-    // 완성된 줄 있는지 확인후 제거
+    // 완성된 줄 있는지 확인후 완성된 줄 중 맨 윗줄의 Y좌표 반환
     public int checkLines() {
         for (int y = BoardHeight - 1; y >= 0; y--) {
             boolean lineComplete = true;
@@ -244,11 +248,14 @@ public class Tetris {
         	nextBlock.changeColor(Color.WHITE,10);
             break;
         case 4: // 줄삭제 아이템
-		double[] fitness_4=  {basic,basic,basic};
+        	double[] fitness_4=  {basic,basic,basic};
         	randomDelete = RandomFunction.randomFunction(fitness_4);
+        	//fitness 배열의 index중 하나를 랜덤 반환
         	int[] where = nextBlock.whereBlock(randomDelete);
         	nextBlock.changeShapeDetail(where[0],where[1],11);
+        	// 다음 블럭의 특정 랜덤 칸의 shape정보를 11로 수정
         	nextBlock.changeItem(4);
+        	//다음 블럭의 Item변수를 4로 지정 ( 종류를 4로 지정 )
         	
             break;
         case 5: // 무게추 아이템
@@ -271,7 +278,7 @@ public class Tetris {
     
     // 블럭 생성 위치 지정
     public boolean initialiBlock() {
-    	block = nextBlock;
+    	block = nextBlock; //다음 블럭 설명
     	heavyFlag = true;
     	createBlockNum++;
     	randomBlock();
@@ -449,19 +456,22 @@ public class Tetris {
             for (int x = 0; x < BoardWidth; x++) {
             	printBoard[y+1][x+1] = board[y][x];
             }
-        }
+        }//board상태 printBoard에 반영
+    	
     	for (int y = 0; y < block.height(); y++) {
-            for (int x = 0; x < block.width(); x++) {
-                if (block.getShape(x, y) > 0) {
+            for (int x = 0; x < block.width(); x++) {//현재 블럭 높이x넓이 크기의 직사각형
+                if (block.getShape(x, y) > 0) {//직사각형 내부에 블럭 채워져 있을때
                 	printBoard[currentY + y + 1][currentX + x + 1] = block.getColorNum();
+                	//현재위치의 board에 현재 블럭의 color숫자 채우기
                 	
                 }
             }
-        }
-    	if(mode==1&&block.getItem()==4) {
+        }//현재 위치의 board에 현재블럭 넣기
+    	
+    	if(mode==1&&block.getItem()==4) {//아이템 모드 활성화 && 현재 블럭이 줄삭제 아이템인 경우
     		int[] where = nextBlock.whereBlock(randomDelete);
     		printBoard[currentY + where[1] + 1][currentX + where[0] + 1] = 11;
-    		
+    		//줄삭제 아이템 블럭의 특정 랜덤 한 칸을 11로 지정
     	}
     	return printBoard;
     	

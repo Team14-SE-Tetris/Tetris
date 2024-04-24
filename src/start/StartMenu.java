@@ -7,6 +7,7 @@ import java.util.List;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
@@ -16,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import setting.SettingMenu;
 import tetris.Board;
@@ -157,13 +159,19 @@ public class StartMenu extends Application {
         if (selectedItem.equals("Standard Game")) {
 		board=new Board(0);
         	primaryStage.setScene(board.createScene(primaryStage));
+        	//화면 중앙배치
+        	centerStage(primaryStage);
         }
         else if(selectedItem.equals("Item Mode Game")) {
         	board=new Board(1);
         	primaryStage.setScene(board.createScene(primaryStage));
+        	//화면 중앙배치
+        	centerStage(primaryStage);
         }
         else if (selectedItem.equals("Setting")) {
         	new SettingMenu().display(primaryStage, scene);//설정화면 표시
+        	//화면 중앙배치
+        	centerStage(primaryStage);
         } 
         else if (selectedItem.equals("Score Board")) {
             primaryStage.setScene(ScoreBoard.createScene(primaryStage));
@@ -216,4 +224,12 @@ public class StartMenu extends Application {
             // 파일 읽기 실패 시, 적절한 예외 처리나 사용자 알림이 필요할 수 있습니다.
         }
     }
+    
+    private void centerStage(Stage stage) {
+	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
+	    
+	    // 스테이지의 크기를 고려하여 중앙에 배치
+	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
+	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
+	}
 }
