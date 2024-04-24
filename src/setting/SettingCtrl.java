@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -239,6 +240,15 @@ public class SettingCtrl {
     		//버튼 클릭시 포커스 해제 
     		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
     			KeyCode code = keyEvent.getCode();
+    			if (checkDuplicateKey(code)) {
+    	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+    	            rotateButton.requestFocus();
+    	    		//버튼에 포커스 되돌리기
+    	            primaryStage.getScene().setOnKeyPressed(null);
+    				//키가 눌린 이벤트를 해제
+    	            return; // 중복이면 메서드 종료   
+    	        }
+    			//기존 키와 중복 확인
     			rotateButton.setText(code.toString());
     			//키 입력시 키텍스트를 누른 키로 변경
     			rotateKey = KeyCode.valueOf(rotateButton.getText());
@@ -257,6 +267,15 @@ public class SettingCtrl {
 		//버튼 클릭시 포커스 해제 
 		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
 			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            teleportButton.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
 			teleportButton.setText(code.toString());
 			//키 입력시 키텍스트를 누른 키로 변경
 			teleportKey = KeyCode.valueOf(teleportButton.getText());
@@ -273,6 +292,15 @@ public class SettingCtrl {
 		//버튼 클릭시 포커스 해제 
 		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
 			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            leftButton.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
 			leftButton.setText(code.toString());
 			//키 입력시 키텍스트를 누른 키로 변경
 			leftKey = KeyCode.valueOf(leftButton.getText());
@@ -289,6 +317,15 @@ public class SettingCtrl {
 		//버튼 클릭시 포커스 해제 
 		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
 			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            downButton.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
 			downButton.setText(code.toString());
 			//키 입력시 키텍스트를 누른 키로 변경
 			downKey = KeyCode.valueOf(downButton.getText());
@@ -305,6 +342,15 @@ public class SettingCtrl {
 		//버튼 클릭시 포커스 해제 
 		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
 			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            rightButton.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
 			rightButton.setText(code.toString());
 			//키 입력시 키텍스트를 누른 키로 변경
 			rightKey = KeyCode.valueOf(rightButton.getText());
@@ -422,4 +468,20 @@ public class SettingCtrl {
 	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
 	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
 	}
+    
+    private boolean checkDuplicateKey(KeyCode newKey) {
+        // 기존에 할당된 키들과 새로운 키가 중복되는지 확인
+        return newKey == rotateKey || newKey == teleportKey || newKey == leftKey ||
+               newKey == downKey || newKey == rightKey || newKey == KeyCode.SPACE || newKey == KeyCode.Q;
+    }
+    
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    
 }
