@@ -9,13 +9,12 @@ public abstract class Block {
 	protected int color_num;
 	protected int item;
 	//item 변수 = 현재 블럭의 아이템 종류
-	//0 : 평범한 블럭
-	//1 : 해당 블럭이 지워진 줄이 2배
-	//2 : 폭탄
-	//3 : 1줄 랜덤 삭제
-	//4 : 줄삭제 아이템
-	//5 : 무게추 아이템
-	
+  	//0 : 평범한 블럭
+  	//1 : 해당 블럭이 지워진 줄이 2배
+  	//2 : 폭탄
+  	//3 : 1줄 랜덤 삭제
+  	//4 : 줄삭제 아이템
+  	//5 : 무게추 아이템
 	public Block() {
 		shape = new int[][]{ 
 				{1, 1}, 
@@ -31,9 +30,9 @@ public abstract class Block {
 	}
 	public int getBlockNums() {
 		int blockNums = 0;
-		for (int i = height()-1; i>=0; i-- ) {
-			for (int j=width()-1; j>=0;j--) {
-				if(shape[i][j]>0) {
+		for (int i = 0; i<width(); i++ ) {
+			for (int j=0; j<height();j++) {
+				if(shape[j][i]!=0) {
 					blockNums++;
 				}
 			}
@@ -43,27 +42,30 @@ public abstract class Block {
 	}
 	public int[] whereBlock(int w) {
 		int[] result = new int[2];
-		for (int i = width()-1; i>=0; i-- ) {
-			for (int j=height()-1; j>=0;j--) {
-					if (shape[i][j]>0) {
-						w--;
-					}
-					if(w==0) {
-						result[0]=i;
-						result[1]=j;
-					}
+		for (int i = 0; i<width(); i++ ) {
+			for (int j=0; j<height();j++) {
+					if (shape[j][i]>0) {
+						if(w==0) {
+							result[0]=i;
+							result[1]=j;
+						} else {
+							w--;
+						}
+						
+					} 
 			}
 		}
-		//현재 블록의 오오른쪽 아래에서 시작하여 왼쪽 위로 올라가면서 n번째로 비어있지 않은 블럭위 위치를 반환
+			
 		return result;
 	}
+	//현재 블록의 오오른쪽 아래에서 시작하여 왼쪽 위로 올라가면서 n번째로 비어있지 않은 블럭위 위치를 반환
 	public void changeShape(int[][] shape) {
 		this.shape = shape;
 	}
 	public void changeShapeDetail(int x, int y, int num) {
-		this.shape[x][y] = num;
+		shape[y][x] = num;
 		if (num ==0) {
-			this.shape[x][y] = ' '; //?
+			shape[y][x] = ' ';
 		}
 	}
 	public void changeColor(Color color, int color_num) {
