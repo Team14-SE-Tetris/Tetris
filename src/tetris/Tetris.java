@@ -7,27 +7,27 @@ import tetris.RandomFunction;
 import blocks.*;
 
 public class Tetris {
-    private static final int BoardWidth = 10;
-    private static final int BoardHeight = 20;
-    private static int[][] board = new int[BoardHeight][BoardWidth];
-    private static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
-    private static int currentY = 0; // 현재 블록의 Y 위치
-    private static int score = 0;
-    private static int dropSpeed = 1_000_000_000;
-    private static Block block;
-    private static Block nextBlock;
-    private static int deleteBar = 0;
-    private static int dropBlocks = 0;
-    private static int deleteItem = 0;
-    private static int itemBar = 1;
-    private static int createBlockNum = 0;
-    private int level = 1; // 레벨 기본값
-    private static int mode = 0; // 기본값 none item mode
+    public static final int BoardWidth = 10;
+    public static final int BoardHeight = 20;
+    public static int[][] board = new int[BoardHeight][BoardWidth];
+    public static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
+    public static int currentY = 0; // 현재 블록의 Y 위치
+    public static int score = 0;
+    public static int dropSpeed = 1_000_000_000;
+    public static Block block;
+    public static Block nextBlock;
+    public static int deleteBar = 0;
+    public static int dropBlocks = 0;
+    public static int deleteItem = 0;
+    public static int itemBar = 1;
+    public static int createBlockNum = 0;
+    public int level = 1; // 레벨 기본값
+    public static int mode = 0; // 기본값 none item mode
     public static int nextnum = 0;
     public static int liney = 0;
-    private static int randomDelete_3 = 0;
-    private static int randomDelete_4 = 0;
-    private boolean heavyFlag = true;
+    public static int randomDelete_3 = 0;
+    public static int randomDelete_4 = 0;
+    public boolean heavyFlag = true;
     
     // 생성자
     public Tetris(int level) {
@@ -39,7 +39,7 @@ public class Tetris {
     
     
     // 보드 초기화 
-    private void clearBoard() {
+    public void clearBoard() {
     	
         for (int y = 0; y < BoardHeight; y++) {
             for (int x = 0; x < BoardWidth; x++) {
@@ -49,7 +49,7 @@ public class Tetris {
     }
     
     // 충돌 점검 (바닥에 닫는 것도 포함함)
-    private boolean checkCollision(int posX, int posY) {
+    public boolean checkCollision(int posX, int posY) {
         for (int y = 0; y < block.height(); y++) {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y) != 0) {
@@ -87,7 +87,7 @@ public class Tetris {
     }
     
  // 최소 속도는 200ms로 제한 임의로 1번 내려올때마다 0.1ms씩 빨라지도록 설정 1_000_000_000 은 1초임
-    private void adjustDropSpeed() {
+    public void adjustDropSpeed() {
     	int levelSpeed = 10; // default normal
     	if (level == 1) {
     		levelSpeed = 8;
@@ -114,7 +114,7 @@ public class Tetris {
     }
     
     // 블럭 이동
-    private boolean moveBlock(int deltaX, int deltaY) {
+    public boolean moveBlock(int deltaX, int deltaY) {
         int newX = currentX + deltaX;
         int newY = currentY + deltaY;
 
@@ -192,7 +192,7 @@ public class Tetris {
     }
     
     // 블럭들 랜덤 생성
-    private void randomBlock() {
+    public void randomBlock() {
     	double basic = 0.14; // 1/7 반올림
     	double[] fitness=  {basic,basic,basic,basic,basic,basic,basic};
     	if (level == 1) {
@@ -234,7 +234,7 @@ public class Tetris {
 	}
 
     // 블럭들 랜덤 생성
-    private void randomItemBlock() {
+    public void randomItemBlock() {
     	double basic = 0.14; // 1/7 반올림
     	double[] fitness=  {basic,basic,basic,basic,basic};
     	int randomNum = 0;
@@ -284,10 +284,9 @@ public class Tetris {
             break;
     	}
     	
-    	
 	}
     
-    private void adjustScore() { // 떨어질때 점수추가 추가적으로 속도와 연관된 deleteBar, createBlockNum을 통해 속도와 점수관 연관시킴
+    public void adjustScore() { // 떨어질때 점수추가 추가적으로 속도와 연관된 deleteBar, createBlockNum을 통해 속도와 점수관 연관시킴
     	adjustDropSpeed();
     	score = (1_000_000_000-dropSpeed)/1000+deleteItem*100+dropBlocks*10+deleteBar*100;
     }
@@ -302,7 +301,6 @@ public class Tetris {
     	if(mode==1 && deleteBar/10==itemBar) {
     		randomItemBlock();
     		itemBar++;
-    		
     	}
     	currentX = BoardWidth / 2; // 블록을 중앙 상단에 위치
         currentY = 0; // 블록을 게임 보드 상단에 위치
@@ -312,7 +310,6 @@ public class Tetris {
         }
         return true;
     }
-    
     
     // 블럭 시계방향 90도 회전
     public boolean rotateBlock() {
@@ -508,9 +505,6 @@ public class Tetris {
 		return score;
 	}
     public int changeMode(int mode) {
-		return this.mode=mode;
-	}
-    public int getMode() {
 		return this.mode=mode;
 	}
     // 블록의 현재 x 좌표
