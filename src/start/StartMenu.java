@@ -28,8 +28,8 @@ public class StartMenu extends Application {
     public static int YSIZE = 600;
     public static Scene scene;
     public static Text[] menuItems = new Text[5];
-    private int selectedIndex = 0;
-    private static Stage primaryStage;
+    public int selectedIndex = 0;
+    public static Stage primaryStage;
     
     Text menuTitle = new Text("Tetris by 14 Team");
     VBox menuTitleBox;
@@ -39,15 +39,15 @@ public class StartMenu extends Application {
     Text keyDescription;
   //설정파일 변수
   		//키코드
-  	private KeyCode rotateKey = KeyCode.U, 
-  			teleportKey = KeyCode.T, 
-  			leftKey = KeyCode.LEFT, 
-  			downKey = KeyCode.DOWN, 
-  			rightKey = KeyCode.RIGHT;
+  	public KeyCode rotateKey = KeyCode.U;
+	KeyCode teleportKey = KeyCode.T;
+	KeyCode leftKey = KeyCode.LEFT;
+	KeyCode downKey = KeyCode.DOWN;
+	KeyCode rightKey = KeyCode.RIGHT;
   		//화면 크기
   		//위에 정의함, gameSize변수
   		//색맹모드
-  	private int colorBlindMode = 0;
+  	public int colorBlindMode = 0;
   	
     public static Runnable updateKeyDescription;
     public static void main(String[] args) {
@@ -137,13 +137,13 @@ public class StartMenu extends Application {
     }
 
     //메뉴에서 select 할 때 화살표 입력 방향(값)에 따라 선택되는 메뉴가 바뀌는 함수
-    private void navigateMenu(int direction) {
+    public void navigateMenu(int direction) {
         selectedIndex = (selectedIndex + direction + menuItems.length) % menuItems.length;
         updateMenu();
     }
     
     //바뀌면 UI에서 Text 색이 빨강으로 바뀜
-    private void updateMenu() {
+    public void updateMenu() {
         for (int i = 0; i < menuItems.length; i++) {
             if (i == selectedIndex) {
                 menuItems[i].setFill(Color.RED);
@@ -155,7 +155,7 @@ public class StartMenu extends Application {
     }
     
     //enter를 눌렀을 때 실행되는 함수
-    private void executeSelectedMenuItem() {
+    public void executeSelectedMenuItem() {
         String selectedItem = menuItems[selectedIndex].getText();
         System.out.println("Selected menu item: " + selectedItem);
         if (selectedItem.equals("Standard Game")) {
