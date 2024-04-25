@@ -93,6 +93,8 @@ public class StartMenu extends Application {
         updateKeyDescription = () -> {
         	settingConfigLoader();
             keyDescription.setText("아래방향키 및 블럭 아래 이동 키: " + downKey.toString() + "\n"
+            				+ "게임 중 메인화면으로 돌아가기: Q" + "\n"
+            				+ "게임 중 일시정지/재개: SPACE바" + "\n"
                             + "윗방향키 및 블럭 순간 이동 키: " + teleportKey.toString() + "\n"
                             + "오른쪽방향키 및 블럭 오른쪽 이동 키: " + rightKey.toString() + "\n"
                             + "왼쪽방향키 및 블럭 왼쪽 이동 키: " + leftKey.toString() + "\n"

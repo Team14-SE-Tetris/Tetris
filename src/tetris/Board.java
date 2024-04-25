@@ -54,6 +54,13 @@ public int gameSize = 2; //게임 사이즈
     public double dlsize = boardsize;
     public double scoresize = blocksize*0.6;
     
+//    //mac용 
+//    public double boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
+//    public double blocksize = 1.18*boardsize;  //테트리스 블럭 크기
+//    public double interver = boardsize;
+//    public double dlsize = boardsize;
+//    public double scoresize = blocksize;
+    
     //final public static Pane으로 하면 메인화면 => gamestart => 메인화면 후 다시 gamestart를 눌렀을때 오류가 발생
     //gamestart후 게임을 하다가 메인으로 다시 돌아가서 다시 gamestart를 누르면 
     //게임 내의 점수, 블록 떨어지는 속도가 안되는 현상발생 
@@ -124,9 +131,13 @@ public int gameSize = 2; //게임 사이즈
    
     	// board 내부 블럭은 inGame에서 가져옴
         drawBoard();
-	if (mode ==1){
-		inGame.changeMode();
-	}
+        if (mode ==1){
+        	inGame.changeMode(1);
+        }
+        else {
+        	inGame.changeMode(0);
+        }
+        
         // score inGame에서 가져옴
         drawScore();
         
@@ -674,6 +685,18 @@ public int gameSize = 2; //게임 사이즈
         interver = boardsize;
         dlsize = boardsize;
         scoresize = blocksize*0.6;
+        
+//        //mac용 
+//        SIZE = gameSize*5 + 20; //윈도우 창 한 칸의 크기
+//        xPoint = 22; //가로 칸 수 21
+//        yPoint = 24; //세로 칸 수 24
+//        XMAX = SIZE * xPoint; //윈도우의 실제 가로 크기
+//        YMAX = SIZE * yPoint; //윈도우의 실제 세로 크기
+//        boardsize = SIZE;//pane에서의 한칸의 크기, Text를 배치할때 좌표로 활용.
+//        blocksize = 1.18*boardsize; //테트리스 블럭 크기
+//        interver = boardsize;
+//        dlsize = boardsize;
+//        scoresize = blocksize;
 	}
 
 //	public static void main(String[] args) {

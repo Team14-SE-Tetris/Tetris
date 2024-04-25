@@ -105,6 +105,7 @@ public class Tetris {
     public void resetVariable(){
     	dropSpeed = 1_000_000_000;
     	score = 0;
+    	itemBar = 1;
     	deleteBar = 0;
     	createBlockNum = 0;
     	deleteItem = 0;
@@ -487,8 +488,8 @@ public class Tetris {
     	adjustScore();
 		return score;
 	}
-    public int changeMode() {
-		return this.mode=1;
+    public int changeMode(int mode) {
+		return this.mode=mode;
 	}
     // 블록의 현재 x 좌표
     public int getCurrentY() {
