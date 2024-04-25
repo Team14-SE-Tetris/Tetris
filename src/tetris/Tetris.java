@@ -278,7 +278,8 @@ public class Tetris {
         	shape = new int[][] {{12, 12, 12, 12},{12, 12, 12, 12}};
         	nextBlock.changeShape(shape);
         	nextBlock.changeItem(5);
-        	nextBlock.changeColor(Color.WHITE,10);
+        	
+        	nextBlock.changeColor(Color.WHITE,13);
             break;
         default:
             System.out.print("System Error: randomNum"+randomNum);
