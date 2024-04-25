@@ -100,6 +100,8 @@ public int gameSize = 2; //게임 사이즈
     private boolean delayflag = true;
     private int removestep = 0;
     
+    private boolean telpoflag = false;
+    
 	//설정파일 변수
 		//키코드
 	private KeyCode rotateKey = KeyCode.U, 
@@ -168,6 +170,7 @@ public int gameSize = 2; //게임 사이즈
             public void handle(long now) {
                 if (!isLineRemovalScheduled) {
                     if (now - lastUpdate >= interval) { // interval 간격마다 수행
+                    	telpoflag=false;
                         if (!inGame.moveDown()) { // moveDown 실패 시
                             if (inGame.checkLines() > 0 && inGame.checkLines() < 22) {
                                 // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
@@ -253,6 +256,7 @@ public int gameSize = 2; //게임 사이즈
                 KeyCode keyCode = event.getCode();
                 if (delayflag) {
                 if(gamePaused == false) {
+                if(telpoflag == false) {
                 if (keyCode == leftKey) {
                 	inGame.moveLeft(); // 왼쪽으로 이동
                 } else if (keyCode == rightKey) {
@@ -270,7 +274,7 @@ public int gameSize = 2; //게임 사이즈
                 		inGame.moveDown();
                 	}
                 } else if (keyCode == teleportKey) {
-                	
+                	telpoflag = true;
                 	if(itemtest.getItem()==5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(),inGame.getCurrentY()))) {
             			delayflag=true;
             			inGame.moveBottom();
@@ -302,6 +306,7 @@ public int gameSize = 2; //게임 사이즈
         			pauseGame(pane);
         			
         		}
+            }
             }
             }
         });
