@@ -48,7 +48,7 @@ public class SettingCtrl {
     	//화면 크기
     private int gameSize = 2;
     	//색맹모드
-    private int colorBlindMode = 0;
+    public int colorBlindMode = 0;
     	//난이도
     private int gameDifficulty = 2;
     

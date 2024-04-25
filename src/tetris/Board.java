@@ -91,12 +91,12 @@ public int gameSize = 2; //게임 사이즈
     
     public Tetris inGame;
     
-    private boolean gamePaused = false;
+    public boolean gamePaused = false;
     
     private int liney = 0;
     private int gradation = 1;
     private int removedelay = 0;
-    private boolean removeflag = true;
+    public boolean removeflag = true;
     private boolean delayflag = true;
     private int removestep = 0;
     
@@ -104,7 +104,7 @@ public int gameSize = 2; //게임 사이즈
     
 	//설정파일 변수
 		//키코드
-	private KeyCode rotateKey = KeyCode.U, 
+	public KeyCode rotateKey = KeyCode.U, 
 			teleportKey = KeyCode.T, 
 			leftKey = KeyCode.LEFT, 
 			downKey = KeyCode.DOWN, 
@@ -112,11 +112,11 @@ public int gameSize = 2; //게임 사이즈
 		//화면 크기
 		//위에 정의함, gameSize변수
 		//색맹모드
-	private int colorBlindMode = 0;
+	public int colorBlindMode = 0;
 		//게임 난이도
-	private int difficulty = 2;
+	public int difficulty = 2;
 	
-	private String difficultyText = "normal";
+	public String difficultyText = "normal";
     
     public Board(int mode) {
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
@@ -127,6 +127,7 @@ public int gameSize = 2; //게임 사이즈
         scene = new Scene(pane, XMAX, YMAX);
         delayflag=true;
     }
+
 
 	public Scene createScene(Stage primaryStage) {
 
@@ -163,7 +164,7 @@ public int gameSize = 2; //게임 사이즈
             private long lastUpdate = 0;
             private long interval = inGame.getDropSpeed(); // 1초마다 이동
             private long delay = 300_000_000; // 딜레이 설정 (0.3초)
-            private boolean isLineRemovalScheduled = false; // 줄 제거가 예정되었는지 확인
+            public boolean isLineRemovalScheduled = false; // 줄 제거가 예정되었는지 확인
             private long removalScheduledTime = 0; // 줄 제거 예정 시간
 
             @Override
@@ -458,7 +459,7 @@ public int gameSize = 2; //게임 사이즈
 		
 	}
 	
-	private void drawScore() {
+	public void drawScore() {
 		
 		switch(difficulty) { //difficulty 값에 따른 난이도 텍스트 설정
     	case 1:
@@ -651,7 +652,7 @@ public int gameSize = 2; //게임 사이즈
 		
 	}
 	
-	private void pauseGame(Pane pane) {
+	public void pauseGame(Pane pane) {
 		if(gamePaused == true) {
 			
 			pane.setStyle("-fx-background-color: #000000;");
