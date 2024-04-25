@@ -82,7 +82,7 @@ public class ScoreBoard {
 	    return scene;
 	}
 	
-	private static VBox createScoreBox(Stage primaryStage,String mode) {
+	public static VBox createScoreBox(Stage primaryStage,String mode) {
 		scoreBox = new VBox(20);
 	    scoreBox.setStyle("-fx-background-color: #FFFFFF;");
 	    scoreBox.setAlignment(Pos.CENTER);
@@ -325,7 +325,7 @@ public class ScoreBoard {
 	
 	
 
-    private static void addScoreToFile(String name, int score,String mode) {
+    public static void addScoreToFile(String name, int score,String mode) {
     	if(mode.equals("Standard Mode")) {
     		 try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/score.txt", true))) {
     	            writer.write(name + " / " + score); //새로운 기록 작성
