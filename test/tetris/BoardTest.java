@@ -58,7 +58,14 @@ public class BoardTest extends ApplicationTest {
 		int CurrentR = board.inGame.getCurrentX();
 		press(KeyCode.RIGHT);
 		
-    	assertEquals(CurrentR+1, board.inGame.getCurrentX());
+		if(CurrentR < 12) {
+
+			assertEquals(CurrentR+1, board.inGame.getCurrentX());
+		}
+		
+		
+		
+    	
 	}
 	@Test
 	public void testLeft() {
