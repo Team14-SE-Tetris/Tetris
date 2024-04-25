@@ -35,7 +35,7 @@ import java.util.List;
 import start.ScoreBoard;
 import start.StartMenu;
 import tetris.Tetris;
-
+import javafx.concurrent.Task;
 public class Board{
     
 public int gameSize = 2; //게임 사이즈
@@ -72,7 +72,7 @@ public int gameSize = 2; //게임 사이즈
     
     private static int level = 1;
     public int score = 1;
-    private int mode =0;
+    private static int mode =0;
     private static int x[] = {0, 0, 0, 0, 0, 0};
     private static int y[] = {0, 0, 0, 0, 0, 0};
     
@@ -123,6 +123,7 @@ public int gameSize = 2; //게임 사이즈
     	this.mode = mode;
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
+        delayflag=true;
     }
 
 	public Scene createScene(Stage primaryStage) {
@@ -130,16 +131,17 @@ public int gameSize = 2; //게임 사이즈
 		//initializeBoard(); -> inGame 객체 내부 시작
 
 		System.out.println(1);// 테스트
-    	inGame.initialiBlock();
-   
-    	// board 내부 블럭은 inGame에서 가져옴
-        drawBoard();
-        if (mode ==1){
+		if (mode ==1){
         	inGame.changeMode(1);
         }
         else {
         	inGame.changeMode(0);
         }
+    	inGame.initialiBlock();
+   
+    	// board 내부 블럭은 inGame에서 가져옴
+        drawBoard();
+        
         
         // score inGame에서 가져옴
         drawScore();
@@ -155,20 +157,45 @@ public int gameSize = 2; //게임 사이즈
 
         
         //MoveDown(x, y);
-        
         AnimationTimer timer = new AnimationTimer() {
-        	private long lastUpdate = 0;
+            private long lastUpdate = 0;
             private long interval = inGame.getDropSpeed(); // 1초마다 이동
-            private long delay = 300_000_000;    
-            
+            private long delay = 300_000_000; // 딜레이 설정 (0.3초)
+            private boolean isLineRemovalScheduled = false; // 줄 제거가 예정되었는지 확인
+            private long removalScheduledTime = 0; // 줄 제거 예정 시간
+
             @Override
             public void handle(long now) {
-            	
-            	if(inGame.checkLines()>0 && inGame.checkLines()<22) {//완성된 줄이 있는 경우
-            		
-            		removeflag = false;
-            		
+                if (!isLineRemovalScheduled) {
+                    if (now - lastUpdate >= interval) { // interval 간격마다 수행
+                        if (!inGame.moveDown()) { // moveDown 실패 시
+                            if (inGame.checkLines() > 0 && inGame.checkLines() < 22) {
+                                // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
+                                isLineRemovalScheduled = true;
+                                removalScheduledTime = now;
+                            } else {
+                                // 완성된 줄이 없고 블록을 초기화할 수 없는 경우 게임 오버 처리
+                                if (!inGame.initialiBlock()) {
+                                    this.stop();
+                                    Platform.runLater(() -> {
+                                        ScoreBoard scoreBoard = new ScoreBoard();
+                                        if (mode == 0) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode");
+                                        } else {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode");
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        lastUpdate = now;
+                    }
+                } else {
+                	
+                	removeflag = false;
+     		
             		liney = inGame.checkLines();
+            		
             		
             		if (removestep == 0) {//완성된 줄 확인 후 1번째 프레임
 
@@ -192,53 +219,37 @@ public int gameSize = 2; //게임 사이즈
             			removestep--;
             		}
             		
-            		removeflag = true;
-            		removestep++;
-
-            	}
-            	
-            	else {//완성된 블록이 없는 경우
-            	
-            		if (now - lastUpdate >= interval) {//interval 간격마다 수행
+            		if(!(inGame.checkLines() > 0 && inGame.checkLines() < 22)) {
+            			isLineRemovalScheduled = false;
+            			removeflag = true;
             			
-            			if(!(inGame.moveDown())) {
-            				if(!(inGame.initialiBlock())) {
-            					this.stop();
-            					// Game over 시 작동
-            					Platform.runLater(() -> {
-            				
-            						ScoreBoard scoreBoard = new ScoreBoard();
-            						// UI 블로킹 메서드 실행
-            						if(mode == 0) {
-                						scoreBoard.showSettingDialog(score, primaryStage,"Standard Mode"); //이건 기본모드에서 점수 기록 아래는 아이템모드에서 점수기록
-            						}
-            						else {
-            							scoreBoard.showSettingDialog(score, primaryStage,"Item Mode");
-            						}
-            					});
-            			       
-            				}
-            			
-            		}
-            			//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
-            			lastUpdate = now;
+            			if (!inGame.initialiBlock()) {
+                          this.stop();
+                          Platform.runLater(() -> {
+                              ScoreBoard scoreBoard = new ScoreBoard();
+                              if (mode == 0) {
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode");
+                              } else {
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode");
+                              }
+                          });
+                      }
             		}
             		
-            		drawBoard();
-            	}
-            	
-                // 화면 업데이트 로직을 작성
-            	delayflag=true;
+            		removestep++;
+                }
+                delayflag=true;
+                drawBoard(); // 화면 업데이트
                 deadLine();
                 drawScore();
                 Styleset();
             }
         };
-        // 키 이벤트 핸들러 등록
-     // 키 이벤트 핸들러 등록
+
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+            	Block itemtest = inGame.getCurrentBlock();
                 KeyCode keyCode = event.getCode();
                 if (delayflag) {
                 if(gamePaused == false) {
@@ -247,13 +258,26 @@ public int gameSize = 2; //게임 사이즈
                 } else if (keyCode == rightKey) {
                     inGame.moveRight(); // 오른쪽으로 이동
                 } else if (keyCode == downKey) {
-                	if(!(inGame.moveDown())) {
+                	
+                	if(!(inGame.checkBlock())) {
                 		delayflag=false;
+                		if(itemtest.getItem()==5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(),inGame.getCurrentY()))) {
+                			delayflag=true;
+                			inGame.moveDown();
+                		}
             		}
-                } else if (keyCode == teleportKey) {
-                	if(!(inGame.moveBottom())){ // 맨 아래로 이동
-                		delayflag=false;
+                	else {
+                		inGame.moveDown();
                 	}
+                } else if (keyCode == teleportKey) {
+                	
+                	if(itemtest.getItem()==5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(),inGame.getCurrentY()))) {
+            			delayflag=true;
+            			inGame.moveBottom();
+            		} else {
+            			inGame.moveBottom();
+                    	delayflag=false;
+            		}
         		} else if (keyCode == rotateKey) {
         			inGame.rotateBlock();
         		}
@@ -392,13 +416,23 @@ public int gameSize = 2; //게임 사이즈
             			cellText.setFill(Color.GRAY);
             			break;
         			case 9: // item 1 용
+        				cellText.setText("a");
             			cellText.setFill(Color.WHITE);
             			break;
         			case 10: // item 색 맞추기
+        				cellText.setText("b");
             			cellText.setFill(Color.WHITE);
             			break;
         			case 11: // item 4 용
         				cellText.setText("L");
+            			cellText.setFill(Color.WHITE);
+            			break;
+        			case 12: // item 색 맞추기
+        				cellText.setText("c");
+            			cellText.setFill(Color.WHITE);
+            			break;
+        			case 13: // item 색 맞추기
+        				cellText.setText("d");
             			cellText.setFill(Color.WHITE);
             			break;
             			
@@ -581,9 +615,23 @@ public int gameSize = 2; //게임 사이즈
     				nbText.setFill(Color.GRAY);
     				break;
     			case 9: // item 1 용
+    				nbText.setText("a");
     				nbText.setFill(Color.WHITE);
         			break;
     			case 10: // item 색 맞추기
+    				nbText.setText("b");
+    				nbText.setFill(Color.WHITE);
+        			break;
+    			case 11: // item 4 용
+    				nbText.setText("L");
+    				nbText.setFill(Color.WHITE);
+        			break;
+    			case 12: // item 색 맞추기
+    				nbText.setText("c");
+    				nbText.setFill(Color.WHITE);
+        			break;
+    			case 13: // item 색 맞추기
+    				nbText.setText("d");
     				nbText.setFill(Color.WHITE);
         			break;
     			default:
