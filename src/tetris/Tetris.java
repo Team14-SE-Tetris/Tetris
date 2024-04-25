@@ -260,7 +260,7 @@ public class Tetris {
         	randomDelete_3 = RandomFunction.randomFunction(fitness_3);
         	nextBlock.changeShape(shape);
         	nextBlock.changeItem(3);
-        	nextBlock.changeColor(Color.WHITE,10);
+        	nextBlock.changeColor(Color.WHITE,12);
             break;
         case 3: // 줄삭제 아이템
         	int block_nums= nextBlock.getBlockNums();
@@ -278,7 +278,7 @@ public class Tetris {
         	shape = new int[][] {{12, 12, 12, 12},{12, 12, 12, 12}};
         	nextBlock.changeShape(shape);
         	nextBlock.changeItem(5);
-        	nextBlock.changeColor(Color.WHITE,10);
+        	nextBlock.changeColor(Color.WHITE,13);
             break;
         default:
             System.out.print("System Error: randomNum"+randomNum);
