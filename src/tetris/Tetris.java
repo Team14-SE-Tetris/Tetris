@@ -278,10 +278,6 @@ public class Tetris {
         	shape = new int[][] {{12, 12, 12, 12},{12, 12, 12, 12}};
         	nextBlock.changeShape(shape);
         	nextBlock.changeItem(5);
-<<<<<<< HEAD
-        	
-=======
->>>>>>> 02816c5f105fddcd2517849169748f6f41c9885f
         	nextBlock.changeColor(Color.WHITE,13);
             break;
         default:
