@@ -69,7 +69,7 @@ public class Tetris {
         return false;
     }
     
-    private boolean checkCollisionBottom(int posX, int posY) {
+    public boolean checkCollisionBottom(int posX, int posY) {
         for (int y = 0; y < block.height(); y++) {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y) != 0) {
@@ -98,7 +98,8 @@ public class Tetris {
     	else if (level == 3) {
     		levelSpeed = 12;
     	}
-    	dropSpeed = Math.max(1_000_000,dropSpeed - (deleteBar*100*levelSpeed + (createBlockNum/10)*500)); 
+    	dropSpeed = Math.max(1_000_000,1_000_000_000 - (deleteBar*100*levelSpeed + (createBlockNum/10)*500)); 
+    	
     }
     
     //dropSpeed와 score초기화 함수
@@ -120,6 +121,16 @@ public class Tetris {
         if (!checkCollision(newX, newY)) {
         	currentX = newX;
         	currentY = newY;
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean checkBlock() {
+        int newX = currentX + 0;
+        int newY = currentY + 1;
+
+        if (!checkCollision(newX, newY)) {
             return true;
         }
         return false;
@@ -151,7 +162,7 @@ public class Tetris {
     }
     
     // 보드에 블록을 그리는 메소드
-    private void placeBlock() {
+    public void placeBlock() {
         for (int y = 0; y < block.height(); y++) {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y)> 0) {
@@ -164,7 +175,7 @@ public class Tetris {
  // 선 지우는 메소드
     public void removeLine(int line) {
     	deleteBar++;
-    	System.out.print("detet");
+    	System.out.print("delte");
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
             	if (board[line][x]==9) {
@@ -278,7 +289,8 @@ public class Tetris {
 	}
     
     private void adjustScore() { // 떨어질때 점수추가 추가적으로 속도와 연관된 deleteBar, createBlockNum을 통해 속도와 점수관 연관시킴
-    	score = (deleteBar+createBlockNum/5)*100+deleteItem*100+dropBlocks*10;
+    	adjustDropSpeed();
+    	score = (1_000_000_000-dropSpeed)/1000+deleteItem*100+dropBlocks*10+deleteBar*100;
     }
     
     // 블럭 생성 위치 지정
@@ -288,10 +300,10 @@ public class Tetris {
     	
     	createBlockNum++;
     	randomBlock();
-    	System.out.print("initial");
-    	if(mode==1 && deleteBar/10==itemBar) {
+    	 System.out.print("initial");
+    	if(mode==1 && itemBar%2==1) {
     		randomItemBlock();
-    		itemBar++;
+    		
     	}
     	currentX = BoardWidth / 2; // 블록을 중앙 상단에 위치
         currentY = 0; // 블록을 게임 보드 상단에 위치
@@ -391,6 +403,7 @@ public class Tetris {
     			moveBlock(0,1);
     			dropBlocks++;
 	    		return true;
+	    		
     		} else {
     			placeBlock();
         		currentX = BoardWidth / 2;
@@ -402,15 +415,21 @@ public class Tetris {
   
     }
     // 쭉내리기
-    public boolean moveBottom() {
+    public void moveBottom() {
     	
-    	boolean l = true;
+    	while(checkBlock()) {
+    		moveDown();
+    	}
     	
-    	while(l) {
-    		l = moveDown();
+    	while(block.getItem()==5) {
+    		
+    		if (checkCollisionBottom(currentX, currentY+1)) {
+    			break;
+    		}
+    		
+    		moveDown();
     	}
     		
-    	return false;
     }
     
     // 블럭 왼쪽으로 이동
@@ -492,6 +511,9 @@ public class Tetris {
     public int changeMode(int mode) {
 		return this.mode=mode;
 	}
+    public int getMode() {
+		return this.mode=mode;
+	}
     // 블록의 현재 x 좌표
     public int getCurrentY() {
 		return currentY;
@@ -510,6 +532,10 @@ public class Tetris {
     // preBlock 출력
     public Block getNextBlock() {
 		return nextBlock;
+	}
+    
+    public Block getCurrentBlock() {
+		return block;
 	}
     
  // Level 변경
