@@ -164,6 +164,7 @@ public class Tetris {
  // 선 지우는 메소드
     public void removeLine(int line) {
     	deleteBar++;
+    	System.out.print("detet");
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
             	if (board[line][x]==9) {
@@ -284,8 +285,10 @@ public class Tetris {
     public boolean initialiBlock() {
     	block = nextBlock;
     	heavyFlag = true;
+    	
     	createBlockNum++;
     	randomBlock();
+    	System.out.print("initial");
     	if(mode==1 && deleteBar/10==itemBar) {
     		randomItemBlock();
     		itemBar++;
@@ -369,8 +372,6 @@ public class Tetris {
 	    		else {
 	    			placeBlock();
 	    		}
-	    		currentX = BoardWidth / 2;
-	    		currentY = 0;
 	    		return false;
 	    	}
     	}

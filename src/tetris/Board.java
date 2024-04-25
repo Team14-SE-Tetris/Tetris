@@ -91,12 +91,13 @@ public int gameSize = 2; //게임 사이즈
     
     public Tetris inGame;
     
-    private boolean gamePaused;
+    private boolean gamePaused = false;
     
     private int liney = 0;
     private int gradation = 1;
     private int removedelay = 0;
-    private boolean removeflag = false;
+    private boolean removeflag = true;
+    private boolean delayflag = true;
     private int removestep = 0;
     
 	//설정파일 변수
@@ -127,6 +128,8 @@ public int gameSize = 2; //게임 사이즈
 	public Scene createScene(Stage primaryStage) {
 
 		//initializeBoard(); -> inGame 객체 내부 시작
+
+		System.out.println(1);// 테스트
     	inGame.initialiBlock();
    
     	// board 내부 블럭은 inGame에서 가져옴
@@ -197,7 +200,7 @@ public int gameSize = 2; //게임 사이즈
             	else {//완성된 블록이 없는 경우
             	
             		if (now - lastUpdate >= interval) {//interval 간격마다 수행
-            			System.out.println(inGame.getDropSpeed());// 테스트
+            			
             			if(!(inGame.moveDown())) {
             				if(!(inGame.initialiBlock())) {
             					this.stop();
@@ -215,7 +218,8 @@ public int gameSize = 2; //게임 사이즈
             					});
             			       
             				}
-            			}
+            			
+            		}
             			//MoveDown(x, y); // 1초마다 MoveDown() 메서드 호출
             			lastUpdate = now;
             		}
@@ -224,7 +228,7 @@ public int gameSize = 2; //게임 사이즈
             	}
             	
                 // 화면 업데이트 로직을 작성
-            	
+            	delayflag=true;
                 deadLine();
                 drawScore();
                 Styleset();
@@ -236,21 +240,20 @@ public int gameSize = 2; //게임 사이즈
             @Override
             public void handle(KeyEvent event) {
                 KeyCode keyCode = event.getCode();
+                if (delayflag) {
+                if(gamePaused == false) {
                 if (keyCode == leftKey) {
                 	inGame.moveLeft(); // 왼쪽으로 이동
                 } else if (keyCode == rightKey) {
                     inGame.moveRight(); // 오른쪽으로 이동
                 } else if (keyCode == downKey) {
                 	if(!(inGame.moveDown())) {
-            			if(!(inGame.initialiBlock())) {
-            				// Game over 시 작동
-            			}
+                		delayflag=false;
             		}
                 } else if (keyCode == teleportKey) {
-        			inGame.moveBottom(); // 맨 아래로 이동
-        			if(!(inGame.initialiBlock())) {
-        				// Game over 시 작동
-        			}
+                	if(!(inGame.moveBottom())){ // 맨 아래로 이동
+                		delayflag=false;
+                	}
         		} else if (keyCode == rotateKey) {
         			inGame.rotateBlock();
         		}
@@ -264,7 +267,8 @@ public int gameSize = 2; //게임 사이즈
         			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
                 	centerStage(primaryStage);
         		}
-        		else if(keyCode == KeyCode.SPACE) {
+                }
+                if(keyCode == KeyCode.SPACE) {
         			if(gamePaused == false) {
         				timer.stop();
         			}
@@ -274,6 +278,7 @@ public int gameSize = 2; //게임 사이즈
         			pauseGame(pane);
         			
         		}
+            }
             }
         });
         timer.start(); // AnimationTimer 시작
