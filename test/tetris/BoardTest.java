@@ -23,7 +23,7 @@ import javafx.scene.layout.Pane;
 
 
 
-public class Boardtest extends ApplicationTest {
+public class BoardTest extends ApplicationTest {
 	
 	private Board board;
 	private Pane pane;
@@ -41,6 +41,7 @@ public class Boardtest extends ApplicationTest {
     public void setUp() throws Exception {
         // StartMenu 인스턴스를 생성하기 위해 start() 메서드가 먼저 호출되도록 설정
         //launch(Board.class);
+    	
     }
 
 	@Test
