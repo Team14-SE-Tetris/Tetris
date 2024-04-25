@@ -34,7 +34,7 @@ public class Tetris {
     	this.level = level;
         clearBoard();
         randomBlock();
-        resetSpeedScore();
+        resetVariable();
     }
     
     
@@ -102,10 +102,13 @@ public class Tetris {
     }
     
     //dropSpeed와 score초기화 함수
-    public void resetSpeedScore(){
+    public void resetVariable(){
     	dropSpeed = 1_000_000_000;
     	score = 0;
-    	itemBar=0;
+    	deleteBar = 0;
+    	createBlockNum = 0;
+    	deleteItem = 0;
+    	dropBlocks = 0;	
     }
     
     // 블럭 이동
@@ -272,7 +275,7 @@ public class Tetris {
     	
 	}
     
-    private void adjustScore() { // 떨어질때 점수추가
+    private void adjustScore() { // 떨어질때 점수추가 추가적으로 속도와 연관된 deleteBar, createBlockNum을 통해 속도와 점수관 연관시킴
     	score = (deleteBar+createBlockNum/5)*100+deleteItem*100+dropBlocks*10;
     }
     
@@ -342,7 +345,12 @@ public class Tetris {
 	    				break;
 	    			case 3: // 1줄 랜덤 삭제
 	    				for (int x = 0; x < BoardWidth; x++) {
-			                board[randomDelete_3+currentY][x] = 10;
+	    					if (block.height()>1) {
+	    						board[currentY+randomDelete_3][x] = 10;
+	    					}
+	    					else {
+				                board[currentY][x] = 10;
+	    					}
 			            }
 	    				break;
 	    			case 4: // 1줄 삭제
@@ -463,13 +471,13 @@ public class Tetris {
                 	printBoard[currentY + y + 1][currentX + x + 1] = block.getColorNum();
                 	
                 }
+                if(mode==1&&block.getItem()==4&&block.getShape(x, y)==11) {
+            		printBoard[currentY + y + 1][currentX + x + 1] = 11;
+            		
+            	}
             }
         }
-    	if(mode==1&&block.getItem()==4) {
-    		int[] where = block.whereBlock(randomDelete_4);
-    		printBoard[currentY + where[1] + 1][currentX + where[0] + 1] = 11;
-    		
-    	}
+    	
     	return printBoard;
     	
     }
