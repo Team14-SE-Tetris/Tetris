@@ -15,18 +15,21 @@ import javafx.stage.Stage;
 public class StartMenuTest extends ApplicationTest {
 
     private StartMenu startMenu;
+    
 
     @Override
     public void start(Stage stage) throws Exception {
         startMenu = new StartMenu();
         Scene scene = startMenu.createScene(stage);
         stage.setScene(scene);
+        
         stage.show();
     }
 
     @Before
     public void setUp() throws Exception {
         // StartMenu 인스턴스를 생성하기 위해 start() 메서드가 먼저 호출되도록 설정
+    	
         launch(StartMenu.class);
     }
 

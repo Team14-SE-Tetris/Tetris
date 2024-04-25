@@ -30,10 +30,10 @@ public class ScoreBoardTest extends ApplicationTest {
         scoreBoard = new ScoreBoard();
     }
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        this.stage = stage;
-    }
+    //@Override
+    //public void start(Stage stage) throws Exception {
+        //this.stage = stage;
+    //}
 
     @Test
     public void testCreateScene() {

@@ -30,9 +30,9 @@ public class Boardtest extends ApplicationTest {
 	
 	@Override
     public void start(Stage stage) throws Exception {
-        board = new Board(1);
+		board = new Board(1);
         Scene scene = board.createScene(stage);
-     
+        
         stage.setScene(scene);
         stage.show();
     }
