@@ -297,7 +297,9 @@ public int gameSize = 2; //게임 사이즈
                 	centerStage(primaryStage);
         		}
                 }
-                if(keyCode == KeyCode.SPACE) {
+                
+            }
+			if(keyCode == KeyCode.SPACE) {
         			if(gamePaused == false) {
         				timer.stop();
         			}
@@ -307,7 +309,6 @@ public int gameSize = 2; //게임 사이즈
         			pauseGame(pane);
         			
         		}
-            }
             }
             }
         });
