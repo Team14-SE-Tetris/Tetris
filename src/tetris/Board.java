@@ -23,6 +23,7 @@ import javafx.stage.Screen;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.SplitPane;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -35,6 +36,7 @@ import java.util.List;
 import start.ScoreBoard;
 import start.StartMenu;
 import tetris.Tetris;
+import tetris.Board2;
 import javafx.concurrent.Task;
 public class Board{
     
@@ -65,6 +67,7 @@ public int gameSize = 2; //게임 사이즈
     //gamestart후 게임을 하다가 메인으로 다시 돌아가서 다시 gamestart를 누르면 
     //게임 내의 점수, 블록 떨어지는 속도가 안되는 현상발생 
     public Pane pane;
+    public Pane pane2;
     public Scene scene;
     
     private static final int BOARD_WIDTH = 12;
@@ -90,6 +93,9 @@ public int gameSize = 2; //게임 사이즈
     public static Text Title = new Text("board");
     
     public Tetris inGame;
+    public Tetris2 inGame2;
+    
+    public Board2 Board2;
     
     public boolean gamePaused = false;
     
@@ -121,10 +127,15 @@ public int gameSize = 2; //게임 사이즈
     public Board(int mode) {
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
+    	Board2 = new Board2(0);
+    	
     	pane = new Pane();
+    	pane2 = Board2.createpane(null);
+    	SplitPane splitPane1 = new SplitPane();
+        splitPane1.getItems().addAll(pane, pane2);
     	this.mode = mode;
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
-        scene = new Scene(pane, XMAX, YMAX);
+        scene = new Scene(splitPane1, XMAX*2, YMAX);
         delayflag=true;
     }
 
@@ -259,7 +270,7 @@ public int gameSize = 2; //게임 사이즈
                 if(gamePaused == false) {
                 if(telpoflag == false) {
                 if (keyCode == leftKey) {
-                	inGame.moveLeft(); // 왼쪽으로 이동
+                	inGame.moveLeft();
                 } else if (keyCode == rightKey) {
                     inGame.moveRight(); // 오른쪽으로 이동
                 } else if (keyCode == downKey) {
