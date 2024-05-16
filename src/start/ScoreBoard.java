@@ -35,12 +35,11 @@ public class ScoreBoard {
 	public Scene scene;
 	public static StartMenu startMenu=new StartMenu();
 	//scoreBoard scene 생성
-	public static Scene createScene(Stage primaryStage) {	
-		
+	public static Scene createScene(Stage primaryStage,int level) {	
 		// 첫 번째 VBox 생성
-	    VBox scoreBox1 = createScoreBox(primaryStage,"Standard Mode");
+	    VBox scoreBox1 = createScoreBox(primaryStage,"Standard Mode",level);
 	    // 두 번째 VBox 생성
-	    VBox scoreBox2 = createScoreBox(primaryStage,"Item Mode");
+	    VBox scoreBox2 = createScoreBox(primaryStage,"Item Mode",level);
 	    //// GridPane 생성
         GridPane gridPane = new GridPane();
         gridPane.setHgap(20); // 가로 간격 설정
@@ -65,44 +64,81 @@ public class ScoreBoard {
         gridPane.add(scoreBox2, 1, 0); // 두 번째 열(Column)의 첫 번째 행(Row
 	    gridPane.setStyle("-fx-background-color: #FFFFFF;");
 	    
-	    // 뒤로 가기 버튼 추가
+	 // Level 변경 버튼 추가
+	    Button level1Button = new Button("Easy");
+	    level1Button.setOnAction(event -> {
+	        primaryStage.setScene(createScene(primaryStage, 1));
+	        centerStage(primaryStage);
+	    });
+	    
+	    Button level2Button = new Button("Normal");
+	    level2Button.setOnAction(event -> {
+	        primaryStage.setScene(createScene(primaryStage, 2));
+	        centerStage(primaryStage);
+	    });
+	    
+	    Button level3Button = new Button("Hard");
+	    level3Button.setOnAction(event -> {
+	        primaryStage.setScene(createScene(primaryStage, 3));
+	        centerStage(primaryStage);
+	    });
+	    
+	    // 버튼들을 HBox에 추가하고 가운데 정렬
+	    HBox buttonBox = new HBox(10, level1Button, level2Button, level3Button);
+	    buttonBox.setAlignment(Pos.CENTER);
+	    
+	    // GridPane의 아래쪽 중앙에 버튼 추가
+	    GridPane.setHalignment(buttonBox, HPos.CENTER); // 가로 정렬 설정
+	    GridPane.setValignment(buttonBox, VPos.BOTTOM); // 세로 정렬 설정
+	    gridPane.add(buttonBox, 0, 1, 2, 1); // 첫 번째 열(Column)의 두 번째 행(Row)에 스팬을 지정하여 2열에 걸쳐 버튼 추가
+	    
+	    // 백 버튼 추가
 	    Button backButton = new Button("Back");
 	    backButton.setOnAction(event -> {
 	        primaryStage.setScene(StartMenu.scene);
-        	centerStage(primaryStage);
+	        centerStage(primaryStage);
 	    });
 	    
-	    // GridPane의 아래쪽 중앙에 버튼 추가
-	    GridPane.setHalignment(backButton, HPos.CENTER); // 가로 정렬 설정
-	    GridPane.setValignment(backButton, VPos.BOTTOM); // 세로 정렬 설정
-	    gridPane.add(backButton, 0, 1, 2, 1); // 첫 번째 열(Column)의 두 번째 행(Row)에 스팬을 지정하여 2열에 걸쳐 버튼 추가
+	    // 백 버튼을 아래쪽 중앙에 배치
+	    GridPane.setHalignment(backButton, HPos.CENTER);
+	    gridPane.add(backButton, 0, 2, 2, 1); // 두 번째 열(Column)의 세 번째 행(Row)에 스팬을 지정하여 2열에 걸쳐 버튼 추가
 	    
-	    Scene scene = new Scene(gridPane, 2*StartMenu.XSIZE, StartMenu.YSIZE);
+	    Scene scene = new Scene(gridPane, 2 * StartMenu.XSIZE, StartMenu.YSIZE);
 	    
 	    return scene;
 	}
 	
-	public static VBox createScoreBox(Stage primaryStage,String mode) {
+	public static VBox createScoreBox(Stage primaryStage,String mode, int level) {
 		scoreBox = new VBox(20);
 	    scoreBox.setStyle("-fx-background-color: #FFFFFF;");
 	    scoreBox.setAlignment(Pos.CENTER);
-      
+	    String difficultyText="";
+	    if(level==1) {
+	    	difficultyText="Easy";
+	    }
+	    else if(level==2) {
+	    	difficultyText="Normal";
+	    }
+	    else if(level==3) {
+	    	difficultyText="Hard";
+	    }
+	    
 	    if(mode.equals("Standard Mode")) {
 	    	// "Standard Mode" 텍스트 추가
-		    Text modeText = new Text("Standard Mode");
+		    Text modeText = new Text("Standard Mode ("+difficultyText+")");
 		    modeText.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		    modeText.setFill(Color.BLACK);
 		    scoreBox.getChildren().add(modeText);
 	    }
 	    else {
 	    	// "Item mode" 텍스트 추가
-		    Text modeText = new Text("Item Mode");
+		    Text modeText = new Text("Item Mode ("+difficultyText+")");
 		    modeText.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		    modeText.setFill(Color.BLACK);
 		    scoreBox.getChildren().add(modeText);
 	    }
 	    
-	    List<String> scores = readScoresFromFile(mode);//txt 파일에서 score들을 읽어옴
+	    List<String> scores = readScoresFromFile(mode,level);//txt 파일에서 score들을 읽어옴
 	    
 	    Text text = new Text("   순위   이름  점수");
         text.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
@@ -128,11 +164,11 @@ public class ScoreBoard {
 	}
 
 	//오버로딩 게임 끝났을 때 방금 기록 강조효과와 스코어 보드에 게임종료 버튼 추가를 위해 사용 , 위의 기본함수는 scoreBoard판 확인했을 때 용도임 -> 빨간색 강조효과 없음
-	public static Scene createScene(Stage primaryStage,int score,String name,String mode) {
+	public static Scene createScene(Stage primaryStage,int score,String name,String mode,int level) {
 		// 첫 번째 VBox 생성
-	    VBox scoreBox1 = createScoreBox_add(primaryStage,"Standard Mode",score,name);
+	    VBox scoreBox1 = createScoreBox_add(primaryStage,"Standard Mode",score,name,level);
 	    // 두 번째 VBox 생성
-	    VBox scoreBox2 = createScoreBox_add(primaryStage,"Item Mode",score,name);
+	    VBox scoreBox2 = createScoreBox_add(primaryStage,"Item Mode",score,name,level);
 	    //// GridPane 생성
 	    if(mode.equals("Standard Mode")) {
 	    	scoreBox1.getChildren().get(0).setStyle("-fx-fill: red;");
@@ -186,27 +222,36 @@ public class ScoreBoard {
 	    return scene;
 	}
 	
-	private static VBox createScoreBox_add(Stage primaryStage,String mode,int score,String name) {
+	private static VBox createScoreBox_add(Stage primaryStage,String mode,int score,String name,int level) {
 		scoreBox = new VBox(20);
 	    scoreBox.setStyle("-fx-background-color: #FFFFFF;");
 	    scoreBox.setAlignment(Pos.CENTER);
-      
+	    String difficultyText="";
+	    if(level==1) {
+	    	difficultyText="Easy";
+	    }
+	    else if(level==2) {
+	    	difficultyText="Normal";
+	    }
+	    else if(level==3) {
+	    	difficultyText="Hard";
+	    }
 	    if(mode.equals("Standard Mode")) {
 	    	// "Standard Mode" 텍스트 추가
-		    Text modeText = new Text("Standard Mode");
+		    Text modeText = new Text("Standard Mode ("+difficultyText+")");
 		    modeText.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		    modeText.setFill(Color.BLACK);
 		    scoreBox.getChildren().add(modeText);
 	    }
 	    else {
 	    	// "Item mode" 텍스트 추가
-		    Text modeText = new Text("Item Mode");
+		    Text modeText = new Text("Item Mode ("+difficultyText+")");
 		    modeText.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
 		    modeText.setFill(Color.BLACK);
 		    scoreBox.getChildren().add(modeText);
 	    }
 	    
-	    List<String> scores = readScoresFromFile(mode);//txt 파일에서 score들을 읽어옴
+	    List<String> scores = readScoresFromFile(mode,level);//txt 파일에서 score들을 읽어옴
 	    
 	    Text text = new Text("   순위   이름  점수");
         text.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
@@ -237,9 +282,9 @@ public class ScoreBoard {
 	}
 
 	//게임 종료시 랭크 안에 든다면 뜨는 팝업창을 위한 함수
-	public static void showSettingDialog(int score,Stage primaryStage,String mode) {
+	public static void showSettingDialog(int score,Stage primaryStage,String mode,int level) {
 		
-		boolean isInRanking = isScoreInRanking(score,mode);//현재 점수가 랭킹에 들어가는지?
+		boolean isInRanking = isScoreInRanking(score,mode,level);//현재 점수가 랭킹에 들어가는지?
 		
 		if (isInRanking) {
 			TextInputDialog dialog = new TextInputDialog();
@@ -250,8 +295,8 @@ public class ScoreBoard {
 	        Optional<String> result = dialog.showAndWait();//초기값 null 방지하기 위해 Optional 클래스 사용
 	        result.ifPresentOrElse(name -> {
 	            if (name.length() <= 8 && isValidName(name)) {//이름 길이가 8 이하, 특수문자 및 띄어쓰기가 없어야 함 
-	                addScoreToFile(name, score,mode); //이름과 해당 판의 score를 txt에 추가
-	                primaryStage.setScene(ScoreBoard.createScene(primaryStage,score,name,mode)); //스코어보드 scene으로 설정
+	                addScoreToFile(name, score,mode,level); //이름과 해당 판의 score를 txt에 추가
+	                primaryStage.setScene(ScoreBoard.createScene(primaryStage,score,name,mode,level)); //스코어보드 scene으로 설정
                 	centerStage(primaryStage);
 	            } 
 	            else {
@@ -260,26 +305,26 @@ public class ScoreBoard {
 	                alert.setHeaderText(null);
 	                alert.setContentText("이름은 8글자 이하! 특수문자와 띄어쓰기는 포함될 수 없습니다!");
 	                alert.showAndWait();
-	                showSettingDialog(score,primaryStage,mode);
+	                showSettingDialog(score,primaryStage,mode,level);
 	            }
 	        },
 	        ()->{
-	        	primaryStage.setScene(ScoreBoard.createScene(primaryStage));
+	        	primaryStage.setScene(ScoreBoard.createScene(primaryStage,level));
 	        	centerStage(primaryStage);
 	        	}//랭킹 등록하기 싫어서 취소버튼누르면 
 	        );
 		}
 		else {
 			//기록 name 입력받는 프롬프트창 없이 바로 스코어보드 scene으로 설정
-			primaryStage.setScene(ScoreBoard.createScene(primaryStage));
+			primaryStage.setScene(ScoreBoard.createScene(primaryStage,level));
         	centerStage(primaryStage);
 			}
     }
 	
 	
 	
-	private static boolean isScoreInRanking(int score,String mode) {
-		List<String> scores = readScoresFromFile(mode);
+	private static boolean isScoreInRanking(int score,String mode,int level) {
+		List<String> scores = readScoresFromFile(mode,level);
 	    if (scores.size() < 10) {
 	        return true; // 랭킹에 공간이 있으면 무조건 들어감
 	    } 
@@ -293,10 +338,10 @@ public class ScoreBoard {
 	
 	
 	
-	private static List<String> readScoresFromFile(String mode) {
+	private static List<String> readScoresFromFile(String mode,int level) {
         List<String> scores = new ArrayList<>();
         if(mode.equals("Standard Mode")) {
-        	try (BufferedReader reader = new BufferedReader(new FileReader("src/score.txt"))) {
+        	try (BufferedReader reader = new BufferedReader(new FileReader("src/score"+level+".txt"))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     scores.add(line);
@@ -309,7 +354,7 @@ public class ScoreBoard {
             return scores;
         }
         else {
-        	try (BufferedReader reader = new BufferedReader(new FileReader("src/scoreItem.txt"))) {
+        	try (BufferedReader reader = new BufferedReader(new FileReader("src/scoreItem"+level+".txt"))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     scores.add(line);
@@ -325,26 +370,26 @@ public class ScoreBoard {
 	
 	
 
-    public static void addScoreToFile(String name, int score,String mode) {
+    public static void addScoreToFile(String name, int score,String mode,int level) {
     	if(mode.equals("Standard Mode")) {
-    		 try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/score.txt", true))) {
+    		 try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/score"+level+".txt", true))) {
     	            writer.write(name + " / " + score); //새로운 기록 작성
     	            writer.newLine();
     	        } 
     	        catch (IOException e) {
     	            e.printStackTrace();
     	        }
-    	        sortScoresAndSaveToFile(mode); // 파일을 정렬하고 다시 저장
+    	        sortScoresAndSaveToFile(mode,level); // 파일을 정렬하고 다시 저장
     	}
     	else {
-    		try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/scoreItem.txt", true))) {
+    		try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/scoreItem"+level+".txt", true))) {
 	            writer.write(name + " / " + score); //새로운 기록 작성
 	            writer.newLine();
 	        } 
 	        catch (IOException e) {
 	            e.printStackTrace();
 	        }
-	        sortScoresAndSaveToFile(mode); // 파일을 정렬하고 다시 저장
+	        sortScoresAndSaveToFile(mode,level); // 파일을 정렬하고 다시 저장
     	}
     }
     
@@ -356,14 +401,14 @@ public class ScoreBoard {
     
 
     
-    private static void sortScoresAndSaveToFile(String mode) {
-        List<String> scores = readScoresFromFile(mode);
+    private static void sortScoresAndSaveToFile(String mode,int level) {
+        List<String> scores = readScoresFromFile(mode,level);
         if(mode.equals("Standard Mode")) {
         	if (scores.size()>1) {
                 sortScores(scores); // 새롭게 추가한 기록을 포함하여 점수를 기준으로 정렬 (기록이 2개 이상일 때)
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/score.txt"))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/score"+level+".txt"))) {
                 for (String score : scores) {
                     writer.write(score);// 정렬한 것으로 txt파일에 다시 쓴다.
                     writer.newLine();
@@ -378,7 +423,7 @@ public class ScoreBoard {
                 sortScores(scores); // 새롭게 추가한 기록을 포함하여 점수를 기준으로 정렬 (기록이 2개 이상일 때)
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/scoreItem.txt"))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/scoreItem"+level+".txt"))) {
                 for (String score : scores) {
                     writer.write(score);// 정렬한 것으로 txt파일에 다시 쓴다.
                     writer.newLine();

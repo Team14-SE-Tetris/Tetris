@@ -65,26 +65,24 @@ public class StartMenuTest extends ApplicationTest {
         startMenu.selectedIndex = 2;
         startMenu.updateMenu();
         
-        // selectedIndex에 해당하는 메뉴가 빨간색으로 변경되었는지 확인
-        assertEquals("Standard Game", startMenu.menuItems[0].getText());
-        assertEquals("Item Mode Game", startMenu.menuItems[1].getText());
-        assertEquals("Setting", startMenu.menuItems[2].getText());
-        assertEquals("Score Board", startMenu.menuItems[3].getText());
-        assertEquals("Exit", startMenu.menuItems[4].getText());
-        assertEquals("Setting", startMenu.menuItems[2].getText());
-        assertEquals("Exit", startMenu.menuItems[4].getText());
-        //assertEquals("red", startMenu.menuItems[2].getFill().toString());
-        
+     // selectedIndex에 해당하는 메뉴가 빨간색으로 변경되었는지 확인
+        assertEquals("Standard Game", startMenu.menuItems.get(0).getText());
+        assertEquals("Item Mode Game", startMenu.menuItems.get(1).getText());
+        assertEquals("Battle Mode Game", startMenu.menuItems.get(2).getText());
+        assertEquals("Setting", startMenu.menuItems.get(3).getText());
+        assertEquals("Score Board", startMenu.menuItems.get(4).getText());
+        assertEquals("Exit", startMenu.menuItems.get(5).getText());
+        //assertEquals("red", startMenu.menuItems.get(2).getFill().toString());
+
         // selectedIndex를 0으로 변경하여 해당 메뉴가 검정색인지 확인
         startMenu.selectedIndex = 0;
         startMenu.updateMenu();
-        assertEquals("Standard Game", startMenu.menuItems[0].getText());
-        assertEquals("Item Mode Game", startMenu.menuItems[1].getText());
-        assertEquals("Setting", startMenu.menuItems[2].getText());
-        assertEquals("Score Board", startMenu.menuItems[3].getText());
-        assertEquals("Exit", startMenu.menuItems[4].getText());
-        assertEquals("Setting", startMenu.menuItems[2].getText());
-        assertEquals("Exit", startMenu.menuItems[4].getText());
-        //assertEquals("black", startMenu.menuItems[0].getFill().toString());
+        assertEquals("Standard Game", startMenu.menuItems.get(0).getText());
+        assertEquals("Item Mode Game", startMenu.menuItems.get(1).getText());
+        assertEquals("Battle Mode Game", startMenu.menuItems.get(2).getText());
+        assertEquals("Setting", startMenu.menuItems.get(3).getText());
+        assertEquals("Score Board", startMenu.menuItems.get(4).getText());
+        assertEquals("Exit", startMenu.menuItems.get(5).getText());
+
     }
 }
