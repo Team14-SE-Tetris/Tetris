@@ -5,10 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -25,9 +29,10 @@ import setting.*;
 
 public class StartMenu extends Application {
     public static int XSIZE = 400;	 
-    public static int YSIZE = 600;
+    public static int YSIZE = 800;
     public static Scene scene;
-    public static Text[] menuItems = new Text[5];
+    public static ArrayList<Text> menuItems = new ArrayList<>();
+    //public static Text[] menuItems = new Text[5];
     public int selectedIndex = 0;
     public static Stage primaryStage;
     
@@ -48,6 +53,7 @@ public class StartMenu extends Application {
   		//위에 정의함, gameSize변수
   		//색맹모드
   	public int colorBlindMode = 0;
+  	public int difficulty=0;
   	
     public static Runnable updateKeyDescription;
     public static void main(String[] args) {
@@ -69,12 +75,15 @@ public class StartMenu extends Application {
         menuTitle = new Text("Tetris by 14 Team");
         menuTitle.setFont(Font.font("Verdana", FontWeight.BOLD, 30));
 
-        menuItems[0] = createMenuItem("Standard Game"); //메뉴 종류
-        menuItems[1] = createMenuItem("Item Mode Game"); //메뉴 종류
-        menuItems[2] = createMenuItem("Setting");
-        menuItems[3] = createMenuItem("Score Board");
-        menuItems[4] = createMenuItem("Exit");
-
+        // 메뉴 항목 생성
+        menuItems.add(createMenuItem("Standard Game")); // 메뉴 종류
+        menuItems.add(createMenuItem("Item Mode Game")); // 메뉴 종류
+        menuItems.add(createMenuItem("Battle Mode Game")); // 메뉴 종류
+        menuItems.add(createMenuItem("Setting"));
+        menuItems.add(createMenuItem("Score Board"));
+        menuItems.add(createMenuItem("Exit"));
+        
+        
         menuTitleBox = new VBox(menuTitle);
         menuTitleBox.setAlignment(Pos.CENTER);
         
@@ -138,25 +147,24 @@ public class StartMenu extends Application {
 
     //메뉴에서 select 할 때 화살표 입력 방향(값)에 따라 선택되는 메뉴가 바뀌는 함수
     public void navigateMenu(int direction) {
-        selectedIndex = (selectedIndex + direction + menuItems.length) % menuItems.length;
+        selectedIndex = (selectedIndex + direction + menuItems.size()) % menuItems.size();
         updateMenu();
     }
     
     //바뀌면 UI에서 Text 색이 빨강으로 바뀜
     public void updateMenu() {
-        for (int i = 0; i < menuItems.length; i++) {
-            if (i == selectedIndex) {
-                menuItems[i].setFill(Color.RED);
-            } 
-            else {
-                menuItems[i].setFill(Color.BLACK);
-            }
-        }
+    	for (int i = 0; i < menuItems.size(); i++) {
+    	    if (i == selectedIndex) {
+    	        menuItems.get(i).setFill(Color.RED);
+    	    } else {
+    	        menuItems.get(i).setFill(Color.BLACK);
+    	    }
+    	}
     }
     
     //enter를 눌렀을 때 실행되는 함수
     public void executeSelectedMenuItem() {
-        String selectedItem = menuItems[selectedIndex].getText();
+    	String selectedItem = menuItems.get(selectedIndex).getText();
         System.out.println("Selected menu item: " + selectedItem);
         if (selectedItem.equals("Standard Game")) {
 		board=new Board(0);
@@ -170,13 +178,58 @@ public class StartMenu extends Application {
         	//화면 중앙배치
         	centerStage(primaryStage);
         }
+        else if(selectedItem.equals("Battle Mode Game")) {
+            // 대화상자 생성
+            Dialog<String> modeSelectionDialog = new Dialog<>();
+            modeSelectionDialog.setTitle("게임 모드 선택");
+            
+            // 버튼 생성
+            ButtonType basicModeButton = new ButtonType("기본 모드", ButtonData.OK_DONE);
+            ButtonType itemModeButton = new ButtonType("아이템 모드", ButtonData.OK_DONE);
+            ButtonType timerModeButton = new ButtonType("타이머 모드", ButtonData.OK_DONE);
+            
+            // 대화상자에 버튼 추가
+            modeSelectionDialog.getDialogPane().getButtonTypes().addAll(basicModeButton, itemModeButton, timerModeButton);
+            
+            // 버튼 클릭 시 동작 설정
+            modeSelectionDialog.setResultConverter(dialogButton -> {
+                if (dialogButton == basicModeButton) {
+                    // 기본 모드 선택 시 실행할 동작
+                    board = new Board(2,1);//<여기 argument가 게임 모드임 
+                    primaryStage.setScene(board.createScene(primaryStage));
+                    centerStage(primaryStage);
+                    return "Basic Mode Selected";
+                } else if (dialogButton == itemModeButton) {
+                	//아이템 모드 선택 시
+                	board=new Board(2,2);
+                	primaryStage.setScene(board.createScene(primaryStage));
+                	centerStage(primaryStage);
+                    return "Item Mode Selected";
+                } else if (dialogButton == timerModeButton) {
+                	board=new Board(2,3);
+                	primaryStage.setScene(board.createScene(primaryStage));
+                	centerStage(primaryStage);
+                    return "Timer Mode Selected";
+                }
+                return null;
+            });
+            
+            // 대화상자 보이기
+            modeSelectionDialog.showAndWait();
+        }
+        /*else if(selectedItem.equals("Battle Mode Game")) {
+        	board=new Board(2);
+        	primaryStage.setScene(board.createScene(primaryStage));
+        	//화면 중앙배치
+        	centerStage(primaryStage);
+        }*/
         else if (selectedItem.equals("Setting")) {
         	new SettingMenu().display(primaryStage, scene);//설정화면 표시
         	//화면 중앙배치
         	centerStage(primaryStage);
         } 
         else if (selectedItem.equals("Score Board")) {
-            primaryStage.setScene(ScoreBoard.createScene(primaryStage));
+            primaryStage.setScene(ScoreBoard.createScene(primaryStage,difficulty));
         } 
         else if (selectedItem.equals("Exit")) {
             System.exit(0);
@@ -218,6 +271,9 @@ public class StartMenu extends Application {
                         break;
                     case "colorBlindMode":
                     	colorBlindMode = Integer.parseInt(value);
+                    	break;
+                    case "difficulty" :
+                    	difficulty = Integer.parseInt(value);
                     	break;
                 }
             }

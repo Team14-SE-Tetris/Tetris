@@ -181,13 +181,21 @@ public int gameSize = 2; //게임 사이즈
                             } else {
                                 // 완성된 줄이 없고 블록을 초기화할 수 없는 경우 게임 오버 처리
                                 if (!inGame2.initialiBlock()) {
-                                    this.stop();
+                                    this.stop();           
                                     Platform.runLater(() -> {
                                         ScoreBoard scoreBoard = new ScoreBoard();
                                         if (mode == 0) {
-                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode");
-                                        } else {
-                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode");
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                                        } else if(mode==1) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                                        } else {//대전모드인 경우
+                                        	Alert alert = new Alert(AlertType.INFORMATION);
+                                            alert.setTitle("승리자");
+                                            alert.setHeaderText("게임 결과");
+                                            alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                            alert.showAndWait();
+                                            primaryStage.setScene(StartMenu.scene);
+                                	        centerStage(primaryStage);
                                         }
                                     });
                                 }
@@ -233,9 +241,9 @@ public int gameSize = 2; //게임 사이즈
                           Platform.runLater(() -> {
                               ScoreBoard scoreBoard = new ScoreBoard();
                               if (mode == 0) {
-                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode");
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
                               } else {
-                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode");
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
                               }
                           });
                       }

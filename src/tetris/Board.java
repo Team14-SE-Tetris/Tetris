@@ -36,6 +36,7 @@ import java.util.List;
 import start.ScoreBoard;
 import start.StartMenu;
 import tetris.Tetris;
+import tetris.Tetris2;
 import tetris.Board2;
 import javafx.concurrent.Task;
 public class Board{
@@ -122,21 +123,34 @@ public int gameSize = 2; //게임 사이즈
 		//게임 난이도
 	public int difficulty = 2;
 	
+	public int battleMode=0;
+	
 	public String difficultyText = "normal";
     
     public Board(int mode) {
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
-    	Board2 = new Board2(0);
-    	
     	pane = new Pane();
-    	pane2 = Board2.createpane(null);
-    	SplitPane splitPane1 = new SplitPane();
-        splitPane1.getItems().addAll(pane, pane2);
     	this.mode = mode;
-        pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
-        scene = new Scene(splitPane1, XMAX*2, YMAX);
-        delayflag=true;
+    	if(mode==2) {
+        	Board2 = new Board2(0);
+        	pane2 = Board2.createpane(null);
+        	SplitPane splitPane1 = new SplitPane();
+            splitPane1.getItems().addAll(pane, pane2);
+            pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
+            scene = new Scene(splitPane1, XMAX*2, YMAX);
+            delayflag=true;
+    	}
+    	else{
+            pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
+            scene = new Scene(pane, XMAX, YMAX);
+            delayflag=true;
+    	}
+    }
+    
+    public Board(int mode,int battleMode) { //battleMode 인수를 받았을 때 
+    	this(mode);
+    	this.battleMode=battleMode;
     }
 
 
@@ -145,11 +159,25 @@ public int gameSize = 2; //게임 사이즈
 		//initializeBoard(); -> inGame 객체 내부 시작
 
 		System.out.println(1);// 테스트
-		if (mode ==1){
+		if(mode ==1){
         	inGame.changeMode(1);
         }
-        else {
+        else if(mode==0) {
         	inGame.changeMode(0);
+        }
+        else if(mode==2){
+        	if(battleMode==1) {
+        		inGame.changeMode(0);/* *********중요************  대전 일반모드  나중에 연결해야 함*/
+        		System.out.print("대전모드 일반 연결해야함");
+        	}
+        	else if(battleMode==2) {
+        		inGame.changeMode(0);/* *********중요************  대전 아이템모드  나중에 연결해야 함*/
+        		System.out.print("대전모드 아이템 연결해야함");
+        	}
+        	else if(battleMode==3) {
+        		inGame.changeMode(0);/* *********중요************  대전 타이머모드  나중에 연결해야 함*/
+        		System.out.print("대전모드 타이머 연결해야함");
+        	}
         }
     	inGame.initialiBlock();
    
@@ -195,9 +223,17 @@ public int gameSize = 2; //게임 사이즈
                                     Platform.runLater(() -> {
                                         ScoreBoard scoreBoard = new ScoreBoard();
                                         if (mode == 0) {
-                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode");
-                                        } else {
-                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode");
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                                        } else if(mode==1) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                                        } else {//대전모드인 경우
+                                        	Alert alert = new Alert(AlertType.INFORMATION);
+                                            alert.setTitle("승리자");
+                                            alert.setHeaderText("게임 결과");
+                                            alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                            alert.showAndWait();
+                                            primaryStage.setScene(StartMenu.scene);
+                                	        centerStage(primaryStage);
                                         }
                                     });
                                 }
@@ -243,9 +279,9 @@ public int gameSize = 2; //게임 사이즈
                           Platform.runLater(() -> {
                               ScoreBoard scoreBoard = new ScoreBoard();
                               if (mode == 0) {
-                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode");
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
                               } else {
-                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode");
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
                               }
                           });
                       }
@@ -770,13 +806,6 @@ public int gameSize = 2; //게임 사이즈
 //        scoresize = blocksize;
 	}
 
-//	public static void main(String[] args) {
-//		
-//		// TODO Auto-generated method stub
-//		
-//		launch(args);
-//
-//	}
 	private void centerStage(Stage stage) {
 	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
 	    

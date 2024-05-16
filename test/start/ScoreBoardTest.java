@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -42,7 +41,7 @@ public class ScoreBoardTest extends ApplicationTest {
         String expectedMode2 = "Item Mode";
 
         // When
-        Scene scene = scoreBoard.createScene(stage);
+        Scene scene = scoreBoard.createScene(stage,2);
         GridPane root = (GridPane) scene.getRoot();
         VBox scoreBox1 = null;
         VBox scoreBox2 = null;
@@ -62,9 +61,9 @@ public class ScoreBoardTest extends ApplicationTest {
         assertNotNull(scoreBox2);
         assertNotNull(backButton);
         assertTrue(scoreBox1.getChildren().stream()
-                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode1)));
+                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode1 + " (Normal)")));
         assertTrue(scoreBox2.getChildren().stream()
-                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode2)));
+                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode2+ " (Normal)")));
     }
     
     @Test
@@ -79,10 +78,10 @@ public class ScoreBoardTest extends ApplicationTest {
         
         //주의 테스트를 하면 실제로 test.txt에 반영이 됨
         AtomicBoolean flag = new AtomicBoolean(false); // flag 변수를 AtomicBoolean으로 선언
-        scoreBoard.addScoreToFile(name,score,mode);//테스트로 위에 주어진 이름과 기록점수를 게임 종료시 입력받았을 때 처럼 호출
+        scoreBoard.addScoreToFile(name,score,mode,2);//테스트로 위에 주어진 이름과 기록점수를 게임 종료시 입력받았을 때 처럼 호출
         
         // When
-        Scene scene = scoreBoard.createScene(stage,score,name,mode);
+        Scene scene = scoreBoard.createScene(stage,score,name,mode,2);
         GridPane root = (GridPane) scene.getRoot();
         VBox scoreBox1 = null;
         VBox scoreBox2 = null;
@@ -108,9 +107,9 @@ public class ScoreBoardTest extends ApplicationTest {
         assertNotNull(backButton);
         assertNotNull(exitButton);
         assertTrue(scoreBox1.getChildren().stream()
-                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode1)));
+                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode1+ " (Normal)")));
         assertTrue(scoreBox2.getChildren().stream()
-                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode2)));
+                .anyMatch(child -> child instanceof Text && ((Text) child).getText().equals(expectedMode2+ " (Normal)")));
         
 
         // scoreBox1 내의 모든 요소를 테스트하는 코드 -> 새로운 신기록 빨간색으로 나타나는지 확인
