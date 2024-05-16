@@ -26,8 +26,9 @@ public class SettingCtrl {
     private Scene previousScene; // 이전 씬 참조
     
     @FXML
-    private Button rotateButton, teleportButton,
-    leftButton, downButton, rightButton,
+    private Button 
+    rotateButton_Player1, teleportButton_Player1, leftButton_Player1, downButton_Player1, rightButton_Player1,
+    rotateButton_Player2, teleportButton_Player2, leftButton_Player2, downButton_Player2, rightButton_Player2,
     saveButton, closeButton; 
     
     @FXML
@@ -40,11 +41,19 @@ public class SettingCtrl {
     
     //설정파일 변수
     	//키코드
-    private KeyCode rotateKey = KeyCode.ALT, 
-    		teleportKey = KeyCode.UP, 
-    		leftKey = KeyCode.LEFT, 
-    		downKey = KeyCode.DOWN, 
-    		rightKey = KeyCode.RIGHT;
+    private KeyCode 
+    		rotateKey_Player1 = KeyCode.ALT, 
+    		teleportKey_Player1 = KeyCode.UP, 
+    		leftKey_Player1 = KeyCode.LEFT, 
+    		downKey_Player1 = KeyCode.DOWN, 
+    		rightKey_Player1 = KeyCode.RIGHT,
+
+			rotateKey_Player2 = KeyCode.ALT, 
+			teleportKey_Player2 = KeyCode.UP, 
+			leftKey_Player2 = KeyCode.LEFT, 
+			downKey_Player2 = KeyCode.DOWN, 
+			rightKey_Player2 = KeyCode.RIGHT;
+    	
     	//화면 크기
     private int gameSize = 2;
     	//색맹모드
@@ -123,6 +132,301 @@ public class SettingCtrl {
     	}
     }
 
+	public void setStageAndScene(Stage stage, Scene scene) {
+        this.primaryStage = stage;
+        this.previousScene = scene;
+    }
+    
+    public void back(ActionEvent e) {
+        primaryStage.setScene(previousScene);
+        centerStage(primaryStage);
+    }
+    
+    public void colorBlindOnOff() {
+    	if(colorBlindMode == 0) {
+    		colorBlindMode = 1;
+    	}
+    	else {
+    		colorBlindMode = 0;
+    	}
+    }
+    
+    public void colorBlindSet() {
+    	if(colorBlindMode == 0) {
+    		//체크박스를 비운 상태로 표시
+    		colorBlind.setSelected(false);
+    	}
+    	if(colorBlindMode == 1) {
+    		//체크박스에 체크된 상태로 표시
+    		colorBlind.setSelected(true);
+    	}
+    }
+    
+    public void setRotateButton_Player1() {
+    		primaryStage.getScene().getRoot().requestFocus();
+    		//버튼 클릭시 포커스 해제 
+    		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+    			KeyCode code = keyEvent.getCode();
+    			if (checkDuplicateKey(code)) {
+    	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+    	            rotateButton_Player1.requestFocus();
+    	    		//버튼에 포커스 되돌리기
+    	            primaryStage.getScene().setOnKeyPressed(null);
+    				//키가 눌린 이벤트를 해제
+    	            return; // 중복이면 메서드 종료   
+    	        }
+    			//기존 키와 중복 확인
+    			rotateButton_Player1.setText(code.toString());
+    			//키 입력시 키텍스트를 누른 키로 변경
+    			rotateKey_Player1 = KeyCode.valueOf(rotateButton_Player1.getText());
+    			//변경된 키 텍스트를 키코드 변수에 저장
+    			System.out.println(rotateKey_Player1);
+    			//테스트 출력
+    			rotateButton_Player1.requestFocus();
+	    		//버튼에 포커스 되돌리기
+				primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+    		});
+    }
+    
+    public void setTeleportButton_Player1() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            teleportButton_Player1.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			teleportButton_Player1.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			teleportKey_Player1 = KeyCode.valueOf(teleportButton_Player1.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			teleportButton_Player1.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setLeftButton_Player1() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            leftButton_Player1.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			leftButton_Player1.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			leftKey_Player1 = KeyCode.valueOf(leftButton_Player1.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			leftButton_Player1.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setDownButton_Player1() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            downButton_Player1.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			downButton_Player1.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			downKey_Player1 = KeyCode.valueOf(downButton_Player1.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			downButton_Player1.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setRightButton_Player1() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            rightButton_Player1.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			rightButton_Player1.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			rightKey_Player1 = KeyCode.valueOf(rightButton_Player1.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			rightButton_Player1.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setRotateButton_Player2() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            rotateButton_Player2.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			rotateButton_Player2.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			rotateKey_Player2 = KeyCode.valueOf(rotateButton_Player2.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			System.out.println(rotateKey_Player2);
+			//테스트 출력
+			rotateButton_Player2.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setTeleportButton_Player2() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            teleportButton_Player2.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			teleportButton_Player2.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			teleportKey_Player2 = KeyCode.valueOf(teleportButton_Player2.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			teleportButton_Player2.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setLeftButton_Player2() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            leftButton_Player2.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			leftButton_Player2.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			leftKey_Player2 = KeyCode.valueOf(leftButton_Player2.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			leftButton_Player2.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setDownButton_Player2() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            downButton_Player2.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			downButton_Player2.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			downKey_Player2 = KeyCode.valueOf(downButton_Player2.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			downButton_Player2.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    public void setRightButton_Player2() {
+		primaryStage.getScene().getRoot().requestFocus();
+		//버튼 클릭시 포커스 해제 
+		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
+			KeyCode code = keyEvent.getCode();
+			if (checkDuplicateKey(code)) {
+	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
+	            rightButton_Player2.requestFocus();
+	    		//버튼에 포커스 되돌리기
+	            primaryStage.getScene().setOnKeyPressed(null);
+				//키가 눌린 이벤트를 해제
+	            return; // 중복이면 메서드 종료   
+	        }
+			//기존 키와 중복 확인
+			rightButton_Player2.setText(code.toString());
+			//키 입력시 키텍스트를 누른 키로 변경
+			rightKey_Player2 = KeyCode.valueOf(rightButton_Player2.getText());
+			//변경된 키 텍스트를 키코드 변수에 저장
+			rightButton_Player2.requestFocus();
+    		//버튼에 포커스 되돌리기
+			primaryStage.getScene().setOnKeyPressed(null);
+			//키가 눌린 이벤트를 해제
+		});
+    }
+    
+    
+    public KeyCode getKeyCodeFromString(String keyName) {//주어진 텍스트를 키코드로 변환시켜주 함
+        try {
+            return KeyCode.valueOf(keyName);
+        } catch (IllegalArgumentException e) {
+            // 주어진 이름에 해당하는 KeyCode가 없는 경우 예외 처리
+            System.out.println("해당 이름의 KeyCode가 없습니다: " + keyName);
+            return KeyCode.UNDEFINED; // 또는 기본 KeyCode를 반환할 수도 있음
+        }
+    }
+    
     public void settingConfigLoader() {
         // 설정파일의 위치 설정
         String filePath = "src/Settings.txt"; // 상대 경로
@@ -140,34 +444,55 @@ public class SettingCtrl {
 
                 // 문자열을 KeyCode로 변환하고 적절한 변수에 할당
                 switch (key) {
-                    case "rotateKey":
-                        rotateKey = KeyCode.valueOf(value);
-                        rotateButton.setText(value); // 버튼 텍스트도 변경
+                    case "rotateKey_Player1":
+                        rotateKey_Player1 = KeyCode.valueOf(value);
+                        rotateButton_Player1.setText(value); // 버튼 텍스트도 변경
                         break;
-                    case "teleportKey":
-                        teleportKey = KeyCode.valueOf(value);
-                        teleportButton.setText(value);
+                    case "teleportKey_Player1":
+                        teleportKey_Player1 = KeyCode.valueOf(value);
+                        teleportButton_Player1.setText(value);
                         break;
-                    case "leftKey":
-                        leftKey = KeyCode.valueOf(value);
-                        leftButton.setText(value);
+                    case "leftKey_Player1":
+                        leftKey_Player1 = KeyCode.valueOf(value);
+                        leftButton_Player1.setText(value);
                         break;
-                    case "downKey":
-                        downKey = KeyCode.valueOf(value);
-                        downButton.setText(value);
+                    case "downKey_Player1":
+                        downKey_Player1 = KeyCode.valueOf(value);
+                        downButton_Player1.setText(value);
                         break;
-                    case "rightKey":
-                        rightKey = KeyCode.valueOf(value);
-                        rightButton.setText(value);
+                    case "rightKey_Player1":
+                        rightKey_Player1 = KeyCode.valueOf(value);
+                        rightButton_Player1.setText(value);
                         break;
+
+                        
+                    case "rotateKey_Player2":
+                    	rotateKey_Player2 = KeyCode.valueOf(value);
+                        rotateButton_Player2.setText(value); // 버튼 텍스트도 변경                    	
+                        break;
+                    case "teleportKey_Player2":
+                    	teleportKey_Player2 = KeyCode.valueOf(value);
+                    	teleportButton_Player2.setText(value); // 버튼 텍스트도 변경                    	
+                        break;
+                    case "leftKey_Player2":
+                    	leftKey_Player2 = KeyCode.valueOf(value);
+                    	leftButton_Player2.setText(value); // 버튼 텍스트도 변경                    	
+                        break;
+                    case "downKey_Player2":
+                    	downKey_Player2 = KeyCode.valueOf(value);
+                    	downButton_Player2.setText(value); // 버튼 텍스트도 변경                    	
+                        break;
+                    case "rightKey_Player2":
+                    	rightKey_Player2 = KeyCode.valueOf(value);
+                    	rightButton_Player2.setText(value); // 버튼 텍스트도 변경                    	
+                        break;
+                        
+                        
                     case "gameSize":
                     	gameSize = Integer.parseInt(value);
                     	break;
                     case "colorBlindMode":
                     	colorBlindMode = Integer.parseInt(value);
-                    	break;
-                    case "difficulty":
-                    	gameDifficulty = Integer.parseInt(value);
                     	break;
                 }
             }
@@ -204,176 +529,10 @@ public class SettingCtrl {
     		break;  	
     	}
     }
-	
-	public void setStageAndScene(Stage stage, Scene scene) {
-        this.primaryStage = stage;
-        this.previousScene = scene;
-    }
-    
-    public void back(ActionEvent e) {
-        primaryStage.setScene(previousScene);
-        centerStage(primaryStage);
-    }
-    
-    public void colorBlindOnOff() {
-    	if(colorBlindMode == 0) {
-    		colorBlindMode = 1;
-    	}
-    	else {
-    		colorBlindMode = 0;
-    	}
-    }
-    
-    public void colorBlindSet() {
-    	if(colorBlindMode == 0) {
-    		//체크박스를 비운 상태로 표시
-    		colorBlind.setSelected(false);
-    	}
-    	if(colorBlindMode == 1) {
-    		//체크박스에 체크된 상태로 표시
-    		colorBlind.setSelected(true);
-    	}
-    }
-    
-    public void setRotateButton() {
-    		primaryStage.getScene().getRoot().requestFocus();
-    		//버튼 클릭시 포커스 해제 
-    		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
-    			KeyCode code = keyEvent.getCode();
-    			if (checkDuplicateKey(code)) {
-    	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
-    	            rotateButton.requestFocus();
-    	    		//버튼에 포커스 되돌리기
-    	            primaryStage.getScene().setOnKeyPressed(null);
-    				//키가 눌린 이벤트를 해제
-    	            return; // 중복이면 메서드 종료   
-    	        }
-    			//기존 키와 중복 확인
-    			rotateButton.setText(code.toString());
-    			//키 입력시 키텍스트를 누른 키로 변경
-    			rotateKey = KeyCode.valueOf(rotateButton.getText());
-    			//변경된 키 텍스트를 키코드 변수에 저장
-    			System.out.println(rotateKey);
-    			//테스트 출력
-    			rotateButton.requestFocus();
-	    		//버튼에 포커스 되돌리기
-				primaryStage.getScene().setOnKeyPressed(null);
-				//키가 눌린 이벤트를 해제
-    		});
-    }
-    
-    public void setTeleportButton() {
-		primaryStage.getScene().getRoot().requestFocus();
-		//버튼 클릭시 포커스 해제 
-		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
-			KeyCode code = keyEvent.getCode();
-			if (checkDuplicateKey(code)) {
-	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
-	            teleportButton.requestFocus();
-	    		//버튼에 포커스 되돌리기
-	            primaryStage.getScene().setOnKeyPressed(null);
-				//키가 눌린 이벤트를 해제
-	            return; // 중복이면 메서드 종료   
-	        }
-			//기존 키와 중복 확인
-			teleportButton.setText(code.toString());
-			//키 입력시 키텍스트를 누른 키로 변경
-			teleportKey = KeyCode.valueOf(teleportButton.getText());
-			//변경된 키 텍스트를 키코드 변수에 저장
-			teleportButton.requestFocus();
-    		//버튼에 포커스 되돌리기
-			primaryStage.getScene().setOnKeyPressed(null);
-			//키가 눌린 이벤트를 해제
-		});
-    }
-    
-    public void setLeftButton() {
-		primaryStage.getScene().getRoot().requestFocus();
-		//버튼 클릭시 포커스 해제 
-		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
-			KeyCode code = keyEvent.getCode();
-			if (checkDuplicateKey(code)) {
-	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
-	            leftButton.requestFocus();
-	    		//버튼에 포커스 되돌리기
-	            primaryStage.getScene().setOnKeyPressed(null);
-				//키가 눌린 이벤트를 해제
-	            return; // 중복이면 메서드 종료   
-	        }
-			//기존 키와 중복 확인
-			leftButton.setText(code.toString());
-			//키 입력시 키텍스트를 누른 키로 변경
-			leftKey = KeyCode.valueOf(leftButton.getText());
-			//변경된 키 텍스트를 키코드 변수에 저장
-			leftButton.requestFocus();
-    		//버튼에 포커스 되돌리기
-			primaryStage.getScene().setOnKeyPressed(null);
-			//키가 눌린 이벤트를 해제
-		});
-    }
-    
-    public void setDownButton() {
-		primaryStage.getScene().getRoot().requestFocus();
-		//버튼 클릭시 포커스 해제 
-		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
-			KeyCode code = keyEvent.getCode();
-			if (checkDuplicateKey(code)) {
-	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
-	            downButton.requestFocus();
-	    		//버튼에 포커스 되돌리기
-	            primaryStage.getScene().setOnKeyPressed(null);
-				//키가 눌린 이벤트를 해제
-	            return; // 중복이면 메서드 종료   
-	        }
-			//기존 키와 중복 확인
-			downButton.setText(code.toString());
-			//키 입력시 키텍스트를 누른 키로 변경
-			downKey = KeyCode.valueOf(downButton.getText());
-			//변경된 키 텍스트를 키코드 변수에 저장
-			downButton.requestFocus();
-    		//버튼에 포커스 되돌리기
-			primaryStage.getScene().setOnKeyPressed(null);
-			//키가 눌린 이벤트를 해제
-		});
-    }
-    
-    public void setRightButton() {
-		primaryStage.getScene().getRoot().requestFocus();
-		//버튼 클릭시 포커스 해제 
-		primaryStage.getScene().setOnKeyPressed(keyEvent ->{
-			KeyCode code = keyEvent.getCode();
-			if (checkDuplicateKey(code)) {
-	            showAlert("중복된 키입니다!", "해당 키는 이미 다른 기능에 할당되어 있습니다. 다른 키를 선택해 주세요.");
-	            rightButton.requestFocus();
-	    		//버튼에 포커스 되돌리기
-	            primaryStage.getScene().setOnKeyPressed(null);
-				//키가 눌린 이벤트를 해제
-	            return; // 중복이면 메서드 종료   
-	        }
-			//기존 키와 중복 확인
-			rightButton.setText(code.toString());
-			//키 입력시 키텍스트를 누른 키로 변경
-			rightKey = KeyCode.valueOf(rightButton.getText());
-			//변경된 키 텍스트를 키코드 변수에 저장
-			rightButton.requestFocus();
-    		//버튼에 포커스 되돌리기
-			primaryStage.getScene().setOnKeyPressed(null);
-			//키가 눌린 이벤트를 해제
-		});
-    }
-    
-    public KeyCode getKeyCodeFromString(String keyName) {//주어진 텍스트를 키코드로 변환시켜주 함
-        try {
-            return KeyCode.valueOf(keyName);
-        } catch (IllegalArgumentException e) {
-            // 주어진 이름에 해당하는 KeyCode가 없는 경우 예외 처리
-            System.out.println("해당 이름의 KeyCode가 없습니다: " + keyName);
-            return KeyCode.UNDEFINED; // 또는 기본 KeyCode를 반환할 수도 있음
-        }
-    }
     
     //Key 변수들의 값을 Setting.txt파일에 형식에 맞추어 저장해주는 함수
     public void saveKeyConfigurations() {
+
         String filePath = "src/Settings.txt";
         try {
             // 파일에서 기존 설정을 읽어옴
@@ -390,11 +549,18 @@ public class SettingCtrl {
             }
             
             // 새로운 설정으로 맵 업데이트
-            settingsMap.put("rotateKey", "\"" + rotateKey.toString() + "\"");
-            settingsMap.put("teleportKey", "\"" + teleportKey.toString() + "\"");
-            settingsMap.put("leftKey", "\"" + leftKey.toString() + "\"");
-            settingsMap.put("downKey", "\"" + downKey.toString() + "\"");
-            settingsMap.put("rightKey", "\"" + rightKey.toString() + "\"");
+            settingsMap.put("rotateKey_Player1", "\"" + rotateKey_Player1.toString() + "\"");
+            settingsMap.put("teleportKey_Player1", "\"" + teleportKey_Player1.toString() + "\"");
+            settingsMap.put("leftKey_Player1", "\"" + leftKey_Player1.toString() + "\"");
+            settingsMap.put("downKey_Player1", "\"" + downKey_Player1.toString() + "\"");
+            settingsMap.put("rightKey_Player1", "\"" + rightKey_Player1.toString() + "\"");
+
+            settingsMap.put("rotateKey_Player2", "\"" + rotateKey_Player2.toString() + "\"");
+            settingsMap.put("teleportKey_Player2", "\"" + teleportKey_Player2.toString() + "\"");
+            settingsMap.put("leftKey_Player2", "\"" + leftKey_Player2.toString() + "\"");
+            settingsMap.put("downKey_Player2", "\"" + downKey_Player2.toString() + "\"");
+            settingsMap.put("rightKey_Player2", "\"" + rightKey_Player2.toString() + "\"");
+            
             settingsMap.put("gameSize", "\"" + Integer.toString(gameSize) + "\"");
             settingsMap.put("colorBlindMode", "\"" + Integer.toString(colorBlindMode) + "\"");
             settingsMap.put("difficulty", "\"" + Integer.toString(gameDifficulty) + "\"");
@@ -415,7 +581,6 @@ public class SettingCtrl {
             System.out.println("키 설정 저장 중 오류가 발생했습니다.");
         }
     }
-    
     
     public void resetScoreFile() {
     	//score.txt파일을 완전히 비우는 함
@@ -441,21 +606,28 @@ public class SettingCtrl {
     public void resetSettingFile() {
         String filePath = "src/Settings.txt"; // 설정 파일 경로
         
-        rotateKey = KeyCode.U;
-        teleportKey = KeyCode.T; 
-        leftKey = KeyCode.LEFT; 
-        downKey = KeyCode.DOWN; 
-        rightKey = KeyCode.RIGHT;
+        rotateKey_Player1 = KeyCode.U;
+        teleportKey_Player1 = KeyCode.T; 
+        leftKey_Player1 = KeyCode.LEFT; 
+        downKey_Player1 = KeyCode.DOWN; 
+        rightKey_Player1 = KeyCode.RIGHT;
         gameSize = 2;
         colorBlindMode = 0;
         gameDifficulty = 2;
         //변수들 기본값으로 초기화 
         
-        downButton.setText(KeyCode.DOWN.toString());
-        rightButton.setText(KeyCode.RIGHT.toString());
-        leftButton.setText(KeyCode.LEFT.toString());
-        rotateButton.setText(KeyCode.U.toString());
-        teleportButton.setText(KeyCode.T.toString());     
+        downButton_Player1.setText(KeyCode.DOWN.toString());
+        rightButton_Player1.setText(KeyCode.RIGHT.toString());
+        leftButton_Player1.setText(KeyCode.LEFT.toString());
+        rotateButton_Player1.setText(KeyCode.U.toString());
+        teleportButton_Player1.setText(KeyCode.T.toString());   
+        
+        downButton_Player2.setText(KeyCode.DOWN.toString());
+        rightButton_Player2.setText(KeyCode.RIGHT.toString());
+        leftButton_Player2.setText(KeyCode.LEFT.toString());
+        rotateButton_Player2.setText(KeyCode.U.toString());
+        teleportButton_Player2.setText(KeyCode.T.toString());  
+        
         colorBlind.setSelected(false);
         difficultyChoice.setValue("normal");
         screenSizeChoice.setValue("보통");
@@ -471,8 +643,11 @@ public class SettingCtrl {
     
     private boolean checkDuplicateKey(KeyCode newKey) {
         // 기존에 할당된 키들과 새로운 키가 중복되는지 확인
-        return newKey == rotateKey || newKey == teleportKey || newKey == leftKey ||
-               newKey == downKey || newKey == rightKey || newKey == KeyCode.SPACE || newKey == KeyCode.Q;
+        return newKey == rotateKey_Player1 || newKey == teleportKey_Player1 || newKey == leftKey_Player1 ||
+               newKey == downKey_Player1 || newKey == rightKey_Player1 || 
+               newKey == rotateKey_Player2 || newKey == teleportKey_Player2 || newKey == leftKey_Player2 ||
+               newKey == downKey_Player2 || newKey == rightKey_Player2 ||
+               newKey == KeyCode.SPACE || newKey == KeyCode.Q;
     }
     
     private void showAlert(String title, String message) {

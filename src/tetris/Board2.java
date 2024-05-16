@@ -98,18 +98,20 @@ public int gameSize = 2; //게임 사이즈
     private int gradation = 1;
     private int removedelay = 0;
     public boolean removeflag = true;
-    private boolean delayflag = true;
-    private int removestep = 0;
+    public boolean delayflag = true;
+    public int removestep = 0;
     
-    private boolean telpoflag = false;
+    public boolean telpoflag = false;
+    
+    public AnimationTimer timer;
     
 	//설정파일 변수
 		//키코드
-	public KeyCode rotateKey = KeyCode.U, 
-			teleportKey = KeyCode.T, 
-			leftKey = KeyCode.LEFT, 
-			downKey = KeyCode.DOWN, 
-			rightKey = KeyCode.RIGHT;
+	public KeyCode rotateKey_Player2 = KeyCode.U, 
+			teleportKey_Player2 = KeyCode.T, 
+			leftKey_Player2 = KeyCode.LEFT, 
+			downKey_Player2 = KeyCode.DOWN, 
+			rightKey_Player2 = KeyCode.RIGHT;
 		//화면 크기
 		//위에 정의함, gameSize변수
 		//색맹모드
@@ -120,6 +122,7 @@ public int gameSize = 2; //게임 사이즈
 	public String difficultyText = "normal";
     
     public Board2(int mode) {
+    	timer = null;
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame2 = new Tetris2(difficulty);
     	pane = new Pane();
@@ -161,7 +164,7 @@ public int gameSize = 2; //게임 사이즈
 
         
         //MoveDown(x, y);
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             private long lastUpdate = 0;
             private long interval = inGame2.getDropSpeed(); // 1초마다 이동
             private long delay = 300_000_000; // 딜레이 설정 (0.3초)
@@ -259,68 +262,8 @@ public int gameSize = 2; //게임 사이즈
             }
         };
 
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-            	Block itemtest = inGame2.getCurrentBlock();
-                KeyCode keyCode = event.getCode();
-                if (delayflag) {
-                if(gamePaused == false) {
-                if(telpoflag == false) {
-                if (keyCode == leftKey) {
-                	inGame2.moveLeft(); // 왼쪽으로 이동
-                } else if (keyCode == rightKey) {
-                    inGame2.moveRight(); // 오른쪽으로 이동
-                } else if (keyCode == downKey) {
-                	
-                	if(!(inGame2.checkBlock())) {
-                		delayflag=false;
-                		if(itemtest.getItem()==5 && !(inGame2.checkCollisionBottom(inGame2.getCurrentX(),inGame2.getCurrentY()))) {
-                			delayflag=true;
-                			inGame2.moveDown();
-                		}
-            		}
-                	else {
-                		inGame2.moveDown();
-                	}
-                } else if (keyCode == teleportKey) {
-                	telpoflag = true;
-                	if(itemtest.getItem()==5 && !(inGame2.checkCollisionBottom(inGame2.getCurrentX(),inGame2.getCurrentY()))) {
-            			delayflag=true;
-            			inGame2.moveBottom();
-            		} else {
-            			inGame2.moveBottom();
-                    	delayflag=false;
-            		}
-        		} else if (keyCode == rotateKey) {
-        			inGame2.rotateBlock();
-        		}
-        		else if(keyCode == KeyCode.Q) {
-        			timer.stop();
-        			primaryStage.setScene(StartMenu.scene);
-        			inGame2.resetVariable();
-        			score = 0;
-        			System.out.println("점수: " + score);
-        			System.out.println("점수: " + inGame2.getScore());
-        			//게임 종료시, inGame2의 dropSpeed와 Score를 초기상태로 초기화
-                	centerStage(primaryStage);
-        		}
-                }
-                
-            }
-			if(keyCode == KeyCode.SPACE) {
-        			if(gamePaused == false) {
-        				timer.stop();
-        			}
-        			else {
-        				timer.start();
-        			}
-        			pauseGame(pane);
-        			
-        		}
-            }
-            }
-        });
+        
+        
         timer.start(); // AnimationTimer 시작
         
         return pane;
@@ -716,30 +659,29 @@ public int gameSize = 2; //게임 사이즈
 
                 // 문자열을 KeyCode로 변환하고 적절한 변수에 할당
                 switch (key) {
-                    case "rotateKey":
-                        rotateKey = KeyCode.valueOf(value);
-                        break;
-                    case "teleportKey":
-                        teleportKey = KeyCode.valueOf(value);
-                        break;
-                    case "leftKey":
-                        leftKey = KeyCode.valueOf(value);
-                        break;
-                    case "downKey":
-                        downKey = KeyCode.valueOf(value);
-                        break;
-                    case "rightKey":
-                        rightKey = KeyCode.valueOf(value);
-                        break;
-                    case "gameSize":
-                    	gameSize = Integer.parseInt(value);
-                    	break;
-                    case "colorBlindMode":
-                    	colorBlindMode = Integer.parseInt(value);
-                    	break;
-                    case "difficulty" :
-                    	difficulty = Integer.parseInt(value);
-                    	break;
+                case "rotateKey_Player2":
+                	rotateKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "teleportKey_Player2":
+                	teleportKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "leftKey_Player2":
+                	leftKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "downKey_Player2":
+                	downKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "rightKey_Player2":
+                	rightKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                    
+                    
+                case "gameSize":
+                	gameSize = Integer.parseInt(value);
+                	break;
+                case "colorBlindMode":
+                	colorBlindMode = Integer.parseInt(value);
+                	break;
                 }
             }
         } catch (IOException e) {
@@ -788,4 +730,8 @@ public int gameSize = 2; //게임 사이즈
 	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
 	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
 	}
+	
+    public Tetris2 getTetris() {
+    	return this.inGame2;
+    }
 }
