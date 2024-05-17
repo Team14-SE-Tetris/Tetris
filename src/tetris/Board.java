@@ -39,9 +39,11 @@ import tetris.Tetris;
 import tetris.Tetris2;
 import tetris.Board2;
 import javafx.concurrent.Task;
+
+
 public class Board{
     
-public int gameSize = 2; //게임 사이즈
+	public int gameSize = 2; //게임 사이즈
 	
 	//윈도우를 (xPoint)x(Ypoint)칸의 좌표 나누었다.
 	public int SIZE = gameSize*5 + 20; //윈도우 창 한 칸의 크기    public static final int XMAX = SIZE * 20;
@@ -94,7 +96,6 @@ public int gameSize = 2; //게임 사이즈
     public static Text Title = new Text("board");
     
     public Tetris inGame;
-    public Tetris2 inGame2;
     
     public Board2 Board2;
     
@@ -109,13 +110,23 @@ public int gameSize = 2; //게임 사이즈
     
     private boolean telpoflag = false;
     
+    public AnimationTimer timer;
+    
 	//설정파일 변수
 		//키코드
-	public KeyCode rotateKey = KeyCode.U, 
-			teleportKey = KeyCode.T, 
-			leftKey = KeyCode.LEFT, 
-			downKey = KeyCode.DOWN, 
-			rightKey = KeyCode.RIGHT;
+	public KeyCode 
+			rotateKey_Player1 = KeyCode.G, 
+			teleportKey_Player1 = KeyCode.H, 
+			leftKey_Player1 = KeyCode.A, 
+			downKey_Player1 = KeyCode.S, 
+			rightKey_Player1 = KeyCode.D,
+	
+			rotateKey_Player2 = KeyCode.PERIOD, 
+			teleportKey_Player2 = KeyCode.SLASH, 
+			leftKey_Player2 = KeyCode.LEFT, 
+			downKey_Player2 = KeyCode.DOWN, 
+			rightKey_Player2 = KeyCode.RIGHT;
+	
 		//화면 크기
 		//위에 정의함, gameSize변수
 		//색맹모드
@@ -128,12 +139,13 @@ public int gameSize = 2; //게임 사이즈
 	public String difficultyText = "normal";
     
     public Board(int mode) {
+    	timer = null;
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
     	pane = new Pane();
-    	Board2 = new Board2(0);
-    	pane2 = Board2.createpane(null);
     	this.mode = mode;
+		Board2 = new Board2(0);
+    	pane2 = Board2.createpane(null);
     	if(mode==2) {
         	SplitPane splitPane1 = new SplitPane();
             splitPane1.getItems().addAll(pane, pane2);
@@ -298,7 +310,7 @@ public int gameSize = 2; //게임 사이즈
                 
                 if (!isLineRemovalScheduled2) { //Board2 컨트롤
                     if (now - lastUpdate2 >= interval2) { // interval 간격마다 수행
-                    	telpoflag=false;
+                    	Board2.telpoflag=false;
                         if (!Board2.movedown()) { // moveDown 실패 시
                             if (Board2.checkline() > 0 && Board2.checkline() < 22) {
                                 // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
@@ -384,90 +396,213 @@ public int gameSize = 2; //게임 사이즈
                 drawScore();
                 Styleset();
                 
-                if(mode == 2)
-                drawLine();
-                
-                Board2.drawBoard();
-                Board2.drawScore();
-                
-            }
-        };
-
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-            	Block itemtest = inGame.getCurrentBlock();
-                KeyCode keyCode = event.getCode();
-                if (delayflag) {
-                if(gamePaused == false) {
-                if(telpoflag == false) {
-                if (keyCode == leftKey) {
-                	inGame.moveLeft();
-                	Board2.moveleft();
-                } else if (keyCode == rightKey) {
-                    inGame.moveRight(); // 오른쪽으로 이동
-                    Board2.moveright();
-                } else if (keyCode == downKey) {
-                	
-                	if(!(inGame.checkBlock())) {
-                		delayflag=false;
-                		if(itemtest.getItem()==5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(),inGame.getCurrentY()))) {
-                			delayflag=true;
-                			inGame.moveDown();
-                		}
-            		}
-                	else {
-                		inGame.moveDown();
-                		Board2.movedown();
-                	}
-                } else if (keyCode == teleportKey) {
-                	telpoflag = true;
-                	if(itemtest.getItem()==5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(),inGame.getCurrentY()))) {
-            			delayflag=true;
-            			inGame.moveBottom();
-            		} else {
-            			inGame.moveBottom();
-            			Board2.movebottom();
-                    	delayflag=false;
-            		}
-        		} else if (keyCode == rotateKey) {
-        			inGame.rotateBlock();
-        			Board2.rotateblock();
-        		}
-        		else if(keyCode == KeyCode.Q) {
-        			timer.stop();
-        			primaryStage.setScene(StartMenu.scene);
-        			inGame.resetVariable();
-        			score = 0;
-        			System.out.println("점수: " + score);
-        			System.out.println("점수: " + inGame.getScore());
-        			
-        			if(mode == 2)
-        			Board2.resetVariable();
-        			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
-                	centerStage(primaryStage);
-        		}
+                if(mode == 2) { 
+                	drawLine();
+                	Board2.delayflag = true;
+                	Board2.drawBoard();
+                	Board2.drawScore();
                 }
                 
             }
-			if(keyCode == KeyCode.SPACE) {
-        			if(gamePaused == false) {
-        				timer.stop();
-        			}
-        			else {
-        				timer.start();
-        			}
-        			pauseGame(pane);
-        			Board2.pauseGame(pane2);
-        			
-        		}
-            }
-            }
+        };
+        
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        	@Override
+            public void handle(KeyEvent event) {
+                if (mode == 1 || mode == 0) {
+        		    Block itemtest = inGame.getCurrentBlock();
+        		    KeyCode keyCode = event.getCode();
+        		    if (delayflag) {
+        		        if (gamePaused == false) {
+        		            if (telpoflag == false) {
+        		                if (keyCode == leftKey_Player1) {
+        		                    inGame.moveLeft();
+        		                } else if (keyCode == rightKey_Player1) {
+        		                    inGame.moveRight(); // 오른쪽으로 이동
+        		                } else if (keyCode == downKey_Player1) {
+
+        		                    if (!(inGame.checkBlock())) {
+        		                        delayflag = false;
+        		                        if (itemtest.getItem() == 5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY()))) {
+        		                            delayflag = true;
+        		                            inGame.moveDown();
+        		                        }
+        		                    } else {
+        		                        inGame.moveDown();
+        		                    }
+        		                } else if (keyCode == teleportKey_Player1) {
+        		                    telpoflag = true;
+        		                    if (itemtest.getItem() == 5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY()))) {
+        		                        delayflag = true;
+        		                        inGame.moveBottom();
+        		                    } else {
+        		                        inGame.moveBottom();
+        		                        delayflag = false;
+        		                    }
+        		                } else if (keyCode == rotateKey_Player1) {
+        		                    inGame.rotateBlock();
+        		                } else if (keyCode == KeyCode.Q) {
+        		                    timer.stop();
+        		                    primaryStage.setScene(StartMenu.scene);
+        		                    inGame.resetVariable();
+        		                    score = 0;
+        		                    System.out.println("점수: " + score);
+        		                    System.out.println("점수: " + inGame.getScore());
+        		                    // 게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
+        		                    centerStage(primaryStage);
+        		                }
+        		            }
+
+        		            }
+
+    		            if (keyCode == KeyCode.SPACE) {
+    		                if (gamePaused == false) {
+    		                    timer.stop();
+    		                } else {
+    		                    timer.start();
+    		                }
+    		                pauseGame(pane);
+        		        }
+        		    }
+                } else if (mode == 2) {
+                	KeyCode keyCode = event.getCode();
+                		Block itemtest1 = inGame.getCurrentBlock();
+                		Block itemtest2 = Board2.getCurrentblock();
+            		    
+            		    if (delayflag) {
+            		        if (gamePaused == false) {
+            		            if (telpoflag == false) {
+            		                if (keyCode == leftKey_Player1) {
+            		                    inGame.moveLeft();
+            		                } else if (keyCode == rightKey_Player1) {
+            		                    inGame.moveRight(); // 오른쪽으로 이동
+            		                } else if (keyCode == downKey_Player1) {
+
+            		                    if (!(inGame.checkBlock())) {
+            		                        delayflag = false;
+            		                        if (itemtest1.getItem() == 5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY()))) {
+            		                            delayflag = true;
+            		                            inGame.moveDown();
+            		                        }
+            		                    } else {
+            		                        inGame.moveDown();
+            		                    }
+            		                } else if (keyCode == teleportKey_Player1) {
+            		                    telpoflag = true;
+            		                    if (itemtest1.getItem() == 5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY()))) {
+            		                        delayflag = true;
+            		                        inGame.moveBottom();
+            		                    } else {
+            		                        inGame.moveBottom();
+            		                        delayflag = false;
+            		                    }
+            		                } else if (keyCode == rotateKey_Player1) {
+            		                    inGame.rotateBlock();
+            		                } else if(keyCode == KeyCode.Q) {
+                            			timer.stop();
+                            			primaryStage.setScene(StartMenu.scene);
+                            			
+                            			inGame.resetVariable();
+                            			Board2.resetVariable();
+                            			score = 0;
+                            			Board2.score = 0;
+                            			
+                            			System.out.println("Player1 점수: " + score);
+                            			System.out.println("Player1 점수: " + inGame.getScore());
+                            			
+                            			System.out.println("Player2 점수: " + Board2.score);
+                            			System.out.println("Player2 점수: " + Board2.getscore());
+                            			//게임 종료시, Board2의 dropSpeed와 Score를 초기상태로 초기화
+                            			
+                                    	centerStage(primaryStage);
+                            		}
+            		                
+            	        			
+            		            }
+            		        }//Gamepaused_flag
+            		        
+            		        if(keyCode == KeyCode.SPACE) {
+                    			if(gamePaused == false) {
+                    				timer.stop();
+                    			}
+                    			else {
+                    				timer.start();
+                    			}
+                    			Board2.pauseGame(pane2);
+        		                pauseGame(pane);
+        		                
+                    		}
+
+            		    }
+            		    //Board2 키 시작
+                        if (Board2.delayflag) {
+                        if(Board2.gamePaused == false) {
+                        if(Board2.telpoflag == false) {
+                        if (keyCode == leftKey_Player2) {
+                        	Board2.moveleft();; // 왼쪽으로 이동
+                        } else if (keyCode == rightKey_Player2) {
+                            Board2.moveright(); // 오른쪽으로 이동
+                        } else if (keyCode == downKey_Player2) {
+                        	
+                        	if(!(Board2.checkblock())) {
+                        		Board2.delayflag=false;
+                        		if(itemtest2.getItem()==5 && !(Board2.checkcollisionBottom(Board2.getcurrentx(),Board2.getcurrenty()))) {
+                        			Board2.delayflag=true;
+                        			Board2.movedown();
+                        		}
+                    		}
+                        	else {
+                        		Board2.movedown();
+                        	}
+                        } else if (keyCode == teleportKey_Player2) {
+                        	Board2.telpoflag = true;
+                        	if(itemtest2.getItem()==5 && !(Board2.checkcollisionBottom(Board2.getcurrentx(),Board2.getcurrenty()))) {
+                        		Board2.delayflag=true;
+                    			Board2.movebottom();
+                    		} else {
+                    			Board2.movebottom();
+                    			Board2.delayflag=false;
+                    		}
+                		} else if (keyCode == rotateKey_Player2) {
+                			Board2.rotateblock();
+                		}
+                		
+                      }
+                        
+                    }
+
+                    }//Board2.delayfalg
+            		    
+                }//mode == 2
+            
+        	}//keyevent_handler
         });
+        
+    	
         timer.start(); // AnimationTimer 시작
         
         return scene; 
     }
+	
+	/*private boolean IsKeyBoard1(KeyCode keyCode) {
+		if(keyCode == rotateKey_Player1 || keyCode == teleportKey_Player1 || 
+				keyCode == leftKey_Player1 || keyCode == downKey_Player1 || keyCode == rightKey_Player1) {
+			return true;
+		}
+		else if(keyCode == rotateKey_Player2 || keyCode == teleportKey_Player2 || 
+				keyCode == leftKey_Player2 || keyCode == downKey_Player2 || keyCode == rightKey_Player2) {
+			return false;
+		}
+		return false;
+	}*/
+	
+	private void handleKeyEventForBoard1(KeyEvent event) {
+		 	
+	}
+	
+	private void handleKeyEventForBoard2(KeyEvent event) {
+	    // Board2에 대한 KeyEvent 처리 로직
+	}
 	
 	// 수정됨 -> inGame 객체 내부의 숫자로 색 구분
 	private void drawBoard() {
@@ -642,7 +777,7 @@ public int gameSize = 2; //게임 사이즈
                 	 
                  }
                  else {
-                	 cellText.setText("■");
+                	 cellText.setText(" ");
                 	 cellText.setFill(Color.BLACK);
                 	 cellText.setX(j* interver/1.5 + boardsize*14);//블럭 X좌표
                      cellText.setY(i* interver/1.5 + boardsize*12);//블럭 Y좌표
@@ -857,6 +992,7 @@ public int gameSize = 2; //게임 사이즈
 			pane.setStyle("-fx-background-color: #000000;");
 			
 			gamePaused = false;
+			Board2.gamePaused = false;
 		}
 		else {
 			
@@ -877,6 +1013,7 @@ public int gameSize = 2; //게임 사이즈
 			 pane.getChildren().add(pause2);
 			
 			gamePaused = true;
+			Board2.gamePaused = true;
 		}
 
 	    
@@ -899,30 +1036,44 @@ public int gameSize = 2; //게임 사이즈
 
                 // 문자열을 KeyCode로 변환하고 적절한 변수에 할당
                 switch (key) {
-                    case "rotateKey":
-                        rotateKey = KeyCode.valueOf(value);
-                        break;
-                    case "teleportKey":
-                        teleportKey = KeyCode.valueOf(value);
-                        break;
-                    case "leftKey":
-                        leftKey = KeyCode.valueOf(value);
-                        break;
-                    case "downKey":
-                        downKey = KeyCode.valueOf(value);
-                        break;
-                    case "rightKey":
-                        rightKey = KeyCode.valueOf(value);
-                        break;
-                    case "gameSize":
-                    	gameSize = Integer.parseInt(value);
-                    	break;
-                    case "colorBlindMode":
-                    	colorBlindMode = Integer.parseInt(value);
-                    	break;
-                    case "difficulty" :
-                    	difficulty = Integer.parseInt(value);
-                    	break;
+                case "rotateKey_Player1":
+                    rotateKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "teleportKey_Player1":
+                    teleportKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "leftKey_Player1":
+                    leftKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "downKey_Player1":
+                    downKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "rightKey_Player1":
+                    rightKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                    
+                case "rotateKey_Player2":
+                	rotateKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "teleportKey_Player2":
+                	teleportKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "leftKey_Player2":
+                	leftKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "downKey_Player2":
+                	downKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "rightKey_Player2":
+                	rightKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                    
+                case "gameSize":
+                	gameSize = Integer.parseInt(value);
+                	break;
+                case "colorBlindMode":
+                	colorBlindMode = Integer.parseInt(value);
+                	break;
                 }
             }
         } catch (IOException e) {

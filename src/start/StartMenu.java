@@ -290,4 +290,6 @@ public class StartMenu extends Application {
 	    stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX());
 	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
 	}
+    
+
 }
