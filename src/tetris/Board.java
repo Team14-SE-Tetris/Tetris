@@ -131,10 +131,10 @@ public int gameSize = 2; //게임 사이즈
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
     	pane = new Pane();
+    	Board2 = new Board2(0);
+    	pane2 = Board2.createpane(null);
     	this.mode = mode;
     	if(mode==2) {
-        	Board2 = new Board2(0);
-        	pane2 = Board2.createpane(null);
         	SplitPane splitPane1 = new SplitPane();
             splitPane1.getItems().addAll(pane, pane2);
             pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
@@ -201,10 +201,14 @@ public int gameSize = 2; //게임 사이즈
         //MoveDown(x, y);
         AnimationTimer timer = new AnimationTimer() {
             private long lastUpdate = 0;
+            private long lastUpdate2 = 0;
             private long interval = inGame.getDropSpeed(); // 1초마다 이동
+            private long interval2 = Board2.getDropspeed(); // 1초마다 이동
             private long delay = 300_000_000; // 딜레이 설정 (0.3초)
             public boolean isLineRemovalScheduled = false; // 줄 제거가 예정되었는지 확인
+            public boolean isLineRemovalScheduled2 = false; // 줄 제거가 예정되었는지 확인
             private long removalScheduledTime = 0; // 줄 제거 예정 시간
+            private long removalScheduledTime2 = 0; // 줄 제거 예정 시간
 
             @Override
             public void handle(long now) {
@@ -264,7 +268,9 @@ public int gameSize = 2; //게임 사이즈
             			if(now - lastUpdate >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
             				drawBoard();
                     		inGame.removeLine(liney);//removeLine에서 checkline반환값이 0으로 변홤
+                    		// vsModeBoardPrint() 가져오기
                     		removestep = 0;
+                    		//placedelete_board()
             			}
             			
             			removestep--;
@@ -289,11 +295,101 @@ public int gameSize = 2; //게임 사이즈
             		
             		removestep++;
                 }
+                
+                if (!isLineRemovalScheduled2) { //Board2 컨트롤
+                    if (now - lastUpdate2 >= interval2) { // interval 간격마다 수행
+                    	telpoflag=false;
+                        if (!Board2.movedown()) { // moveDown 실패 시
+                            if (Board2.checkline() > 0 && Board2.checkline() < 22) {
+                                // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
+                                isLineRemovalScheduled2 = true;
+                                removalScheduledTime2 = now;
+                            } else {
+                                // 완성된 줄이 없고 블록을 초기화할 수 없는 경우 게임 오버 처리
+                                if (!Board2.initializeblock()) {
+                                    this.stop();
+                                    Platform.runLater(() -> {
+                                        ScoreBoard scoreBoard = new ScoreBoard();
+                                        if (mode == 0) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                                        } else if(mode==1) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                                        } else {//대전모드인 경우
+                                        	Alert alert = new Alert(AlertType.INFORMATION);
+                                            alert.setTitle("승리자");
+                                            alert.setHeaderText("게임 결과");
+                                            alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                            alert.showAndWait();
+                                            primaryStage.setScene(StartMenu.scene);
+                                	        centerStage(primaryStage);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        lastUpdate2 = now;
+                    }
+                } else {
+                	
+                	Board2.removeflag = false;
+     		
+            		Board2.liney = Board2.checkline();
+            		
+            		
+            		if (Board2.removestep == 0) {//완성된 줄 확인 후 1번째 프레임
+
+            				Board2.drawBoard();
+            				lastUpdate2 = now;//완성된 줄 확인 후 1번째 프레임의 시간 기록
+
+            		}
+            		else if(Board2.removestep == 1) {//완성된 줄 확인 후 2번째 프레임
+
+            				Board2.drawBoard();
+
+            		}
+            		else if(Board2.removestep == 2) {//완성된 줄 확인 후 3번째 프레임
+
+            			if(now - lastUpdate2 >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
+            				Board2.drawBoard();
+            				Board2.removeline(Board2.liney); //removeLine에서 checkline반환값이 0으로 변홤
+                    		Board2.removestep = 0;
+            			}
+            			
+            			Board2.removestep--;
+            		}
+            		
+            		if(!(Board2.checkline() > 0 && Board2.checkline() < 22)) {
+            			isLineRemovalScheduled2 = false;
+            			Board2.removeflag = true;
+            			
+            			if (!Board2.initializeblock()) {
+                          this.stop();
+                          Platform.runLater(() -> {
+                              ScoreBoard scoreBoard = new ScoreBoard();
+                              if (mode == 0) {
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                              } else {
+                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                              }
+                          });
+                      }
+            		}
+            		
+            		Board2.removestep++;
+                }
+                
                 delayflag=true;
                 drawBoard(); // 화면 업데이트
                 deadLine();
                 drawScore();
                 Styleset();
+                
+                if(mode == 2)
+                drawLine();
+                
+                Board2.drawBoard();
+                Board2.drawScore();
+                
             }
         };
 
@@ -307,8 +403,10 @@ public int gameSize = 2; //게임 사이즈
                 if(telpoflag == false) {
                 if (keyCode == leftKey) {
                 	inGame.moveLeft();
+                	Board2.moveleft();
                 } else if (keyCode == rightKey) {
                     inGame.moveRight(); // 오른쪽으로 이동
+                    Board2.moveright();
                 } else if (keyCode == downKey) {
                 	
                 	if(!(inGame.checkBlock())) {
@@ -320,6 +418,7 @@ public int gameSize = 2; //게임 사이즈
             		}
                 	else {
                 		inGame.moveDown();
+                		Board2.movedown();
                 	}
                 } else if (keyCode == teleportKey) {
                 	telpoflag = true;
@@ -328,10 +427,12 @@ public int gameSize = 2; //게임 사이즈
             			inGame.moveBottom();
             		} else {
             			inGame.moveBottom();
+            			Board2.movebottom();
                     	delayflag=false;
             		}
         		} else if (keyCode == rotateKey) {
         			inGame.rotateBlock();
+        			Board2.rotateblock();
         		}
         		else if(keyCode == KeyCode.Q) {
         			timer.stop();
@@ -340,6 +441,9 @@ public int gameSize = 2; //게임 사이즈
         			score = 0;
         			System.out.println("점수: " + score);
         			System.out.println("점수: " + inGame.getScore());
+        			
+        			if(mode == 2)
+        			Board2.resetVariable();
         			//게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
                 	centerStage(primaryStage);
         		}
@@ -354,6 +458,7 @@ public int gameSize = 2; //게임 사이즈
         				timer.start();
         			}
         			pauseGame(pane);
+        			Board2.pauseGame(pane2);
         			
         		}
             }
@@ -371,7 +476,7 @@ public int gameSize = 2; //게임 사이즈
 		
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
-            	Text cellText = new Text(String.valueOf(board[i][j]));
+            	Text cellText = new Text(String.valueOf(board[i][j])); //vsmodeprint()
                 
                 if(i == 0 || i == 21) {//테트리스 벽 채우기
                 	cellText.setText("□");
@@ -505,6 +610,52 @@ public int gameSize = 2; //게임 사이즈
 		
 		pane.setStyle("-fx-background-color: black;");
 		
+	}
+	
+	public void drawLine() {
+		
+		for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+            	Text cellText = new Text(String.valueOf(board[i][j]));
+            	
+            	 if(i == 0 || i == 21) {//테트리스 벽 채우기
+                 	cellText.setText("■");
+                 	cellText.setFill(Color.WHITE);
+                 	cellText.setX(j* interver/2 + boardsize*14);//블럭 X좌표
+                    cellText.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
+                    cellText.setFont(Font.font(scoresize));//블럭사이즈
+                 	
+                 }
+                 else if(j == 0 || j == 11) {//테트리스 벽 채우기
+                 	cellText.setText("■");
+                 	cellText.setFill(Color.WHITE);
+                 	cellText.setX(j* interver/2 + boardsize*14);//블럭 X좌표
+                    cellText.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
+                    cellText.setFont(Font.font(scoresize));//블럭사이즈
+                 }
+                 else if(i > 17) {
+                	 cellText.setText("■");
+                	 cellText.setFill(Color.GRAY);
+                	 cellText.setX(j* interver/2.09 + boardsize*14 + 6);//블럭 X좌표
+                     cellText.setY(i* interver/2.09 + boardsize*12 + 10);//블럭 Y좌표
+                     cellText.setFont(Font.font(scoresize/1.3));//블럭사이즈
+                	 
+                 }
+                 else {
+                	 cellText.setText("■");
+                	 cellText.setFill(Color.BLACK);
+                	 cellText.setX(j* interver/1.5 + boardsize*14);//블럭 X좌표
+                     cellText.setY(i* interver/1.5 + boardsize*12);//블럭 Y좌표
+                     cellText.setFont(Font.font(scoresize/1.1));//블럭사이즈
+                	 
+                 }
+
+                pane.getChildren().add(cellText);
+            	
+
+            }
+		
+		}
 	}
 	
 	public void drawScore() {

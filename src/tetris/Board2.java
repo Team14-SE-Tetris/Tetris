@@ -94,14 +94,16 @@ public int gameSize = 2; //게임 사이즈
     
     public boolean gamePaused = false;
     
-    private int liney = 0;
+    public int liney = 0;
     private int gradation = 1;
     private int removedelay = 0;
     public boolean removeflag = true;
     private boolean delayflag = true;
-    private int removestep = 0;
+    public int removestep = 0;
     
     private boolean telpoflag = false;
+    
+    private boolean timerflag = false;
     
 	//설정파일 변수
 		//키코드
@@ -154,14 +156,8 @@ public int gameSize = 2; //게임 사이즈
         
         Styleset();
         
-        // addBlock(); -> inGame2의 initialiBlock()에서 이미 배치 함 
         
-        // MoveLeft(x, y);
-        // MoveLeft(x, y);
-
-        
-        //MoveDown(x, y);
-        AnimationTimer timer = new AnimationTimer() {
+        /*AnimationTimer timer = new AnimationTimer() {
             private long lastUpdate = 0;
             private long interval = inGame2.getDropSpeed(); // 1초마다 이동
             private long delay = 300_000_000; // 딜레이 설정 (0.3초)
@@ -250,16 +246,18 @@ public int gameSize = 2; //게임 사이즈
             		}
             		
             		removestep++;
+            		
                 }
                 delayflag=true;
                 drawBoard(); // 화면 업데이트
                 deadLine();
                 drawScore();
                 Styleset();
+               
             }
         };
 
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        /*scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
             	Block itemtest = inGame2.getCurrentBlock();
@@ -320,14 +318,61 @@ public int gameSize = 2; //게임 사이즈
         		}
             }
             }
-        });
-        timer.start(); // AnimationTimer 시작
+        });*/
+        
+        //timer.start();
+        
         
         return pane;
     }
 	
+	public void resetVariable() {
+		inGame2.resetVariable();
+		timerflag = true;
+		score = 0;
+		System.out.println("점수2: " + score);
+		System.out.println("점수2: " + inGame2.getScore());
+		
+	}
+	public void moveleft() {
+		inGame2.moveLeft();
+	}
+	
+	public void moveright() {
+		inGame2.moveRight();
+	}
+	
+	public boolean movedown() {
+		return inGame2.moveDown();
+		
+	}
+	
+	public void movebottom() {
+		inGame2.moveBottom();
+	}
+	
+	public void rotateblock() {
+		inGame2.rotateBlock();
+	}
+	
+	public long getDropspeed() {
+		return inGame2.getDropSpeed();
+	}
+	
+	public int checkline() {
+		return inGame2.checkLines();
+	}
+	
+	public boolean initializeblock() {
+		return inGame2.initialiBlock();
+	}
+	
+	public void removeline(int liney) {
+		inGame2.removeLine(liney);
+	}
+	
 	// 수정됨 -> inGame2 객체 내부의 숫자로 색 구분
-	private void drawBoard() {
+	public void drawBoard() {
 		
 		pane.getChildren().clear(); //pane(게임화면) 비우기
 		
