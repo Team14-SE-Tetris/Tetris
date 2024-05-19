@@ -162,7 +162,7 @@ public class Board{
     	}
     }
     
-    public Board(int mode,int battleMode) { //battleMode 인수를 받았을 때 
+    public Board(int mode,int battleMode) { //battleMode 인수를 받았을 때 -> 오버라이딩
     	this(mode);
     	this.battleMode=battleMode;
     }
