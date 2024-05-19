@@ -144,16 +144,7 @@ public class Board{
     	inGame = new Tetris(difficulty);
     	pane = new Pane();
     	this.mode = mode;
-    	if(mode==2) {
-    		Board2 = new Board2(mode,battleMode);
-        	pane2 = Board2.createpane(null);
-        	SplitPane splitPane1 = new SplitPane();
-            splitPane1.getItems().addAll(pane, pane2);
-            pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
-            scene = new Scene(splitPane1, XMAX*2, YMAX);
-            delayflag=true;
-    	}
-    	else{
+    	if(mode!=2) {
     		Board2 = new Board2(mode);
         	pane2 = Board2.createpane(null);
             pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
@@ -165,6 +156,13 @@ public class Board{
     public Board(int mode,int battleMode) { //battleMode 인수를 받았을 때 -> 오버라이딩
     	this(mode);
     	this.battleMode=battleMode;
+    	Board2 = new Board2(mode,battleMode);
+    	pane2 = Board2.createpane(null);
+    	SplitPane splitPane1 = new SplitPane();
+        splitPane1.getItems().addAll(pane, pane2);
+        pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
+        scene = new Scene(splitPane1, XMAX*2, YMAX);
+        delayflag=true;
     }
 
 
