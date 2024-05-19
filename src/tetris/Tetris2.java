@@ -432,7 +432,7 @@ public class Tetris2 {
     	
     	createBlockNum++;
     	randomBlock();
-    	if(mode==1 && deleteBar/10==itemBar) {
+    	if(mode==1 && deleteBar/1==itemBar) {
     		randomItemBlock();
     		itemBar++;
     	}

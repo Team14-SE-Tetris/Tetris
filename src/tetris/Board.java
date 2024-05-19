@@ -144,9 +144,9 @@ public class Board{
     	inGame = new Tetris(difficulty);
     	pane = new Pane();
     	this.mode = mode;
-		Board2 = new Board2(0);
-    	pane2 = Board2.createpane(null);
     	if(mode==2) {
+    		Board2 = new Board2(mode,battleMode);
+        	pane2 = Board2.createpane(null);
         	SplitPane splitPane1 = new SplitPane();
             splitPane1.getItems().addAll(pane, pane2);
             pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
@@ -154,13 +154,15 @@ public class Board{
             delayflag=true;
     	}
     	else{
+    		Board2 = new Board2(mode);
+        	pane2 = Board2.createpane(null);
             pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
             scene = new Scene(pane, XMAX, YMAX);
             delayflag=true;
     	}
     }
     
-    public Board(int mode,int battleMode) { //battleMode 인수를 받았을 때 
+    public Board(int mode,int battleMode) { //battleMode 인수를 받았을 때 -> 오버라이딩
     	this(mode);
     	this.battleMode=battleMode;
     }
@@ -177,14 +179,14 @@ public class Board{
         else if(mode==0) {
         	inGame.changeMode(0);
         }
-        else if(mode==2){
+        else if(mode==2){//대전모드
         	if(battleMode==1) {
         		inGame.changeMode(0);/* *********중요************  대전 일반모드  나중에 연결해야 함*/
         		inGame.changeVsMode(battleMode);
         		System.out.print("대전모드 일반 연결해야함");
         	}
         	else if(battleMode==2) {
-        		inGame.changeMode(0);/* *********중요************  대전 아이템모드  나중에 연결해야 함*/
+        		inGame.changeMode(1);/* *********중요************  대전 아이템모드  나중에 연결해야 함*/
         		inGame.changeVsMode(battleMode);
         		System.out.print("대전모드 아이템 연결해야함");
         	}

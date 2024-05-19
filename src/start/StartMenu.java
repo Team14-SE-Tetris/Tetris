@@ -44,11 +44,18 @@ public class StartMenu extends Application {
     Text keyDescription;
   //설정파일 변수
   		//키코드
-  	public KeyCode rotateKey = KeyCode.U;
-	KeyCode teleportKey = KeyCode.T;
-	KeyCode leftKey = KeyCode.LEFT;
-	KeyCode downKey = KeyCode.DOWN;
-	KeyCode rightKey = KeyCode.RIGHT;
+    public KeyCode 
+	rotateKey_Player1 = KeyCode.G, 
+	teleportKey_Player1 = KeyCode.H, 
+	leftKey_Player1 = KeyCode.A, 
+	downKey_Player1 = KeyCode.S, 
+	rightKey_Player1 = KeyCode.D,
+
+	rotateKey_Player2 = KeyCode.PERIOD, 
+	teleportKey_Player2 = KeyCode.SLASH, 
+	leftKey_Player2 = KeyCode.LEFT, 
+	downKey_Player2 = KeyCode.DOWN, 
+	rightKey_Player2 = KeyCode.RIGHT;
   		//화면 크기
   		//위에 정의함, gameSize변수
   		//색맹모드
@@ -101,13 +108,13 @@ public class StartMenu extends Application {
         // 키 설명을 변경하는 메서드
         updateKeyDescription = () -> {
         	settingConfigLoader();
-            keyDescription.setText("아래방향키 및 블럭 아래 이동 키: " + downKey.toString() + "\n"
+            keyDescription.setText("아래방향키 및 블럭 아래 이동 키: 1P- " + downKey_Player1.toString() + "/ 2P- "+downKey_Player2.toString() +"\n"
             				+ "게임 중 메인화면으로 돌아가기: Q" + "\n"
             				+ "게임 중 일시정지/재개: SPACE바" + "\n"
-                            + "윗방향키 및 블럭 순간 이동 키: " + teleportKey.toString() + "\n"
-                            + "오른쪽방향키 및 블럭 오른쪽 이동 키: " + rightKey.toString() + "\n"
-                            + "왼쪽방향키 및 블럭 왼쪽 이동 키: " + leftKey.toString() + "\n"
-                            + "블럭 회전 키: " + rotateKey.toString()+ "\n"
+                            + "윗방향키 및 블럭 순간 이동 키: 1P- " + teleportKey_Player1.toString() + "/ 2P- "+ teleportKey_Player2.toString() +"\n"
+                            + "오른쪽방향키 및 블럭 오른쪽 이동 키: 1P- " + rightKey_Player1.toString() + "/ 2P- "+rightKey_Player2.toString()+"\n"
+                            + "왼쪽방향키 및 블럭 왼쪽 이동 키: 1P- " + leftKey_Player1.toString() + "/ 2P- "+ leftKey_Player2.toString()+"\n"
+                            + "블럭 회전 키: 1P- : " + rotateKey_Player1.toString()+ "/ 2P- "+ rotateKey_Player2.toString()+"\n"
                             + "(UP, DOWN, LEFT, RIGHT은 화살표 키)");
         };
         
@@ -182,20 +189,24 @@ public class StartMenu extends Application {
             // 대화상자 생성
             Dialog<String> modeSelectionDialog = new Dialog<>();
             modeSelectionDialog.setTitle("게임 모드 선택");
-            
+            modeSelectionDialog.setOnCloseRequest(event -> {
+                // 사용자가 닫기 버튼을 눌렀을 때 실행될 동작
+                modeSelectionDialog.close(); // 대화상자를 닫음
+            });
             // 버튼 생성
             ButtonType basicModeButton = new ButtonType("기본 모드", ButtonData.OK_DONE);
             ButtonType itemModeButton = new ButtonType("아이템 모드", ButtonData.OK_DONE);
             ButtonType timerModeButton = new ButtonType("타이머 모드", ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType("취소", ButtonData.CANCEL_CLOSE); // 취소 버튼
             
             // 대화상자에 버튼 추가
-            modeSelectionDialog.getDialogPane().getButtonTypes().addAll(basicModeButton, itemModeButton, timerModeButton);
+            modeSelectionDialog.getDialogPane().getButtonTypes().addAll(basicModeButton, itemModeButton, timerModeButton,cancelButton);
             
             // 버튼 클릭 시 동작 설정
             modeSelectionDialog.setResultConverter(dialogButton -> {
                 if (dialogButton == basicModeButton) {
                     // 기본 모드 선택 시 실행할 동작
-                    board = new Board(2,1);//<여기 argument가 게임 모드임 
+                    board = new Board(2,1);//<여기 두 번째 argument가 배틀 모드 안에서 또다른 세 가지 모드 지정임 
                     primaryStage.setScene(board.createScene(primaryStage));
                     centerStage(primaryStage);
                     return "Basic Mode Selected";
@@ -217,12 +228,6 @@ public class StartMenu extends Application {
             // 대화상자 보이기
             modeSelectionDialog.showAndWait();
         }
-        /*else if(selectedItem.equals("Battle Mode Game")) {
-        	board=new Board(2);
-        	primaryStage.setScene(board.createScene(primaryStage));
-        	//화면 중앙배치
-        	centerStage(primaryStage);
-        }*/
         else if (selectedItem.equals("Setting")) {
         	new SettingMenu().display(primaryStage, scene);//설정화면 표시
         	//화면 중앙배치
@@ -254,34 +259,44 @@ public class StartMenu extends Application {
 
                 // 문자열을 KeyCode로 변환하고 적절한 변수에 할당
                 switch (key) {
-                    case "rotateKey":
-                        rotateKey = KeyCode.valueOf(value);
-                        break;
-                    case "teleportKey":
-                        teleportKey = KeyCode.valueOf(value);
-                        break;
-                    case "leftKey":
-                        leftKey = KeyCode.valueOf(value);
-                        break;
-                    case "downKey":
-                        downKey = KeyCode.valueOf(value);
-                        break;
-                    case "rightKey":
-                        rightKey = KeyCode.valueOf(value);
-                        break;
-                    case "colorBlindMode":
-                    	colorBlindMode = Integer.parseInt(value);
-                    	break;
-                    case "difficulty" :
-                    	difficulty = Integer.parseInt(value);
-                    	break;
+                case "rotateKey_Player1":
+                    rotateKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "teleportKey_Player1":
+                    teleportKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "leftKey_Player1":
+                    leftKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "downKey_Player1":
+                    downKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                case "rightKey_Player1":
+                    rightKey_Player1 = KeyCode.valueOf(value);
+                    break;
+                    
+                case "rotateKey_Player2":
+                	rotateKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "teleportKey_Player2":
+                	teleportKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "leftKey_Player2":
+                	leftKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "downKey_Player2":
+                	downKey_Player2 = KeyCode.valueOf(value);
+                    break;
+                case "rightKey_Player2":
+                	rightKey_Player2 = KeyCode.valueOf(value);
+                    break;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+            }
             // 파일 읽기 실패 시, 적절한 예외 처리나 사용자 알림이 필요할 수 있습니다.
         }
-    }
     
     private void centerStage(Stage stage) {
 	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
