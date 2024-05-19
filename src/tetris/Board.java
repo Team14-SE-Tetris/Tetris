@@ -145,8 +145,8 @@ public class Board{
     	pane = new Pane();
     	this.mode = mode;
     	if(mode==2) {
-    		Board2 = new Board2(mode);
-            pane2 = Board2.createpane(null);
+    		Board2 = new Board2(mode,battleMode);
+        	pane2 = Board2.createpane(null);
         	SplitPane splitPane1 = new SplitPane();
             splitPane1.getItems().addAll(pane, pane2);
             pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
@@ -155,11 +155,10 @@ public class Board{
     	}
     	else{
     		Board2 = new Board2(mode);
-            pane2 = Board2.createpane(null);
+        	pane2 = Board2.createpane(null);
             pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
             scene = new Scene(pane, XMAX, YMAX);
             delayflag=true;
-            
     	}
     }
     
@@ -180,18 +179,21 @@ public class Board{
         else if(mode==0) {
         	inGame.changeMode(0);
         }
-        else if(mode==2){
+        else if(mode==2){//대전모드
         	if(battleMode==1) {
-        		inGame.changeMode(0);/* *********중요************  대전 일반모드*/
+        		inGame.changeMode(0);/* *********중요************  대전 일반모드  나중에 연결해야 함*/
+        		inGame.changeVsMode(battleMode);
         		System.out.print("대전모드 일반 연결해야함");
         	}
         	else if(battleMode==2) {
-        		inGame.changeMode(1);/* *********중요************  대전 아이템모드*/
+        		inGame.changeMode(1);/* *********중요************  대전 아이템모드  나중에 연결해야 함*/
+        		inGame.changeVsMode(battleMode);
         		System.out.print("대전모드 아이템 연결해야함");
         	}
         	else if(battleMode==3) {
         		inGame.changeMode(0);/* *********중요************  대전 타이머모드  나중에 연결해야 함*/
         		System.out.print("대전모드 타이머 연결해야함");
+        		inGame.changeVsMode(battleMode);
         	}
         }
     	inGame.initialiBlock();
@@ -245,13 +247,7 @@ public class Board{
                                             scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
                                         } else if(mode==1) {
                                             scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
-                                        } else {//대전모드인 경우 -> 승리조건이 타이머 모드와 기본+아이템 대전모드와 다름
-                                        	if(battleMode==3) {//타이머 대전모드
-                                        		
-                                        	}
-                                        	else {//기본 또는 아이템 대전모드
-                                        		
-                                        	}
+                                        } else {//대전모드인 경우
                                         	Alert alert = new Alert(AlertType.INFORMATION);
                                             alert.setTitle("승리자");
                                             alert.setHeaderText("게임 결과");

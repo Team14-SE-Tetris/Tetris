@@ -122,6 +122,8 @@ public int gameSize = 2; //게임 사이즈
 	public int difficulty = 2;
 	
 	public String difficultyText = "normal";
+	
+	public int battleMode=0;
     
     public Board2(int mode) {
     	timer = null;
@@ -133,6 +135,11 @@ public int gameSize = 2; //게임 사이즈
         scene = new Scene(pane, XMAX, YMAX);
         delayflag=true;
     }
+    
+    public Board2(int mode,int battleMode) {
+    	this(mode);
+    	this.battleMode=battleMode;
+    }
 
 
 	public Pane createpane(Stage primaryStage) {
@@ -143,14 +150,24 @@ public int gameSize = 2; //게임 사이즈
 		if (mode ==1){
         	inGame2.changeMode(1);
         }
-        else {
+        else if(mode==0){
         	inGame2.changeMode(0);
+        }
+        else if(mode==2) {
+        	if(battleMode==1) {
+        		inGame2.changeMode(0);//기본모드
+        	}
+        	else if(battleMode==2) {
+        		inGame2.changeMode(1);//아이템모드
+        	}
+        	else if(battleMode==3) {
+        		inGame2.changeMode(0);//타임어택모드
+        	}
         }
     	inGame2.initialiBlock();
    
     	// board 내부 블럭은 inGame2에서 가져옴
         drawBoard();
-        
         
         // score inGame2에서 가져옴
         drawScore();
