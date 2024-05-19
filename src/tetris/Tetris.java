@@ -640,6 +640,10 @@ public class Tetris {
     public int changeMode(int mode) {
 		return this.mode=mode;
 	}
+    
+    public int changeVsMode(int vsMode) {
+		return this.vsMode=vsMode;
+	}
     // 블록의 현재 x 좌표
     public int getCurrentY() {
 		return currentY;

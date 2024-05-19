@@ -151,7 +151,6 @@ public int gameSize = 2; //게임 사이즈
     	// board 내부 블럭은 inGame2에서 가져옴
         drawBoard();
         
-        
         // score inGame2에서 가져옴
         drawScore();
         

@@ -180,15 +180,18 @@ public class Board{
         else if(mode==2){
         	if(battleMode==1) {
         		inGame.changeMode(0);/* *********중요************  대전 일반모드  나중에 연결해야 함*/
+        		inGame.changeVsMode(battleMode);
         		System.out.print("대전모드 일반 연결해야함");
         	}
         	else if(battleMode==2) {
         		inGame.changeMode(0);/* *********중요************  대전 아이템모드  나중에 연결해야 함*/
+        		inGame.changeVsMode(battleMode);
         		System.out.print("대전모드 아이템 연결해야함");
         	}
         	else if(battleMode==3) {
         		inGame.changeMode(0);/* *********중요************  대전 타이머모드  나중에 연결해야 함*/
         		System.out.print("대전모드 타이머 연결해야함");
+        		inGame.changeVsMode(battleMode);
         	}
         }
     	inGame.initialiBlock();

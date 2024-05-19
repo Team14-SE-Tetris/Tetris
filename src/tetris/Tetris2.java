@@ -11,7 +11,7 @@ public class Tetris2 {
     public static final int BoardHeight = 20;
     public static int[][] board = new int[BoardHeight][BoardWidth];
     public static int[][] deleteBoard = new int[BoardHeight][BoardWidth];
-    public static int vsMode = 0;
+    public static int vsMode = 1;
     public static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
     public static int currentY = 0; // 현재 블록의 Y 위치
     public static int score = 0;
@@ -37,6 +37,7 @@ public class Tetris2 {
         clearBoard();
         randomBlock();
         resetVariable();
+        clearDeleteBoard();
     }
     
     
