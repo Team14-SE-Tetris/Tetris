@@ -10,6 +10,8 @@ public class Tetris {
     public static final int BoardWidth = 10;
     public static final int BoardHeight = 20;
     public static int[][] board = new int[BoardHeight][BoardWidth];
+    public static int[][] deleteBoard = new int[BoardHeight][BoardWidth];
+    public static int vsMode = 0;
     public static int currentX = BoardWidth / 2; // 현재 블록의 X 위치
     public static int currentY = 0; // 현재 블록의 Y 위치
     public static int score = 0;
@@ -167,6 +169,9 @@ public class Tetris {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y)> 0) {
                     board[currentY + y][currentX + x] = block.getColorNum();
+                    if (vsMode == 1) { // 대전 모드일 경우에만 deleteBoard 처리
+                        deleteBoard[currentY + y][currentX + x] = 0; // 블록 부분은 0으로 초기화
+                    }
                 }
             }
         }
@@ -174,23 +179,151 @@ public class Tetris {
     
  // 선 지우는 메소드
     public void removeLine(int line) {
-    	deleteBar++;
+        deleteBar++;
+        int deletedLines = 0; // 삭제된 줄 수 추적
+
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
-            	if (board[line][x]==9) {
-            		deleteItem++;
-            	}
+                if (board[line][x] == 9) {
+                    deleteItem++;
+                }
                 board[y][x] = board[y - 1][x];
+                if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
+                    if (y == line) {
+                        deleteBoard[y][x] = board[y][x]; // 삭제된 줄은 deleteBoard에 복사
+                    } else {
+                        deleteBoard[y][x] = deleteBoard[y - 1][x]; // 위의 줄은 deleteBoard에서 아래로 내림
+                    }
+                }
             }
+            deletedLines++; // 삭제된 줄 수 증가
         }
+
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
             board[0][x] = ' ';
+            if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
+                deleteBoard[0][x] = 0; // deleteBoard의 가장 윗 줄도 초기화
+            }
         }
-        
+
+        // 2줄 이상 삭제된 경우, 블록 부분을 제외한 부분만 deleteBoard에 저장
+        if (deletedLines > 1 && vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
+            for (int y = 0; y < block.height(); y++) {
+                for (int x = 0; x < block.width(); x++) {
+                    if (block.getShape(x, y) > 0) {
+                        deleteBoard[currentY + y][currentX + x] = 0; // 블록 부분은 0으로 초기화
+                    }
+                }
+            }
+        }
+
         liney = 0;
     }
     
+    public void clearDeleteBoard() {
+        for (int y = 0; y < BoardHeight; y++) {
+            for (int x = 0; x < BoardWidth; x++) {
+                deleteBoard[y][x] = 0;
+            }
+        }
+    }
+    
+    public void moveDeleteBoardDown() {
+        for (int y = BoardHeight - 1; y > 0; y--) {
+            for (int x = 0; x < BoardWidth; x++) {
+                if (deleteBoard[y][x] != 0) {
+                    for (int i = y + 1; i < BoardHeight; i++) {
+                        if (deleteBoard[i][x] == 0) {
+                            deleteBoard[i][x] = deleteBoard[y][x];
+                            deleteBoard[y][x] = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    public boolean placeDeleteBoard(int[][] inputBoard) {
+        int topY = 0;
+
+        // 기존 블록의 가장 윗부분 찾기
+        for (int y = 0; y < BoardHeight; y++) {
+            boolean rowEmpty = true;
+            for (int x = 0; x < BoardWidth; x++) {
+                if (board[y][x] != ' ') {
+                    rowEmpty = false;
+                    break;
+                }
+            }
+            if (!rowEmpty) {
+                topY = y + 1;
+                break;
+            }
+        }
+
+        // 기존 블록을 위로 밀어내기
+        for (int y = BoardHeight - 1; y >= topY; y--) {
+            for (int x = 0; x < BoardWidth; x++) {
+                if (y + inputBoard.length < BoardHeight) {
+                    board[y + inputBoard.length][x] = board[y][x];
+                } else {
+                    // 화면을 넘어가는 경우 false 반환
+                    return false;
+                }
+            }
+        }
+
+        // deleteBoard를 아래쪽에 위치시키기
+        for (int y = 0; y < inputBoard.length; y++) {
+            for (int x = 0; x < BoardWidth; x++) {
+                if (inputBoard[y][x] != 0) {
+                    if (topY + y < BoardHeight) {
+                        board[topY + y][x] = inputBoard[y][x];
+                    } else {
+                        // 화면을 넘어가는 경우 false 반환
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+    public int[][] vsModeBoardPrint() {
+    	int[][] printBoard = new int[BoardHeight+2][BoardWidth+2];
+    	for (int y = 0; y < BoardHeight; y++) {
+            for (int x = 0; x < BoardWidth; x++) {
+            	printBoard[y+1][x+1] = deleteBoard[y][x];
+            }
+        }
+    	return printBoard;
+    	
+    }
+    public int[][] deleteBoardPrint() {
+    	int[][] printBoard = new int[BoardHeight+2][BoardWidth+2];
+    	for (int y = 0; y < BoardHeight; y++) {
+            for (int x = 0; x < BoardWidth; x++) {	
+            	printBoard[y+1][x+1] = board[y][x];
+            }
+        }
+    	for (int y = 0; y < block.height(); y++) {
+            for (int x = 0; x < block.width(); x++) {
+                if (block.getShape(x, y) > 0) {
+                	printBoard[currentY + y + 1][currentX + x + 1] = block.getColorNum();
+                	
+                }
+                if(mode==1&&block.getItem()==4&&block.getShape(x, y)==11) {
+            		printBoard[currentY + y + 1][currentX + x + 1] = 11;
+            		
+            	}
+            }
+        }
+    	
+    	return printBoard;
+    	
+    }
     // 블럭들 랜덤 생성
     public void randomBlock() {
     	double basic = 0.14; // 1/7 반올림
