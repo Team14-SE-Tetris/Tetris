@@ -124,6 +124,13 @@ public int gameSize = 2; //게임 사이즈
 	public String difficultyText = "normal";
 	
 	public int battleMode=0;
+	
+	public int time;
+	
+	private Timeline timeline; // 타이머를 제어할 Timeline 객체
+	
+	public Text timerText = new Text();
+	 
     
     public Board2(int mode) {
     	timer = null;
@@ -131,6 +138,7 @@ public int gameSize = 2; //게임 사이즈
     	inGame2 = new Tetris2(difficulty);
     	pane = new Pane();
     	this.mode = mode;
+    	this.time = 300; 
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
         delayflag=true;
@@ -139,6 +147,29 @@ public int gameSize = 2; //게임 사이즈
     public Board2(int mode,int battleMode) {
     	this(mode);
     	this.battleMode=battleMode;
+    	if(battleMode == 3) {
+            initializeTimer(); // 타이머 초기화 함수 호출
+    	}
+    }
+    
+    public int getTime() {
+    	return this.time;
+    }
+    
+    // 타이머 초기화 함수
+    private void initializeTimer() {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            int minutes = time / 60;
+            int seconds = time % 60;
+            timerText.setText(String.format("Time  :  %02d:%02d", minutes, seconds));
+            time--;
+            if (time <= 0) {
+                timeline.stop();
+                // 타이머가 0이 되었을 때의 동작 추가
+            }
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
 
@@ -596,6 +627,17 @@ public int gameSize = 2; //게임 사이즈
 		sc.setY(boardsize*10);
 		sc.setFill(Color.WHITE);
 		sc.setFont(Font.font(scoresize*0.8));
+		
+		//만약 battelmode ==3 이면 타이머 추가
+		// 배틀모드가 3일 때만 타이머 텍스트 추가
+        if (battleMode == 3) {
+            timerText.setX(boardsize * 14);
+            timerText.setY(boardsize * 15);
+            timerText.setFill(Color.WHITE);
+            timerText.setFont(Font.font(scoresize * 0.8));
+            pane.getChildren().add(timerText);
+        }
+        
 		
 		//다음블럭 나타날 텍스트 테두리
 		//가로 7칸 세로 5칸

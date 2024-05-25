@@ -101,6 +101,8 @@ public class Board{
     
     public boolean gamePaused = false;
     
+    public int[] timeSeconds = {300};
+    
     private int liney = 0;
     private int gradation = 1;
     private int removedelay = 0;
@@ -223,12 +225,31 @@ public class Board{
             public boolean isLineRemovalScheduled = false; // 줄 제거가 예정되었는지 확인
             public boolean isLineRemovalScheduled2 = false; // 줄 제거가 예정되었는지 확인
             private long removalScheduledTime = 0; // 줄 제거 예정 시간
-            private long removalScheduledTime2 = 0; // 줄 제거 예정 시간
-
+            private long removalScheduledTime2 = 0; // 줄 제거 예정 시간\
+            
             @Override
             public void handle(long now) {
                 if (!isLineRemovalScheduled) {
                     if (now - lastUpdate >= interval) { // interval 간격마다 수행
+                    	if(Board2.getTime() <= 0) {
+                    		this.stop();
+                            Platform.runLater(() -> {
+                                ScoreBoard scoreBoard = new ScoreBoard();
+                                if (mode == 0) {
+                                    scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                                } else if(mode==1) {
+                                    scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                                } else {//대전모드인 경우
+                                	Alert alert = new Alert(AlertType.INFORMATION);
+                                    alert.setTitle("승리자");
+                                    alert.setHeaderText("게임 결과");
+                                    alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                    alert.showAndWait();
+                                    primaryStage.setScene(StartMenu.scene);
+                        	        centerStage(primaryStage);
+                                }
+                            });
+                    	}
                     	telpoflag=false;
                         if (!inGame.moveDown()) { // moveDown 실패 시
                             if (inGame.checkLines() > 0 && inGame.checkLines() < 22) {
@@ -823,6 +844,15 @@ public class Board{
 		sc.setFill(Color.WHITE);
 		sc.setFont(Font.font(scoresize*0.8));
 		
+		// 타이머 텍스트 추가
+	    Text timerText = new Text();
+	    timerText.setX(boardsize * 14);
+	    timerText.setY(boardsize * 8);
+	    timerText.setFill(Color.WHITE);
+	    timerText.setFont(Font.font(scoresize * 0.8));
+	    
+	    
+		
 		//다음블럭 나타날 텍스트 테두리
 		//가로 7칸 세로 5칸
 		for(int i=0; i<7; i++) {
@@ -853,6 +883,7 @@ public class Board{
 		
 		pane.getChildren().add(lv);
 		pane.getChildren().add(sc);
+	    pane.getChildren().add(timerText);
 	}
 	
 	private void deadLine() {
