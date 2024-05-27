@@ -97,6 +97,8 @@ public class Board{
     
     public Tetris inGame;
     
+    public Tetris2 inGame2;
+    
     public Board2 Board2;
     
     public boolean gamePaused = false;
@@ -113,6 +115,9 @@ public class Board{
     private boolean telpoflag = false;
     
     public AnimationTimer timer;
+    
+    public int deletedLines1 = 0; //board1 deletedLines
+    public int deletedLines2 = 0; //board2 deletedLines
     
 	//설정파일 변수
 		//키코드
@@ -144,6 +149,7 @@ public class Board{
     	timer = null;
     	settingConfigLoader();//Setting.txt파일에서 설정값들을 불러와 변수에 저장하는 함수 
     	inGame = new Tetris(difficulty);
+    	inGame2 = new Tetris2(difficulty);
     	pane = new Pane();
     	this.mode = mode;
     	if(mode!=2) {
@@ -252,6 +258,9 @@ public class Board{
                     	}
                     	telpoflag=false;
                         if (!inGame.moveDown()) { // moveDown 실패 시
+                        	inGame.placeDeleteBoard(inGame2.deleteBoard);
+                        	deletedLines2 = 0;
+                        	inGame2.clearDeleteBoard();
                             if (inGame.checkLines() > 0 && inGame.checkLines() < 22) {
                                 // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
                                 isLineRemovalScheduled = true;
@@ -336,6 +345,7 @@ public class Board{
                     if (now - lastUpdate2 >= interval2) { // interval 간격마다 수행
                     	Board2.telpoflag=false;
                         if (!Board2.movedown()) { // moveDown 실패 시
+                        	inGame2.placeDeleteBoard(inGame.deleteBoard);
                             if (Board2.checkline() > 0 && Board2.checkline() < 22) {
                                 // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
                                 isLineRemovalScheduled2 = true;
@@ -387,8 +397,9 @@ public class Board{
 
             			if(now - lastUpdate2 >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
             				Board2.drawBoard();
-            				Board2.removeline(Board2.liney); //removeLine에서 checkline반환값이 0으로 변홤
-                    		Board2.removestep = 0;
+            				Board2.removeline(Board2.liney, deletedLines2); //removeLine에서 checkline반환값이 0으로 변홤
+            				deletedLines2++; //몇줄 지웠는지 확인
+            				Board2.removestep = 0;
             			}
             			
             			Board2.removestep--;
@@ -773,9 +784,44 @@ public class Board{
 	
 	public void drawLine() {
 		
+		if(deletedLines2 > 1) {
+			
+			int[][] lineBoard = inGame2.vsModeBoardPrint();
+			
+			for(int k=0; k<BOARD_HEIGHT; k++) {
+				for(int m=0; m<BOARD_WIDTH; m++) {
+	            	Text cellTextD = new Text(String.valueOf(lineBoard[k][m]));
+	            	
+	            	if(lineBoard[k][m] == 0) {
+	               	 
+	               	 cellTextD.setText(" ");
+	               	 cellTextD.setFill(Color.BLACK);
+	               	 cellTextD.setX(m* interver/1.5 + boardsize*14);//블럭 X좌표
+	                 cellTextD.setY(k* interver/1.5 + boardsize*12);//블럭 Y좌표
+	                 cellTextD.setFont(Font.font(scoresize/1.1));//블럭사이즈
+
+	                    
+	                }
+	                else {
+	               	 
+	               	 cellTextD.setText("■");
+	               	 cellTextD.setFill(Color.GRAY);
+	               	 cellTextD.setX(m* interver/2.09 + boardsize*14 + 6);//블럭 X좌표
+	                 cellTextD.setY(k* interver/2.09 + boardsize*12 + 10);//블럭 Y좌표
+	                 cellTextD.setFont(Font.font(scoresize/1.3));//블럭사이즈
+
+	                }
+	            	
+	                pane.getChildren().add(cellTextD);
+					
+				}
+			}
+		}
+		
+		
 		for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
-            	Text cellText = new Text(String.valueOf(board[i][j]));
+            	Text cellText = new Text();
             	
             	 if(i == 0 || i == 21) {//테트리스 벽 채우기
                  	cellText.setText("■");
@@ -792,24 +838,10 @@ public class Board{
                     cellText.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
                     cellText.setFont(Font.font(scoresize));//블럭사이즈
                  }
-                 else if(i > 17) {
-                	 cellText.setText("■");
-                	 cellText.setFill(Color.GRAY);
-                	 cellText.setX(j* interver/2.09 + boardsize*14 + 6);//블럭 X좌표
-                     cellText.setY(i* interver/2.09 + boardsize*12 + 10);//블럭 Y좌표
-                     cellText.setFont(Font.font(scoresize/1.3));//블럭사이즈
-                	 
-                 }
-                 else {
-                	 cellText.setText(" ");
-                	 cellText.setFill(Color.BLACK);
-                	 cellText.setX(j* interver/1.5 + boardsize*14);//블럭 X좌표
-                     cellText.setY(i* interver/1.5 + boardsize*12);//블럭 Y좌표
-                     cellText.setFont(Font.font(scoresize/1.1));//블럭사이즈
-                	 
-                 }
+                 
 
                 pane.getChildren().add(cellText);
+
             	
 
             }

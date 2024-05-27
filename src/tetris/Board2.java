@@ -430,8 +430,8 @@ public int gameSize = 2; //게임 사이즈
 		return inGame2.initialiBlock();
 	}
 	
-	public void removeline(int liney) {
-		inGame2.removeLine(liney);
+	public void removeline(int liney, int deletedLines) {
+		inGame2.removeLine(liney, deletedLines);
 	}
 	
 	public Block getCurrentblock() {

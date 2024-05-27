@@ -179,10 +179,12 @@ public class Tetris2 {
     }
     
  // 선 지우는 메소드
-    public void removeLine(int line) {
+    public void removeLine(int line, int deletedLines) {
         deleteBar++;
-        int deletedLines = 0; // 삭제된 줄 수 추적
-
+        
+        deletedLines++; // 삭제된 줄 수 증가
+        System.out.println(deletedLines);
+        
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
                 if (board[line][x] == 9) {
@@ -197,9 +199,9 @@ public class Tetris2 {
                     }
                 }
             }
-            deletedLines++; // 삭제된 줄 수 증가
-        }
 
+        }
+        
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
             board[0][x] = ' ';
@@ -207,7 +209,9 @@ public class Tetris2 {
                 deleteBoard[0][x] = 0; // deleteBoard의 가장 윗 줄도 초기화
             }
         }
-
+        
+        
+        
         // 2줄 이상 삭제된 경우, 블록 부분을 제외한 부분만 deleteBoard에 저장
         if (deletedLines > 1 && vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
             for (int y = 0; y < block.height(); y++) {
@@ -218,7 +222,6 @@ public class Tetris2 {
                 }
             }
         }
-
         liney = 0;
     }
     
