@@ -196,194 +196,6 @@ public int gameSize = 2; //게임 사이즈
         	}
         }
     	inGame2.initialiBlock();
-   
-    	// board 내부 블럭은 inGame2에서 가져옴
-        drawBoard();
-        
-        // score inGame2에서 가져옴
-        drawScore();
-        
-        deadLine();
-        
-        Styleset();
-        
-        
-        /*AnimationTimer timer = new AnimationTimer() {
-=======
-        // MoveLeft(x, y);
-        // MoveLeft(x, y);
-
-        
-        //MoveDown(x, y);
-        timer = new AnimationTimer() {
->>>>>>> 734f1d7237ebf695e6c2fd4c73ea10995f5be2a5
-            private long lastUpdate = 0;
-            private long interval = inGame2.getDropSpeed(); // 1초마다 이동
-            private long delay = 300_000_000; // 딜레이 설정 (0.3초)
-            public boolean isLineRemovalScheduled = false; // 줄 제거가 예정되었는지 확인
-            private long removalScheduledTime = 0; // 줄 제거 예정 시간
-
-            @Override
-            public void handle(long now) {
-                if (!isLineRemovalScheduled) {
-                    if (now - lastUpdate >= interval) { // interval 간격마다 수행
-                    	telpoflag=false;
-                        if (!inGame2.moveDown()) { // moveDown 실패 시
-                            if (inGame2.checkLines() > 0 && inGame2.checkLines() < 22) {
-                                // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
-                                isLineRemovalScheduled = true;
-                                removalScheduledTime = now;
-                            } else {
-                                // 완성된 줄이 없고 블록을 초기화할 수 없는 경우 게임 오버 처리
-                                if (!inGame2.initialiBlock()) {
-                                    this.stop();           
-                                    Platform.runLater(() -> {
-                                        ScoreBoard scoreBoard = new ScoreBoard();
-                                        if (mode == 0) {
-                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
-                                        } else if(mode==1) {
-                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
-                                        } else {//대전모드인 경우
-                                        	Alert alert = new Alert(AlertType.INFORMATION);
-                                            alert.setTitle("승리자");
-                                            alert.setHeaderText("게임 결과");
-                                            alert.setContentText("winnerName" + "(이)가 승리했습니다!");
-                                            alert.showAndWait();
-                                            primaryStage.setScene(StartMenu.scene);
-                                	        centerStage(primaryStage);
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                        lastUpdate = now;
-                    }
-                } else {
-                	
-                	removeflag = false;
-     		
-            		liney = inGame2.checkLines();
-            		
-            		
-            		if (removestep == 0) {//완성된 줄 확인 후 1번째 프레임
-
-            				drawBoard();
-            				lastUpdate = now;//완성된 줄 확인 후 1번째 프레임의 시간 기록
-
-            		}
-            		else if(removestep == 1) {//완성된 줄 확인 후 2번째 프레임
-
-            				drawBoard();
-
-            		}
-            		else if(removestep == 2) {//완성된 줄 확인 후 3번째 프레임
-
-            			if(now - lastUpdate >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
-            				drawBoard();
-                    		inGame2.removeLine(liney);//removeLine에서 checkline반환값이 0으로 변홤
-                    		removestep = 0;
-            			}
-            			
-            			removestep--;
-            		}
-            		
-            		if(!(inGame2.checkLines() > 0 && inGame2.checkLines() < 22)) {
-            			isLineRemovalScheduled = false;
-            			removeflag = true;
-            			
-            			if (!inGame2.initialiBlock()) {
-                          this.stop();
-                          Platform.runLater(() -> {
-                              ScoreBoard scoreBoard = new ScoreBoard();
-                              if (mode == 0) {
-                                  scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
-                              } else {
-                                  scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
-                              }
-                          });
-                      }
-            		}
-            		
-            		removestep++;
-            		
-                }
-                delayflag=true;
-                drawBoard(); // 화면 업데이트
-                deadLine();
-                drawScore();
-                Styleset();
-               
-            }
-        };
-
-<<<<<<< HEAD
-        /*scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-            	Block itemtest = inGame2.getCurrentBlock();
-                KeyCode keyCode = event.getCode();
-                if (delayflag) {
-                if(gamePaused == false) {
-                if(telpoflag == false) {
-                if (keyCode == leftKey) {
-                	inGame2.moveLeft(); // 왼쪽으로 이동
-                } else if (keyCode == rightKey) {
-                    inGame2.moveRight(); // 오른쪽으로 이동
-                } else if (keyCode == downKey) {
-                	
-                	if(!(inGame2.checkBlock())) {
-                		delayflag=false;
-                		if(itemtest.getItem()==5 && !(inGame2.checkCollisionBottom(inGame2.getCurrentX(),inGame2.getCurrentY()))) {
-                			delayflag=true;
-                			inGame2.moveDown();
-                		}
-            		}
-                	else {
-                		inGame2.moveDown();
-                	}
-                } else if (keyCode == teleportKey) {
-                	telpoflag = true;
-                	if(itemtest.getItem()==5 && !(inGame2.checkCollisionBottom(inGame2.getCurrentX(),inGame2.getCurrentY()))) {
-            			delayflag=true;
-            			inGame2.moveBottom();
-            		} else {
-            			inGame2.moveBottom();
-                    	delayflag=false;
-            		}
-        		} else if (keyCode == rotateKey) {
-        			inGame2.rotateBlock();
-        		}
-        		else if(keyCode == KeyCode.Q) {
-        			timer.stop();
-        			primaryStage.setScene(StartMenu.scene);
-        			inGame2.resetVariable();
-        			score = 0;
-        			System.out.println("점수: " + score);
-        			System.out.println("점수: " + inGame2.getScore());
-        			//게임 종료시, inGame2의 dropSpeed와 Score를 초기상태로 초기화
-                	centerStage(primaryStage);
-        		}
-                }
-                
-            }
-			if(keyCode == KeyCode.SPACE) {
-        			if(gamePaused == false) {
-        				timer.stop();
-        			}
-        			else {
-        				timer.start();
-        			}
-        			pauseGame(pane);
-        			
-        		}
-            }
-            }
-        });*/
-        
-        //timer.start();
-        
-
-        
         
         
         return pane;
@@ -599,6 +411,72 @@ public int gameSize = 2; //게임 사이즈
 		
 		pane.setStyle("-fx-background-color: black;");
 		
+	}
+	
+	public void drawLine(int deletedLines1, int [][] lineBoard) {
+		
+		if(deletedLines1 > 1) {
+			
+			
+			for(int k=0; k<BOARD_HEIGHT; k++) {
+				for(int m=0; m<BOARD_WIDTH; m++) {
+	            	Text cellTextD = new Text(String.valueOf(lineBoard[k][m]));
+	            	
+	            	if(lineBoard[k][m] == 0) {
+	               	 
+	               	 cellTextD.setText(" ");
+	               	 cellTextD.setFill(Color.BLACK);
+	               	 cellTextD.setX(m* interver/1.5 + boardsize*14);//블럭 X좌표
+	                 cellTextD.setY(k* interver/1.5 + boardsize*12);//블럭 Y좌표
+	                 cellTextD.setFont(Font.font(scoresize/1.1));//블럭사이즈
+
+	                    
+	                }
+	                else {
+	               	 
+	               	 cellTextD.setText("■");
+	               	 cellTextD.setFill(Color.GRAY);
+	               	 cellTextD.setX(m* interver/2.09 + boardsize*14 + 6);//블럭 X좌표
+	                 cellTextD.setY(k* interver/2.09 + boardsize*12 + 10);//블럭 Y좌표
+	                 cellTextD.setFont(Font.font(scoresize/1.3));//블럭사이즈
+
+	                }
+	            	
+	                pane.getChildren().add(cellTextD);
+					
+				}
+			}
+		}
+		
+		
+		for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+            	Text cellTextL = new Text();
+            	
+            	 if(i == 0 || i == 21) {//테트리스 벽 채우기
+                 	cellTextL.setText("■");
+                 	cellTextL.setFill(Color.WHITE);
+                 	cellTextL.setX(j* interver/2 + boardsize*14);//블럭 X좌표
+                    cellTextL.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
+                    cellTextL.setFont(Font.font(scoresize));//블럭사이즈
+                 	
+                 }
+                 else if(j == 0 || j == 11) {//테트리스 벽 채우기
+                 	cellTextL.setText("■");
+                 	cellTextL.setFill(Color.WHITE);
+                 	cellTextL.setX(j* interver/2 + boardsize*14);//블럭 X좌표
+                    cellTextL.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
+                    cellTextL.setFont(Font.font(scoresize));//블럭사이즈
+                 }
+                 
+
+                pane.getChildren().add(cellTextL);
+
+            	
+
+            }
+		
+		}
 	}
 	
 	public void drawScore() {

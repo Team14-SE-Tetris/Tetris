@@ -312,7 +312,8 @@ public class Board{
 
             			if(now - lastUpdate >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
             				drawBoard();
-                    		inGame.removeLine(liney);//removeLine에서 checkline반환값이 0으로 변홤
+                    		inGame.removeLine(liney, deletedLines1);//removeLine에서 checkline반환값이 0으로 변홤
+            				deletedLines1++; //몇줄 지웠는지 확인
                     		// vsModeBoardPrint() 가져오기
                     		removestep = 0;
                     		//placedelete_board()
@@ -346,6 +347,8 @@ public class Board{
                     	Board2.telpoflag=false;
                         if (!Board2.movedown()) { // moveDown 실패 시
                         	inGame2.placeDeleteBoard(inGame.deleteBoard);
+                        	deletedLines1 = 0;
+                        	inGame.clearDeleteBoard();
                             if (Board2.checkline() > 0 && Board2.checkline() < 22) {
                                 // 완성된 줄이 있는 경우, 줄 제거 예정으로 설정
                                 isLineRemovalScheduled2 = true;
@@ -433,9 +436,12 @@ public class Board{
                 
                 if(mode == 2) { 
                 	drawLine();
+
                 	Board2.delayflag = true;
                 	Board2.drawBoard();
                 	Board2.drawScore();
+                	Board2.drawLine(deletedLines1, inGame.vsModeBoardPrint());
+
                 }
                 
             }
@@ -619,17 +625,6 @@ public class Board{
         return scene; 
     }
 	
-	/*private boolean IsKeyBoard1(KeyCode keyCode) {
-		if(keyCode == rotateKey_Player1 || keyCode == teleportKey_Player1 || 
-				keyCode == leftKey_Player1 || keyCode == downKey_Player1 || keyCode == rightKey_Player1) {
-			return true;
-		}
-		else if(keyCode == rotateKey_Player2 || keyCode == teleportKey_Player2 || 
-				keyCode == leftKey_Player2 || keyCode == downKey_Player2 || keyCode == rightKey_Player2) {
-			return false;
-		}
-		return false;
-	}*/
 	
 	private void handleKeyEventForBoard1(KeyEvent event) {
 		 	

@@ -183,7 +183,6 @@ public class Tetris2 {
         deleteBar++;
         
         deletedLines++; // 삭제된 줄 수 증가
-        System.out.println(deletedLines);
         
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
