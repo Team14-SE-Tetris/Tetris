@@ -194,8 +194,6 @@ public class Tetris {
                 if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
                     if (y == line) {
                     	testDeleteBoard[y][x] = board[y][x]; // 삭제된 줄은 deleteBoard에 복사
-                    } else {
-                    	testDeleteBoard[y][x] = testDeleteBoard[y - 1][x]; // 위의 줄은 deleteBoard에서 아래로 내림
                     }
                 }
             }
@@ -208,9 +206,7 @@ public class Tetris {
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
             board[0][x] = ' ';
-            if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
-            	testDeleteBoard[0][x] = ' '; // deleteBoard의 가장 윗 줄도 초기화
-            }
+           
         }
         // 2줄 이상 삭제된 경우, 블록 부분을 제외한 부분만 deleteBoard에 저장
         if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
