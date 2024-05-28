@@ -242,8 +242,8 @@ public int gameSize = 2; //게임 사이즈
 		return inGame2.initialiBlock();
 	}
 	
-	public void removeline(int liney, int deletedLines) {
-		inGame2.removeLine(liney, deletedLines);
+	public void removeline(int liney, int deleteLine) {
+		inGame2.removeLine(liney, deleteLine);
 	}
 	
 	public Block getCurrentblock() {
@@ -549,20 +549,6 @@ public int gameSize = 2; //게임 사이즈
 		pane.getChildren().add(sc);
 	}
 	
-	private void deadLine() {
-		
-		for(int i=0; i < deadlinenum; i++) {
-			Text line = new Text(" -");
-			line.setX(boardsize*2 + i*interver);
-			line.setY(boardsize*4);
-			line.setFont(Font.font(dlsize));
-			line.setFill(Color.WHITE);
-			
-			pane.getChildren().add(line);
-		}
-		
-		
-	}
 	public void printnext() {
 		
 		Block nextBlock = inGame2.getNextBlock();

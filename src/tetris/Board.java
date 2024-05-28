@@ -32,6 +32,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import start.ScoreBoard;
 import start.StartMenu;
@@ -144,6 +148,17 @@ public class Board{
 	public int battleMode=0;
 	
 	public String difficultyText = "normal";
+	
+    private Set<KeyCode> pressedKeys = new HashSet<>();
+    private Map<KeyCode, Long> lastKeyPressTime = new HashMap<>();
+    
+    private boolean pressedKey1 = false;
+    private boolean pressedKey2 = false;
+    
+    private static long KEY_DELAY1 = 200_000_000; // 200 milliseconds in nanoseconds
+    private static long KEY_DELAY2 = 200_000_000; // 200 milliseconds in nanoseconds
+    
+    private boolean timerflag = true;
     
     public Board(int mode) {
     	timer = null;
@@ -211,17 +226,8 @@ public class Board{
         // score inGame에서 가져옴
         drawScore();
         
-        deadLine();
-        
         Styleset();
-        
-        // addBlock(); -> inGame의 initialiBlock()에서 이미 배치 함 
-        
-        // MoveLeft(x, y);
-        // MoveLeft(x, y);
 
-        
-        //MoveDown(x, y);
         AnimationTimer timer = new AnimationTimer() {
             private long lastUpdate = 0;
             private long lastUpdate2 = 0;
@@ -232,9 +238,26 @@ public class Board{
             public boolean isLineRemovalScheduled2 = false; // 줄 제거가 예정되었는지 확인
             private long removalScheduledTime = 0; // 줄 제거 예정 시간
             private long removalScheduledTime2 = 0; // 줄 제거 예정 시간\
+            private long keyhandleupdate = 0; //keyhandler를 위한 시간 업데이트
             
             @Override
             public void handle(long now) {
+            	
+            	if(mode == 2) {
+            		
+            		Keyhandler(primaryStage, now);
+            		
+            		if(pressedKey1 == true) {
+                		KEY_DELAY1 = KEY_DELAY1 - 9000000;
+                	}
+                	else if(pressedKey2 == true) {
+                		KEY_DELAY2 = KEY_DELAY2 - 9000000;
+                	}
+                }
+            	
+            	
+
+            	
                 if (!isLineRemovalScheduled) {
                     if (now - lastUpdate >= interval) { // interval 간격마다 수행
                     	if(Board2.getTime() <= 0) {
@@ -314,6 +337,7 @@ public class Board{
             				drawBoard();
                     		inGame.removeLine(liney, deletedLines1);//removeLine에서 checkline반환값이 0으로 변홤
             				deletedLines1++; //몇줄 지웠는지 확인
+            				inGame.deleteBoardCheck();
                     		// vsModeBoardPrint() 가져오기
                     		removestep = 0;
                     		//placedelete_board()
@@ -402,6 +426,7 @@ public class Board{
             				Board2.drawBoard();
             				Board2.removeline(Board2.liney, deletedLines2); //removeLine에서 checkline반환값이 0으로 변홤
             				deletedLines2++; //몇줄 지웠는지 확인
+            				inGame2.deleteBoardCheck();
             				Board2.removestep = 0;
             			}
             			
@@ -430,13 +455,11 @@ public class Board{
                 
                 delayflag=true;
                 drawBoard(); // 화면 업데이트
-                deadLine();
                 drawScore();
                 Styleset();
                 
                 if(mode == 2) { 
                 	drawLine();
-
                 	Board2.delayflag = true;
                 	Board2.drawBoard();
                 	Board2.drawScore();
@@ -448,11 +471,16 @@ public class Board{
         };
         
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        	
         	@Override
-            public void handle(KeyEvent event) {
-                if (mode == 1 || mode == 0) {
-        		    Block itemtest = inGame.getCurrentBlock();
+        	public void handle(KeyEvent event) {
+        		
+        		pressedKeys.add(event.getCode());
+        		
+        		if (mode == 1 || mode == 0) {
+        			Block itemtest = inGame.getCurrentBlock();
         		    KeyCode keyCode = event.getCode();
+        		    
         		    if (delayflag) {
         		        if (gamePaused == false) {
         		            if (telpoflag == false) {
@@ -496,127 +524,56 @@ public class Board{
 
         		            }
 
-    		            if (keyCode == KeyCode.SPACE) {
-    		                if (gamePaused == false) {
-    		                    timer.stop();
-    		                } else {
-    		                    timer.start();
-    		                }
-    		                pauseGame(pane);
+        	            if (keyCode == KeyCode.SPACE) {
+        	                if (gamePaused == false) {
+        	                    timer.stop();
+        	                } else {
+        	                    timer.start();
+        	                }
+        	                pauseGame(pane);
         		        }
         		    }
-                } else if (mode == 2) {
-                	KeyCode keyCode = event.getCode();
-                		Block itemtest1 = inGame.getCurrentBlock();
-                		Block itemtest2 = Board2.getCurrentblock();
-            		    
-            		    if (delayflag) {
-            		        if (gamePaused == false) {
-            		            if (telpoflag == false) {
-            		                if (keyCode == leftKey_Player1) {
-            		                    inGame.moveLeft();
-            		                } else if (keyCode == rightKey_Player1) {
-            		                    inGame.moveRight(); // 오른쪽으로 이동
-            		                } else if (keyCode == downKey_Player1) {
+                }
+        		
+        		if (mode == 2) {
+        			Block itemtest = inGame.getCurrentBlock();
+        		    KeyCode keyCode = event.getCode();
+        		    
+        		        if (gamePaused == false) {
 
-            		                    if (!(inGame.checkBlock())) {
-            		                        delayflag = false;
-            		                        if (itemtest1.getItem() == 5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY()))) {
-            		                            delayflag = true;
-            		                            inGame.moveDown();
-            		                        }
-            		                    } else {
-            		                        inGame.moveDown();
-            		                    }
-            		                } else if (keyCode == teleportKey_Player1) {
-            		                    telpoflag = true;
-            		                    if (itemtest1.getItem() == 5 && !(inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY()))) {
-            		                        delayflag = true;
-            		                        inGame.moveBottom();
-            		                    } else {
-            		                        inGame.moveBottom();
-            		                        delayflag = false;
-            		                    }
-            		                } else if (keyCode == rotateKey_Player1) {
-            		                    inGame.rotateBlock();
-            		                } else if(keyCode == KeyCode.Q) {
-                            			timer.stop();
-                            			primaryStage.setScene(StartMenu.scene);
-                            			
-                            			inGame.resetVariable();
-                            			Board2.resetVariable();
-                            			score = 0;
-                            			Board2.score = 0;
-                            			
-                            			System.out.println("Player1 점수: " + score);
-                            			System.out.println("Player1 점수: " + inGame.getScore());
-                            			
-                            			System.out.println("Player2 점수: " + Board2.score);
-                            			System.out.println("Player2 점수: " + Board2.getscore());
-                            			//게임 종료시, Board2의 dropSpeed와 Score를 초기상태로 초기화
-                            			
-                                    	centerStage(primaryStage);
-                            		}
-            		                
-            	        			
-            		            }
-            		        }//Gamepaused_flag
-            		        
-            		        if(keyCode == KeyCode.SPACE) {
-                    			if(gamePaused == false) {
-                    				timer.stop();
-                    			}
-                    			else {
-                    				timer.start();
-                    			}
-                    			Board2.pauseGame(pane2);
-        		                pauseGame(pane);
-        		                
-                    		}
+        		                }if (keyCode == KeyCode.Q) {
+        		                    timer.stop();
+        		                    primaryStage.setScene(StartMenu.scene);
+        		                    inGame.resetVariable();
+        		                    score = 0;
+        		                    System.out.println("점수: " + score);
+        		                    System.out.println("점수: " + inGame.getScore());
+        		                    
+        		                    System.out.println("Player2 점수: " + Board2.score);
+        	                        System.out.println("Player2 점수: " + Board2.getscore());
+        		                    // 게임 종료시, inGame의 dropSpeed와 Score를 초기상태로 초기화
+        		                    centerStage(primaryStage);
+        		                }
 
-            		    }
-            		    //Board2 키 시작
-                        if (Board2.delayflag) {
-                        if(Board2.gamePaused == false) {
-                        if(Board2.telpoflag == false) {
-                        if (keyCode == leftKey_Player2) {
-                        	Board2.moveleft();; // 왼쪽으로 이동
-                        } else if (keyCode == rightKey_Player2) {
-                            Board2.moveright(); // 오른쪽으로 이동
-                        } else if (keyCode == downKey_Player2) {
-                        	
-                        	if(!(Board2.checkblock())) {
-                        		Board2.delayflag=false;
-                        		if(itemtest2.getItem()==5 && !(Board2.checkcollisionBottom(Board2.getcurrentx(),Board2.getcurrenty()))) {
-                        			Board2.delayflag=true;
-                        			Board2.movedown();
-                        		}
-                    		}
-                        	else {
-                        		Board2.movedown();
-                        	}
-                        } else if (keyCode == teleportKey_Player2) {
-                        	Board2.telpoflag = true;
-                        	if(itemtest2.getItem()==5 && !(Board2.checkcollisionBottom(Board2.getcurrentx(),Board2.getcurrenty()))) {
-                        		Board2.delayflag=true;
-                    			Board2.movebottom();
-                    		} else {
-                    			Board2.movebottom();
-                    			Board2.delayflag=false;
-                    		}
-                		} else if (keyCode == rotateKey_Player2) {
-                			Board2.rotateblock();
-                		}
-                		
-                      }
-                        
-                    }
+        	            if (keyCode == KeyCode.SPACE) {
+        	                if (gamePaused == false) {
+        	                    timer.stop();
+        	                } else {
+        	                    timer.start();
+        	                }
+        	                Board2.pauseGame(pane2);
+        	                pauseGame(pane);
 
-                    }//Board2.delayfalg
-            		    
-                }//mode == 2
-            
-        	}//keyevent_handler
+        		        }
+        		   }
+            }
+        	
+        });
+        
+        scene.setOnKeyReleased(event -> {
+            pressedKeys.remove(event.getCode());
+            handleKeyReleased(event);
+            event.consume();
         });
         
     	
@@ -625,16 +582,136 @@ public class Board{
         return scene; 
     }
 	
+	private boolean isKeyDelayElapsed1(KeyCode key, long now) { //각각의 키 delay 설정
+        if (!lastKeyPressTime.containsKey(key)) {
+            lastKeyPressTime.put(key, now);
+            return true;
+        }
+
+        long lastPressTime = lastKeyPressTime.get(key);
+        if (now - lastPressTime >= KEY_DELAY1) {
+            lastKeyPressTime.put(key, now);
+            return true;
+        }
+
+        return false;
+    }
 	
-	private void handleKeyEventForBoard1(KeyEvent event) {
-		 	
-	}
+	private boolean isKeyDelayElapsed2(KeyCode key, long now) { //각각의 키 delay 설정
+        if (!lastKeyPressTime.containsKey(key)) {
+            lastKeyPressTime.put(key, now);
+            return true;
+        }
+
+        long lastPressTime = lastKeyPressTime.get(key);
+        if (now - lastPressTime >= KEY_DELAY2) {
+            lastKeyPressTime.put(key, now);
+            return true;
+        }
+
+        return false;
+    }
 	
-	private void handleKeyEventForBoard2(KeyEvent event) {
-	    // Board2에 대한 KeyEvent 처리 로직
-	}
+	private void handleKeyReleased(KeyEvent event) {
+        System.out.println("Key Released: " + event.getCode());
+        if(pressedKey1 == true) {
+        	pressedKey1 = false;
+        	KEY_DELAY1 = 200_000_000; 
+        }
+        else if(pressedKey2 == true) {
+        	pressedKey2 = false;
+        	KEY_DELAY2 = 200_000_000;
+        }
+    }
 	
-	// 수정됨 -> inGame 객체 내부의 숫자로 색 구분
+	public void Keyhandler(Stage primaryStage, long now) { //대전모드 key 컨트롤
+
+		Block itemtest1 = inGame.getCurrentBlock();
+		Block itemtest2 = Board2.getCurrentblock();
+	    
+		if (delayflag) { //board1 keyhandle
+            if (!gamePaused) {
+                if (!telpoflag) {
+                    if (pressedKeys.contains(leftKey_Player1) && isKeyDelayElapsed1(leftKey_Player1, now)) {
+                        inGame.moveLeft();
+                        pressedKey1 = true;
+                    }
+                    if (pressedKeys.contains(rightKey_Player1) && isKeyDelayElapsed1(rightKey_Player1, now)) {
+                        inGame.moveRight();
+                        pressedKey1 = true;
+                    }
+                    if (pressedKeys.contains(downKey_Player1) && isKeyDelayElapsed1(downKey_Player1, now)) {
+                        if (!inGame.checkBlock()) {
+                            delayflag = false;
+                            if (itemtest1.getItem() == 5 && !inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY())) {
+                                delayflag = true;
+                                inGame.moveDown();
+                            }
+                        } else {
+                            inGame.moveDown();
+                            pressedKey1 = true;
+                        }
+                    }
+                    if (pressedKeys.contains(teleportKey_Player1) && isKeyDelayElapsed1(teleportKey_Player1, now)) {
+                        telpoflag = true;
+                        if (itemtest1.getItem() == 5 && !inGame.checkCollisionBottom(inGame.getCurrentX(), inGame.getCurrentY())) {
+                            delayflag = true;
+                            inGame.moveBottom();
+                        } else {
+                            inGame.moveBottom();
+                            delayflag = false;
+                        }
+                    }
+                    if (pressedKeys.contains(rotateKey_Player1) && isKeyDelayElapsed1(rotateKey_Player1, now)) {
+                        inGame.rotateBlock();
+                    }
+                    
+                }
+            }
+
+        }
+
+        if (Board2.delayflag) { //board2 keyhandle
+            if (!Board2.gamePaused) {
+                if (!Board2.telpoflag) {
+                    if (pressedKeys.contains(leftKey_Player2) && isKeyDelayElapsed2(leftKey_Player2, now)) {
+                        Board2.moveleft();
+                        pressedKey2 = true;
+                    }
+                    if (pressedKeys.contains(rightKey_Player2) && isKeyDelayElapsed2(rightKey_Player2, now)) {
+                        Board2.moveright();
+                        pressedKey2 = true;
+                    }
+                    if (pressedKeys.contains(downKey_Player2) && isKeyDelayElapsed2(downKey_Player2, now)) {
+                        if (!Board2.checkblock()) {
+                            Board2.delayflag = false;
+                            if (itemtest2.getItem() == 5 && !Board2.checkcollisionBottom(Board2.getcurrentx(), Board2.getcurrenty())) {
+                                Board2.delayflag = true;
+                                Board2.movedown();
+                            }
+                        } else {
+                            Board2.movedown();
+                            pressedKey2 = true;
+                        }
+                    }
+                    if (pressedKeys.contains(teleportKey_Player2) && isKeyDelayElapsed2(teleportKey_Player2, now)) {
+                        Board2.telpoflag = true;
+                        if (itemtest2.getItem() == 5 && !Board2.checkcollisionBottom(Board2.getcurrentx(), Board2.getcurrenty())) {
+                            Board2.delayflag = true;
+                            Board2.movebottom();
+                        } else {
+                            Board2.movebottom();
+                            Board2.delayflag = false;
+                        }
+                    }
+                    if (pressedKeys.contains(rotateKey_Player2) && isKeyDelayElapsed2(rotateKey_Player2, now)) {
+                        Board2.rotateblock();
+                    }
+                }
+            }
+        }
+    }
+
 	private void drawBoard() {
 		
 		pane.getChildren().clear(); //pane(게임화면) 비우기
@@ -798,6 +875,7 @@ public class Board{
 	                    
 	                }
 	                else {
+	                	System.out.println(lineBoard[k][m]);
 	               	 
 	               	 cellTextD.setText("■");
 	               	 cellTextD.setFill(Color.GRAY);
@@ -913,20 +991,6 @@ public class Board{
 	    pane.getChildren().add(timerText);
 	}
 	
-	private void deadLine() {
-		
-		for(int i=0; i < deadlinenum; i++) {
-			Text line = new Text(" -");
-			line.setX(boardsize*2 + i*interver);
-			line.setY(boardsize*4);
-			line.setFont(Font.font(dlsize));
-			line.setFill(Color.WHITE);
-			
-			pane.getChildren().add(line);
-		}
-		
-		
-	}
 	public void printnext() {
 		
 		Block nextBlock = inGame.getNextBlock();

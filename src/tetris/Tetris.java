@@ -181,10 +181,10 @@ public class Tetris {
     }
     
  // 선 지우는 메소드
-    public void removeLine(int line) {
+    public void removeLine(int line, int deleteLine) {
         deleteBar++;
          // 삭제된 줄 수 추적
-
+        deletedLines = deleteLine;
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
                 if (board[line][x] == 9) {
@@ -199,8 +199,11 @@ public class Tetris {
                     }
                 }
             }
-            deletedLines++; // 삭제된 줄 수 증가
+            
         }
+        
+        deletedLines++; // 삭제된 줄 수 증가
+        System.out.println(deletedLines);
 
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {

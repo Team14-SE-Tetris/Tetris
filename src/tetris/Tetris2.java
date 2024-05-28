@@ -31,7 +31,7 @@ public class Tetris2 {
     public static int randomDelete_3 = 0;
     public static int randomDelete_4 = 0;
     public boolean heavyFlag = true;
-    public static int deletedLines = 0;
+    public int deletedLines = 0;
     
     // 생성자
     public Tetris2(int level) {
@@ -180,10 +180,10 @@ public class Tetris2 {
     }
     
  // 선 지우는 메소드
-    public void removeLine(int line) {
+    public void removeLine(int line, int deleteLine) {
         deleteBar++;
          // 삭제된 줄 수 추적
-
+        deletedLines = deleteLine;
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
                 if (board[line][x] == 9) {
@@ -198,8 +198,9 @@ public class Tetris2 {
                     }
                 }
             }
-            deletedLines++; // 삭제된 줄 수 증가
+            
         }
+        deletedLines++; // 삭제된 줄 수 증가
 
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
@@ -262,7 +263,8 @@ public class Tetris2 {
         	
         }
         
-        deletedLines=0;
+        deletedLines = 0;
+        
         for (int y = 0; y < BoardHeight; y++) {
             for (int x = 0; x < BoardWidth; x++) {
             	testDeleteBoard[y][x] = ' ';
