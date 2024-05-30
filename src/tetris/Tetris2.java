@@ -211,6 +211,7 @@ public class Tetris2 {
            }
            if(flag) {
         	   topY=9;
+        	   
            }
            if (!rowEmpty) {
                topY = y;
