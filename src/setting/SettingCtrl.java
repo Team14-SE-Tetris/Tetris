@@ -27,7 +27,7 @@ public class SettingCtrl {
     
     @FXML
     public Button 
-    rotateButton_Player1, teleportButton_Player1, leftButton_Player1, downButton_Player1, rightButton_Player1,
+    rotateButton_Player1, teleportButton_Player1, leftButton_Player1, downButton_Player1= null, rightButton_Player1,
     rotateButton_Player2, teleportButton_Player2, leftButton_Player2, downButton_Player2, rightButton_Player2,
     saveButton, closeButton; 
     
@@ -68,7 +68,7 @@ public class SettingCtrl {
     	//Button 5개의 텍스트 KeyCode의 키 텍스트로 변경하기
     
     @FXML
-    private void initialize() {
+    public void initialize() {
         // 난이도 ChoiceBox에 항목 추가
         difficultyChoice.getItems().addAll(difficultyList);
         difficultyChoice.setOnAction(this::getDifficulty);

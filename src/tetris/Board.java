@@ -113,7 +113,7 @@ public class Board{
     private int gradation = 1;
     private int removedelay = 0;
     public boolean removeflag = true;
-    private boolean delayflag = true;
+    public boolean delayflag = true;
     private int removestep = 0;
     
     private boolean telpoflag = false;
@@ -152,8 +152,8 @@ public class Board{
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private Map<KeyCode, Long> lastKeyPressTime = new HashMap<>();
     
-    private boolean pressedKey1 = false;
-    private boolean pressedKey2 = false;
+    public boolean pressedKey1 = false;
+    public boolean pressedKey2 = false;
     
     private static long KEY_DELAY1 = 200_000_000; // 200 milliseconds in nanoseconds
     private static long KEY_DELAY2 = 200_000_000; // 200 milliseconds in nanoseconds

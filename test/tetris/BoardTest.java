@@ -36,18 +36,51 @@ public class BoardTest extends ApplicationTest {
 		Scene scene = board.createScene(stage);
         
         board = new Board(2,2);
+    	board.deletedLines2 = 2;
     	assertEquals(2, board.battleMode);
-
         scene = board.createScene(stage);
         
 		board = new Board(1);
+    	board.colorBlindMode = 0;
         scene = board.createScene(stage);
         
 		board = new Board(2,3);
     	assertEquals(3, board.battleMode);
-
+    	board.pressedKey1 = false;
+    	press(KeyCode.Q);
 		scene = board.createScene(stage);
-        
+    	press(KeyCode.Q);
+    	
+    	board = new Board(2,3);
+    	assertEquals(3, board.battleMode);
+    	board.pressedKey1 = true;
+    	press(KeyCode.SPACE);
+		scene = board.createScene(stage);
+    	press(KeyCode.SPACE);
+    	
+    	board = new Board(2,3);
+    	assertEquals(3, board.battleMode);
+    	board.gamePaused = false;
+		scene = board.createScene(stage);
+		
+    	board = new Board(2,3);
+    	assertEquals(3, board.battleMode);
+    	board.delayflag = true;
+		scene = board.createScene(stage);
+		
+		board = new Board(2,3);
+    	assertEquals(3, board.battleMode);
+    	board.Board2.delayflag = true;
+		scene = board.createScene(stage);
+		
+		board = new Board(2,3);
+    	board.Board2.time = -1 ;
+		scene = board.createScene(stage);
+		
+		board = new Board(2,3);
+    	board.inGame.endFlag = false ;
+		scene = board.createScene(stage);
+		
         stage.setScene(scene);
         stage.show();
     }
@@ -62,8 +95,17 @@ public class BoardTest extends ApplicationTest {
     @Test
     public void testTimer() {
     	board = new Board(2,3);
+    	
+    	
     	board.Board2.time = -1;
     }
+    
+    @Test
+    public void testDrawLine() {
+    	board = new Board(2,3);
+    	board.deletedLines2 = 2;
+    }
+    
     
 //    @Test
 //    public void testFailMoveDown() {
@@ -106,6 +148,8 @@ public class BoardTest extends ApplicationTest {
 		
     	
 	}
+	
+
 	@Test
 	public void testLeft() {
 		board = new Board(1);
@@ -123,8 +167,8 @@ public class BoardTest extends ApplicationTest {
 
 		int CurrentB = board.inGame.getCurrentY();
 		
-		board.inGame.moveDown();
 		if(1<CurrentB) {
+			board.inGame.moveDown();
 	    	assertEquals(CurrentB+1, board.inGame.getCurrentY());
 		}
 	}
@@ -173,6 +217,26 @@ public class BoardTest extends ApplicationTest {
 		
 		assertEquals(1, board.colorBlindMode);
 	}
+	
+	@Test
+	public void testblindcolor1() {
+		board = new Board(1);
+
+		board.colorBlindMode = 0;
+		
+		int CurrentR = board.inGame.getCurrentX();
+
+		if(0< CurrentR && CurrentR < 10) {
+			
+			board.inGame.moveRight();
+			assertEquals(CurrentR+1, board.inGame.getCurrentX());
+		}
+		
+		board.colorBlindMode = 1;
+				
+		assertEquals(1, board.colorBlindMode);
+	}
+	
 	@Test
 	public void testdiff() {
 		board = new Board(1);
@@ -185,7 +249,7 @@ public class BoardTest extends ApplicationTest {
 	@Test
 	public void testgamepause() {
 		board = new Board(1);
-
+		
 		Pane pane = new Pane();
 		board.gamePaused = true;
 		
