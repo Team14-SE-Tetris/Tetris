@@ -262,7 +262,7 @@ public class Tetris2 {
 
         // deleteBoard가 가득 차 있으면 testDeleteBoard 초기화 후 종료
         if (isDeleteBoardFull) {
-            for (int y = 0; y < BoardHeight; y++) {
+            for (int y = 0; y < BoardWidth; y++) {
                 for (int x = 0; x < BoardWidth; x++) {
                     testDeleteBoard[y][x] = ' ';
                 }
@@ -317,7 +317,7 @@ public class Tetris2 {
         }
 
         deletedLines = 0;
-        for (int y = 0; y < BoardHeight; y++) {
+        for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
                 testDeleteBoard[y][x] = ' ';
             }
@@ -327,7 +327,7 @@ public class Tetris2 {
     
     
     public void clearDeleteBoard() {
-        for (int y = 0; y < BoardHeight; y++) {
+        for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
                 deleteBoard[y][x] = ' ';
             }
@@ -380,8 +380,8 @@ public class Tetris2 {
         return true;
     }
     public int[][] vsModeBoardPrint() {
-    	int[][] printBoard = new int[BoardHeight+2][BoardWidth+2];
-    	for (int y = 0; y < BoardHeight; y++) {
+    	int[][] printBoard = new int[BoardWidth+2][BoardWidth+2];
+    	for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
             	printBoard[y+1][x+1] = deleteBoard[y][x];
             }
