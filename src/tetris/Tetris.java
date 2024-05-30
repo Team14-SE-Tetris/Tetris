@@ -149,7 +149,7 @@ public void clearBoard() {
         for (int y = BoardHeight - 1; y >= 0; y--) {
             boolean lineComplete = true;
             for (int x = 0; x < BoardWidth; x++) {
-            	 if (board[y][x] == ' ' ) {
+            	 if (board[y][x] == 32 || board[y][x] == 0) {
                     lineComplete = false;
                     break;
                 }
@@ -186,13 +186,15 @@ public void clearBoard() {
         // 삭제된 줄 수 추적
        deletedLines = deleteLine;
        
+       System.out.println(deletedLines);
+       
        int[][] testBoard = new int[BoardHeight][BoardWidth];
        
        shiftDown(testDeleteBoard);
        
        boolean isDeleteBoardFull = true;
        for (int x = 0; x < BoardWidth; x++) {
-           if (testDeleteBoard[0][x] != 32 && testDeleteBoard[0][x] != 0) {
+           if (testDeleteBoard[0][x] != 0) {
                isDeleteBoardFull = false;
                break;
            }
@@ -203,7 +205,7 @@ public void clearBoard() {
            boolean rowEmpty = true;
            
            for (int x = 0; x < BoardWidth; x++) {
-               if (testDeleteBoard[y][x] != 32 && testDeleteBoard[0][x] != 0) {
+               if (testDeleteBoard[y][x] != 0) {
                    rowEmpty = false;
                    flag = false;
                    break;
@@ -215,7 +217,7 @@ public void clearBoard() {
            }
        }
        for (int x = 0; x < BoardWidth; x++) {
-    	   if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
+    	   if (vsMode == 1 || vsMode == 2 || vsMode == 3) { // 플레이어 모드일 경우에만 deleteBoard 처리
                if(isDeleteBoardFull){
             	   testBoard[line][x] = board[line][x];
                }
@@ -234,7 +236,6 @@ public void clearBoard() {
             
         }
         
-        deletedLines++; // 삭제된 줄 수 증가
 
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
@@ -242,7 +243,7 @@ public void clearBoard() {
            
         }
         // 2줄 이상 삭제된 경우, 블록 부분을 제외한 부분만 deleteBoard에 저장
-        if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
+        if (vsMode == 1 || vsMode ==2 || vsMode == 3) { // 플레이어 모드일 경우에만 deleteBoard 처리
             for (int y = 0; y < block.height(); y++) {
                 for (int x = 0; x < block.width(); x++) {
                     if (block.getShape(x, y) > 0) {
@@ -255,10 +256,13 @@ public void clearBoard() {
             
             if(isDeleteBoardFull) {
             	if(!flag){
-            
-            	for (int x = 0; x < BoardWidth; x++) {
-            		testDeleteBoard[topY-1][x] = testBoard[line][x];
-            	}
+            		if (topY != 0) {
+            			System.out.println(topY);
+                    	for (int x = 0; x < BoardWidth; x++) {
+                    		testDeleteBoard[topY-1][x] = testBoard[line][x];
+                    	}
+            		}
+            	
                    
                 } else {
                 	for (int x = 0; x < BoardWidth; x++) {
@@ -269,12 +273,17 @@ public void clearBoard() {
             
         }
         
-
+       	//System.out.println(Arrays.deepToString(testDeleteBoard));
         liney = 0;
     }
     
     public void deleteBoardCheck() {
         // deleteBoard가 가득 차 있는지 확인
+    	
+    	if(deletedLines <= 1) {
+    		return;
+    	}
+    	
         boolean isDeleteBoardFull = true;
         for (int x = 0; x < BoardWidth; x++) {
             if (deleteBoard[0][x] != 32 && testDeleteBoard[0][x] != 0) {
@@ -343,7 +352,6 @@ public void clearBoard() {
                 }
             }
         }
-        System.out.println(Arrays.deepToString(testDeleteBoard));
         deletedLines = 0;
         for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
@@ -383,15 +391,16 @@ public void clearBoard() {
         }
         
         if (BoardHeight-topY + inputBoard.length>BoardHeight) {
-        	return false;
+           return false;
         }
 
         // 기존 블록을 위로 밀어내기
         if(!flag) {
-        	for (int y = topY; y <BoardHeight; y++) {
+           for (int y = topY; y <BoardHeight; y++) {
                 for (int x = 0; x < BoardWidth; x++) {
                     if (y - inputBoard.length >= 0) {
                         board[y - inputBoard.length][x] = board[y][x];
+                        board[y][x]=' ';
                     } else {
                         // 화면을 넘어가는 경우 false 반환
                         return false;
@@ -400,18 +409,18 @@ public void clearBoard() {
             }
         }
         
-
         // deleteBoard를 아래쪽에 위치시키기
         for (int y = 0; y < inputBoard.length; y++) {
             for (int x = 0; x < BoardWidth; x++) {
                 if (inputBoard[y][x] != ' ') {
-                	board[y+10][x] = inputBoard[y][x];
+                   board[20-inputBoard.length+y][x] = inputBoard[y][x];
                 }
             }
         }
-
+        
         return true;
     }
+
     public int[][] vsModeBoardPrint() {
     	int[][] printBoard = new int[BoardWidth+2][BoardWidth+2];
     	for (int y = 0; y < BoardWidth; y++) {
@@ -525,6 +534,11 @@ public void clearBoard() {
     
     // 블럭 생성 위치 지정
     public boolean initialiBlock() {
+    	for (int y = 0; y < BoardWidth; y++) {
+            for (int x = 0; x < BoardWidth; x++) {
+                testDeleteBoard[y][x] = 0;
+            }
+        }
     	block = nextBlock;
     	heavyFlag = true;
     	
@@ -708,7 +722,7 @@ public void clearBoard() {
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-            	inputBoard[i][j] = newBoard[i][j];
+               inputBoard[i][j] = newBoard[i][j];
             }
         }
     }
@@ -721,7 +735,7 @@ public void clearBoard() {
         for (int i = 0; i < BoardHeight; i++) {
             boolean isEmpty = true;
             for (int j = 0; j < BoardWidth; j++) {
-                if (board[i][j] != 0) {
+                if (board[i][j] != 0 && board[i][j] != 32) {
                     isEmpty = false;
                     break;
                 }
@@ -739,7 +753,7 @@ public void clearBoard() {
         for (int i = 0; i < BoardHeight; i++) {
             boolean isEmpty = true;
             for (int j = 0; j < BoardWidth; j++) {
-                if (board[i][j] != 0) {
+                if (board[i][j] != 0&& board[i][j] != 32) {
                     isEmpty = false;
                     break;
                 }
@@ -754,6 +768,7 @@ public void clearBoard() {
 
         return newBoard;
     }
+
     // 블럭 오른쪽으로 이동
     public boolean moveRight() {
     	if(mode==1 && block.getItem()==5) {
