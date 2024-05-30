@@ -579,7 +579,7 @@ public class Board{
     	
         timer.start(); // AnimationTimer 시작
         
-        return scene; 
+        return scene;
     }
 	
 	private boolean isKeyDelayElapsed1(KeyCode key, long now) { //각각의 키 delay 설정
@@ -858,13 +858,15 @@ public class Board{
 		
 		if(deletedLines2 > 1) {
 			
+			System.out.print(deletedLines2);
+			
 			int[][] lineBoard = inGame2.vsModeBoardPrint();
 			
-			for(int k=0; k<BOARD_HEIGHT; k++) {
+			for(int k=0; k<BOARD_WIDTH; k++) {
 				for(int m=0; m<BOARD_WIDTH; m++) {
 	            	Text cellTextD = new Text(String.valueOf(lineBoard[k][m]));
 	            	
-	            	if(lineBoard[k][m] == 0) {
+	            	if(lineBoard[k][m] == 0 || lineBoard[k][m] == 32) {
 	               	 
 	               	 cellTextD.setText(" ");
 	               	 cellTextD.setFill(Color.BLACK);
