@@ -191,21 +191,26 @@ public void clearBoard() {
        
        shiftDown(testDeleteBoard);
        
-       boolean isDeleteBoardFull = false;
+       boolean isDeleteBoardFull = true;
        for (int x = 0; x < BoardWidth; x++) {
            if (testDeleteBoard[0][x] != ' ') {
-               isDeleteBoardFull = true;
+               isDeleteBoardFull = false;
                break;
            }
        }
-       int topY=9;
-       for (int y = topY; y >= 0; y--) {
+       int topY=0;
+       for (int y = topY; y < 10; y++) {
            boolean rowEmpty = true;
+           boolean flag = true;
            for (int x = 0; x < BoardWidth; x++) {
                if (testDeleteBoard[y][x] != ' ') {
                    rowEmpty = false;
+                   flag = false;
                    break;
                }
+           }
+           if(flag) {
+        	   topY=9;
            }
            if (!rowEmpty) {
                topY = y;
@@ -222,7 +227,8 @@ public void clearBoard() {
                 if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
                     if(isDeleteBoardFull){
                     	if (y == line) {
-                    		testBoard[y][x] = board[y][x]; // 삭제된 줄은 deleteBoard에 복사
+                    		testBoard[y][x] = board[y][x];
+                    		// 삭제된 줄은 deleteBoard에 복사
                     	}
                     }
                 }
@@ -261,16 +267,16 @@ public void clearBoard() {
     
     public void deleteBoardCheck() {
         // deleteBoard가 가득 차 있는지 확인
-        boolean isDeleteBoardFull = false;
+        boolean isDeleteBoardFull = true;
         for (int x = 0; x < BoardWidth; x++) {
             if (deleteBoard[0][x] != ' ') {
-                isDeleteBoardFull = true;
+                isDeleteBoardFull = false;
                 break;
             }
         }
 
         // deleteBoard가 가득 차 있으면 testDeleteBoard 초기화 후 종료
-        if (isDeleteBoardFull) {
+        if (!isDeleteBoardFull) {
             for (int y = 0; y < BoardWidth; y++) {
                 for (int x = 0; x < BoardWidth; x++) {
                     testDeleteBoard[y][x] = ' ';
@@ -282,14 +288,19 @@ public void clearBoard() {
         if (deletedLines > 1) {
         	shiftDown(testDeleteBoard);
             int[][] inputBoard = compressBoard(testDeleteBoard);
-            int topY = 9;
-            for (int y = topY; y >= 0; y--) {
+            int topY = 0;
+            boolean flag = true;
+            for (int y = topY; y < 10; y++) {
                 boolean rowEmpty = true;
                 for (int x = 0; x < BoardWidth; x++) {
-                    if (deleteBoard[y][x] != ' ') {
+                    if (deleteBoard[y][x] != ' ' || deleteBoard[y][x] != 0) {
                         rowEmpty = false;
+                        flag= false;
                         break;
                     }
+                }
+                if(flag) {
+                	topY = 9;
                 }
                 if (!rowEmpty) {
                     topY = y;
@@ -380,8 +391,8 @@ public void clearBoard() {
         // deleteBoard를 아래쪽에 위치시키기
         for (int y = 0; y < inputBoard.length; y++) {
             for (int x = 0; x < BoardWidth; x++) {
-                if (inputBoard[y][x] != 0) {
-                	board[y][x] = inputBoard[y][x];
+                if (inputBoard[y][x] != ' ') {
+                	board[y+10][x] = inputBoard[y][x];
                 }
             }
         }
