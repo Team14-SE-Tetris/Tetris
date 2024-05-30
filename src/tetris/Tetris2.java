@@ -192,7 +192,7 @@ public void clearBoard() {
        
        boolean isDeleteBoardFull = true;
        for (int x = 0; x < BoardWidth; x++) {
-           if (testDeleteBoard[0][x] != ' '&& testDeleteBoard[0][x] != 0) {
+           if (testDeleteBoard[0][x] != 32 && testDeleteBoard[0][x] != 0) {
                isDeleteBoardFull = false;
                break;
            }
@@ -203,7 +203,7 @@ public void clearBoard() {
            boolean rowEmpty = true;
            
            for (int x = 0; x < BoardWidth; x++) {
-               if (testDeleteBoard[y][x] != ' '&& testDeleteBoard[0][x] != 0) {
+               if (testDeleteBoard[y][x] != 32 && testDeleteBoard[0][x] != 0) {
                    rowEmpty = false;
                    flag = false;
                    break;
@@ -277,7 +277,7 @@ public void clearBoard() {
         // deleteBoard가 가득 차 있는지 확인
         boolean isDeleteBoardFull = true;
         for (int x = 0; x < BoardWidth; x++) {
-            if (deleteBoard[0][x] != ' '&& testDeleteBoard[0][x] != 0) {
+            if (deleteBoard[0][x] != 32 && testDeleteBoard[0][x] != 0) {
                 isDeleteBoardFull = false;
                 break;
             }
@@ -301,7 +301,7 @@ public void clearBoard() {
             for (int y = topY; y < 10; y++) {
                 boolean rowEmpty = true;
                 for (int x = 0; x < BoardWidth; x++) {
-                    if (deleteBoard[y][x] != ' ' && deleteBoard[y][x] != 0) {
+                    if (deleteBoard[y][x] != 32 || deleteBoard[y][x] != 0) {
                         rowEmpty = false;
                         flag= false;
                         break;
