@@ -139,7 +139,7 @@ public int gameSize = 2; //게임 사이즈
     	inGame2 = new Tetris2(difficulty);
     	pane = new Pane();
     	this.mode = mode;
-    	this.time = 20; 
+    	this.time = 60; 
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
         delayflag=true;
