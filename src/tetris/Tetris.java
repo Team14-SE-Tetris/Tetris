@@ -186,6 +186,31 @@ public class Tetris {
         deleteBar++;
          // 삭제된 줄 수 추적
         deletedLines = deleteLine;
+        
+        shiftDown(testDeleteBoard);
+        
+        boolean isDeleteBoardFull = false;
+        for (int x = 0; x < BoardWidth; x++) {
+            if (testDeleteBoard[0][x] != ' ') {
+                isDeleteBoardFull = true;
+                break;
+            }
+        }
+        int topY=0;
+        for (int y = 0; y < BoardWidth; y++) {
+            boolean rowEmpty = true;
+            for (int x = 0; x < BoardWidth; x++) {
+                if (testDeleteBoard[y][x] != ' ') {
+                    rowEmpty = false;
+                    break;
+                }
+            }
+            if (!rowEmpty) {
+                topY = y;
+                break;
+            }
+        }
+        
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
                 if (board[line][x] == 9) {
@@ -193,8 +218,10 @@ public class Tetris {
                 }
                 board[y][x] = board[y - 1][x];
                 if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
-                    if (y == line) {
-                    	testDeleteBoard[y][x] = board[y][x]; // 삭제된 줄은 deleteBoard에 복사
+                    if(isDeleteBoardFull){
+                    	if (y == line) {
+                    	testDeleteBoard[topY-1][x] = board[y][x]; // 삭제된 줄은 deleteBoard에 복사
+                    	}
                     }
                 }
             }
