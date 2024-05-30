@@ -255,14 +255,14 @@ public class Board{
                 		KEY_DELAY2 = KEY_DELAY2 - 9000000;
                 	}
                 }
-            	
-            	
 
             	
                 if (!isLineRemovalScheduled) {
                     if (now - lastUpdate >= interval) { // interval 간격마다 수행
                     	if(Board2.getTime() <= 0) {
                     		this.stop();
+                    		int player1_score = inGame.getScore();
+                    		int player2_score = Board2.inGame2.getScore();
                             Platform.runLater(() -> {
                                 ScoreBoard scoreBoard = new ScoreBoard();
                                 if (mode == 0) {
@@ -273,7 +273,15 @@ public class Board{
                                 	Alert alert = new Alert(AlertType.INFORMATION);
                                     alert.setTitle("승리자");
                                     alert.setHeaderText("게임 결과");
-                                    alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                    if(player1_score > player2_score) {
+                                        alert.setContentText("Player1" + "(이)가 승리했습니다!");
+                                    }
+                                    else if(player1_score < player2_score) {
+                                        alert.setContentText("Player2" + "(이)가 승리했습니다!");
+                                    }
+                                    else {
+                                        alert.setContentText("무승부!");
+                                    }
                                     alert.showAndWait();
                                     primaryStage.setScene(StartMenu.scene);
                         	        centerStage(primaryStage);
@@ -293,6 +301,28 @@ public class Board{
                                 removalScheduledTime = now;
                             } else {
                                 // 완성된 줄이 없고 블록을 초기화할 수 없는 경우 게임 오버 처리
+                            	if (!inGame.endFlag) {
+                            		int player1_score = inGame.getScore();
+                            		int player2_score = Board2.inGame2.getScore();
+                                    this.stop();
+                                    Platform.runLater(() -> {
+                                        ScoreBoard scoreBoard = new ScoreBoard();
+                                        if (mode == 0) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                                        } else if(mode==1) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                                        } else {//대전모드인 경우
+                                        	Alert alert = new Alert(AlertType.INFORMATION);
+                                            alert.setTitle("승리자");
+                                            alert.setHeaderText("게임 결과");
+                                            alert.setContentText("Player2" + "(이)가 승리했습니다!");
+                                            alert.showAndWait();
+                                            primaryStage.setScene(StartMenu.scene);
+                                	        centerStage(primaryStage);
+                                        }
+                                    });
+                                }
+                            	
                                 if (!inGame.initialiBlock()) {
                                     this.stop();
                                     Platform.runLater(() -> {
@@ -305,7 +335,7 @@ public class Board{
                                         	Alert alert = new Alert(AlertType.INFORMATION);
                                             alert.setTitle("승리자");
                                             alert.setHeaderText("게임 결과");
-                                            alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                            alert.setContentText("Player2" + "(이)가 승리했습니다!");
                                             alert.showAndWait();
                                             primaryStage.setScene(StartMenu.scene);
                                 	        centerStage(primaryStage);
@@ -338,9 +368,9 @@ public class Board{
 
             			if(now - lastUpdate >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
             				drawBoard();
-            				deletedLines1++; //몇줄 지웠는지 확인
                     		inGame.removeLine(liney, deletedLines1);//removeLine에서 checkline반환값이 0으로 변홤
                     		inGame.deleteBoardCheck();
+            				deletedLines1++; //몇줄 지웠는지 확인
                     		// vsModeBoardPrint() 가져오기
                     		removestep = 0;
                     		//placedelete_board()
@@ -384,6 +414,26 @@ public class Board{
                                 isLineRemovalScheduled2 = true;
                                 removalScheduledTime2 = now;
                             } else {
+                            	
+                            	if (!inGame2.endFlag) {
+                                    this.stop();
+                                    Platform.runLater(() -> {
+                                        ScoreBoard scoreBoard = new ScoreBoard();
+                                        if (mode == 0) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Standard Mode",difficulty);
+                                        } else if(mode==1) {
+                                            scoreBoard.showSettingDialog(score, primaryStage, "Item Mode",difficulty);
+                                        } else {//대전모드인 경우
+                                        	Alert alert = new Alert(AlertType.INFORMATION);
+                                            alert.setTitle("승리자");
+                                            alert.setHeaderText("게임 결과");
+                                            alert.setContentText("Player1" + "(이)가 승리했습니다!");
+                                            alert.showAndWait();
+                                            primaryStage.setScene(StartMenu.scene);
+                                	        centerStage(primaryStage);
+                                        }
+                                    });
+                                }
                                 // 완성된 줄이 없고 블록을 초기화할 수 없는 경우 게임 오버 처리
                                 if (!Board2.initializeblock()) {
                                     this.stop();
@@ -397,7 +447,7 @@ public class Board{
                                         	Alert alert = new Alert(AlertType.INFORMATION);
                                             alert.setTitle("승리자");
                                             alert.setHeaderText("게임 결과");
-                                            alert.setContentText("winnerName" + "(이)가 승리했습니다!");
+                                            alert.setContentText("Player1" + "(이)가 승리했습니다!");
                                             alert.showAndWait();
                                             primaryStage.setScene(StartMenu.scene);
                                 	        centerStage(primaryStage);
@@ -430,9 +480,9 @@ public class Board{
 
             			if(now - lastUpdate2 >= delay) {//1번쨰 프레임 이후 0.3초 이상 지난 경우
             				Board2.drawBoard();
-            				deletedLines2++; //몇줄 지웠는지 확인
             				Board2.removeline(Board2.liney, deletedLines2); //removeLine에서 checkline반환값이 0으로 변홤
             				inGame2.deleteBoardCheck();
+            				deletedLines2++; //몇줄 지웠는지 확인
             				Board2.removestep = 0;
             			}
             			
@@ -563,10 +613,12 @@ public class Board{
         		                }
 
         	            if (keyCode == KeyCode.SPACE) {
-        	                if (gamePaused == false) {
+        	            	if (gamePaused == false) {
         	                    timer.stop();
+        	                    Board2.timerStop();
         	                } else {
         	                    timer.start();
+        	                    Board2.timerStart();
         	                }
         	                Board2.pauseGame(pane2);
         	                pauseGame(pane);
@@ -842,6 +894,8 @@ public class Board{
         				cellText.setText("d");
             			cellText.setFill(Color.WHITE);
             			break;
+        			case 14:
+        				cellText.setFill(Color.LIGHTGRAY);
             			
             		default:
     			

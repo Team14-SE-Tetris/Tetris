@@ -11,4 +11,4 @@ difficulty = "2"
 screenSize = 2
 leftKey_Player1 = "A"
 leftKey_Player2 = "LEFT"
-gameSize = "1"
+gameSize = "2"

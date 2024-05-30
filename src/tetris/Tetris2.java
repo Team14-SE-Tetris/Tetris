@@ -33,7 +33,7 @@ public class Tetris2 {
     public static int randomDelete_4 = 0;
     public boolean heavyFlag = true;
     public static int deletedLines = 0;
-    
+    public static boolean endFlag = true;
     // 생성자
     public Tetris2(int level) {
     	this.level = level;
@@ -41,6 +41,7 @@ public class Tetris2 {
         randomBlock();
         resetVariable();
         clearDeleteBoard();
+        endFlag = true;
        
     }
     
@@ -184,7 +185,9 @@ public void clearBoard() {
     public void removeLine(int line, int deleteLine) {
     	deleteBar++;
         // 삭제된 줄 수 추적
+    	
        deletedLines = deleteLine;
+       deletedLines++;
        
        int[][] testBoard = new int[BoardHeight][BoardWidth];
        
@@ -389,6 +392,7 @@ public void clearBoard() {
         }
         
         if (BoardHeight-topY + inputBoard.length>BoardHeight) {
+           endFlag=false;
            return false;
         }
 
@@ -401,6 +405,7 @@ public void clearBoard() {
                         board[y][x]=' ';
                     } else {
                         // 화면을 넘어가는 경우 false 반환
+                    	endFlag=false;
                         return false;
                     }
                 }
@@ -415,7 +420,7 @@ public void clearBoard() {
                 }
             }
         }
-        
+        endFlag=true;
         return true;
     }
 
@@ -423,6 +428,9 @@ public void clearBoard() {
     	int[][] printBoard = new int[BoardWidth+2][BoardWidth+2];
     	for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
+            	if(deleteBoard[y][x] <32 && deleteBoard[y][x] != 0) {
+            		deleteBoard[y][x] = 14;
+            	}
             	printBoard[y+1][x+1] = deleteBoard[y][x];
             }
         }
@@ -532,7 +540,7 @@ public void clearBoard() {
     
     // 블럭 생성 위치 지정
     public boolean initialiBlock() {
-    	clearDeleteBoard();
+    	
     	for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
                 testDeleteBoard[y][x] = 0;
@@ -543,7 +551,7 @@ public void clearBoard() {
     	
     	createBlockNum++;
     	randomBlock();
-    	if(mode==1 && deleteBar/1==itemBar) {
+    	if(mode==1 && deleteBar/10==itemBar) {
     		randomItemBlock();
     		itemBar++;
     	}

@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.effect.InnerShadow;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -138,7 +139,7 @@ public int gameSize = 2; //게임 사이즈
     	inGame2 = new Tetris2(difficulty);
     	pane = new Pane();
     	this.mode = mode;
-    	this.time = 300; 
+    	this.time = 20; 
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
         delayflag=true;
@@ -170,6 +171,14 @@ public int gameSize = 2; //게임 사이즈
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+    
+    public void timerStop() {
+ 	   this.timeline.stop();
+    }
+    
+    public void timerStart() {
+ 	   this.timeline.play();
     }
 
 
@@ -533,14 +542,24 @@ public int gameSize = 2; //게임 사이즈
 		sc.setFont(Font.font(scoresize*0.8));
 		
 		//만약 battelmode ==3 이면 타이머 추가
-		// 배틀모드가 3일 때만 타이머 텍스트 추가
-        if (battleMode == 3) {
-            timerText.setX(boardsize * 14);
-            timerText.setY(boardsize * 15);
-            timerText.setFill(Color.WHITE);
-            timerText.setFont(Font.font(scoresize * 0.8));
-            pane.getChildren().add(timerText);
-        }
+				// 배틀모드가 3일 때만 타이머 텍스트 추가
+		        if (battleMode == 3) {
+		        	// 빛나는 효과
+		            InnerShadow innerShadow = new InnerShadow();
+		            innerShadow.setOffsetX(0f);
+		            innerShadow.setOffsetY(0f);
+		            innerShadow.setColor(Color.YELLOW);
+		            innerShadow.setRadius(10);
+
+		            timerText.setEffect(innerShadow);
+		            timerText.setStroke(Color.YELLOW); // 테두리 색상
+		            timerText.setStrokeWidth(1); // 테두리 두께
+		            timerText.setX(boardsize * 14);
+		            timerText.setY(boardsize * 1.5);
+		            timerText.setFill(Color.WHITE);
+		            timerText.setFont(Font.font(scoresize * 0.8));
+		            pane.getChildren().add(timerText);
+		        }
         
 		
 		//다음블럭 나타날 텍스트 테두리
@@ -683,6 +702,8 @@ public int gameSize = 2; //게임 사이즈
     				nbText.setText("d");
     				nbText.setFill(Color.WHITE);
         			break;
+    			case 14:
+    				nbText.setFill(Color.LIGHTGRAY);
     			default:
     				
     			}
