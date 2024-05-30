@@ -418,11 +418,11 @@ public int gameSize = 2; //게임 사이즈
 		if(deletedLines1 > 1) {
 			
 			
-			for(int k=0; k<BOARD_HEIGHT; k++) {
+			for(int k=0; k<BOARD_WIDTH; k++) {
 				for(int m=0; m<BOARD_WIDTH; m++) {
 	            	Text cellTextD = new Text(String.valueOf(lineBoard[k][m]));
 	            	
-	            	if(lineBoard[k][m] == 0) {
+	            	if(lineBoard[k][m] == 0 || lineBoard[k][m] == 32) {
 	               	 
 	               	 cellTextD.setText(" ");
 	               	 cellTextD.setFill(Color.BLACK);

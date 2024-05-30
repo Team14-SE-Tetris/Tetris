@@ -281,7 +281,9 @@ public class Board{
                     	}
                     	telpoflag=false;
                         if (!inGame.moveDown()) { // moveDown 실패 시
-                        	inGame.placeDeleteBoard(inGame2.deleteBoard);
+                        	if(deletedLines2 > 1) {
+                        		inGame.placeDeleteBoard(inGame2.deleteBoard);
+                        	}
                         	deletedLines2 = 0;
                         	inGame2.clearDeleteBoard();
                             if (inGame.checkLines() > 0 && inGame.checkLines() < 22) {
@@ -370,7 +372,9 @@ public class Board{
                     if (now - lastUpdate2 >= interval2) { // interval 간격마다 수행
                     	Board2.telpoflag=false;
                         if (!Board2.movedown()) { // moveDown 실패 시
-                        	inGame2.placeDeleteBoard(inGame.deleteBoard);
+                        	if(deletedLines1>1) {
+                        		inGame2.placeDeleteBoard(inGame.deleteBoard);
+                        	}
                         	deletedLines1 = 0;
                         	inGame.clearDeleteBoard();
                             if (Board2.checkline() > 0 && Board2.checkline() < 22) {
@@ -579,7 +583,7 @@ public class Board{
     	
         timer.start(); // AnimationTimer 시작
         
-        return scene; 
+        return scene;
     }
 	
 	private boolean isKeyDelayElapsed1(KeyCode key, long now) { //각각의 키 delay 설정
@@ -613,7 +617,6 @@ public class Board{
     }
 	
 	private void handleKeyReleased(KeyEvent event) {
-        System.out.println("Key Released: " + event.getCode());
         if(pressedKey1 == true) {
         	pressedKey1 = false;
         	KEY_DELAY1 = 200_000_000; 
@@ -860,11 +863,13 @@ public class Board{
 			
 			int[][] lineBoard = inGame2.vsModeBoardPrint();
 			
-			for(int k=0; k<BOARD_HEIGHT; k++) {
+			for(int k=10; k < BOARD_HEIGHT; k++) {
 				for(int m=0; m<BOARD_WIDTH; m++) {
-	            	Text cellTextD = new Text(String.valueOf(lineBoard[k][m]));
+	            	Text cellTextD = new Text(String.valueOf(lineBoard[k-10][m]));
 	            	
-	            	if(lineBoard[k][m] == 0) {
+	    			System.out.println(lineBoard[k-10][m]);
+	            	
+	            	if(lineBoard[k-10][m] == 0 || lineBoard[k-10][m] == 32) {
 	               	 
 	               	 cellTextD.setText(" ");
 	               	 cellTextD.setFill(Color.BLACK);
@@ -875,7 +880,7 @@ public class Board{
 	                    
 	                }
 	                else {
-	                	System.out.println(lineBoard[k][m]);
+	                System.out.println(lineBoard[k-10][m]);
 	               	 
 	               	 cellTextD.setText("■");
 	               	 cellTextD.setFill(Color.GRAY);
