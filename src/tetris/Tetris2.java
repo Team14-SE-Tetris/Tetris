@@ -245,7 +245,7 @@ public class Tetris2 {
             board[0][x] = ' ';
            
         }
-        // 2줄 이상 삭제된 경우, 블록 부분을 제외한 부분만 deleteBoard에 저장
+
         if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
             for (int y = 0; y < block.height(); y++) {
                 for (int x = 0; x < block.width(); x++) {
@@ -268,16 +268,16 @@ public class Tetris2 {
     
     public void deleteBoardCheck() {
         // deleteBoard가 가득 차 있는지 확인
-        boolean isDeleteBoardFull = true;
+        boolean isDeleteBoardFull = false;
         for (int x = 0; x < BoardWidth; x++) {
             if (deleteBoard[0][x] != ' ') {
-                isDeleteBoardFull = false;
+                isDeleteBoardFull = true;
                 break;
             }
         }
 
         // deleteBoard가 가득 차 있으면 testDeleteBoard 초기화 후 종료
-        if (!isDeleteBoardFull) {
+        if (isDeleteBoardFull) {
             for (int y = 0; y < BoardWidth; y++) {
                 for (int x = 0; x < BoardWidth; x++) {
                     testDeleteBoard[y][x] = ' ';
