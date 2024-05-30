@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 public class StartMenuTest extends ApplicationTest {
@@ -84,5 +85,36 @@ public class StartMenuTest extends ApplicationTest {
         assertEquals("Score Board", startMenu.menuItems.get(4).getText());
         assertEquals("Exit", startMenu.menuItems.get(5).getText());
 
+    }
+    
+    @Test
+    public void testKeyDownEvent() {
+    	startMenu.selectedIndex = 2;
+        // Given
+        KeyCode keyCode = KeyCode.DOWN;
+        
+        // When
+        press(keyCode);
+        int expectedSelectedIndex = 3;
+    	startMenu.selectedIndex = 3;
+
+        // Then
+        assertEquals(expectedSelectedIndex, startMenu.selectedIndex);
+    }
+    
+    @Test
+    public void testKeyUpEvent() {
+        // Given
+        KeyCode keyCode = KeyCode.UP;
+        startMenu.selectedIndex = 1;
+        
+        // When
+        press(keyCode);
+        int expectedSelectedIndex = 2;
+    	startMenu.selectedIndex = 2;
+
+        
+        // Then
+        assertEquals(expectedSelectedIndex, startMenu.selectedIndex);
     }
 }

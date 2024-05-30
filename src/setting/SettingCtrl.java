@@ -26,7 +26,7 @@ public class SettingCtrl {
     private Scene previousScene; // 이전 씬 참조
     
     @FXML
-    private Button 
+    public Button 
     rotateButton_Player1, teleportButton_Player1, leftButton_Player1, downButton_Player1, rightButton_Player1,
     rotateButton_Player2, teleportButton_Player2, leftButton_Player2, downButton_Player2, rightButton_Player2,
     saveButton, closeButton; 
@@ -41,7 +41,7 @@ public class SettingCtrl {
     
     //설정파일 변수
     	//키코드
-    private KeyCode 
+    public KeyCode 
     		rotateKey_Player1 = KeyCode.ALT, 
     		teleportKey_Player1 = KeyCode.UP, 
     		leftKey_Player1 = KeyCode.LEFT, 
@@ -55,11 +55,11 @@ public class SettingCtrl {
 			rightKey_Player2 = KeyCode.RIGHT;
     	
     	//화면 크기
-    private int gameSize = 2;
+    public int gameSize = 2;
     	//색맹모드
     public int colorBlindMode = 0;
     	//난이도
-    private int gameDifficulty = 2;
+    public int gameDifficulty = 2;
     
     //Setting.txt 파일로부터 설정을 읽어들어서 Key 변수들에 KeyCode설정
     	//설정파일의 위치는 src/Settings.txt
@@ -633,7 +633,7 @@ public class SettingCtrl {
         screenSizeChoice.setValue("보통");
     }   
     
-    private void centerStage(Stage stage) {
+    public void centerStage(Stage stage) {
 	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds(); // 화면의 크기를 얻음
 	    
 	    // 스테이지의 크기를 고려하여 중앙에 배치
@@ -641,7 +641,7 @@ public class SettingCtrl {
 	    stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY());
 	}
     
-    private boolean checkDuplicateKey(KeyCode newKey) {
+    public boolean checkDuplicateKey(KeyCode newKey) {
         // 기존에 할당된 키들과 새로운 키가 중복되는지 확인
         return newKey == rotateKey_Player1 || newKey == teleportKey_Player1 || newKey == leftKey_Player1 ||
                newKey == downKey_Player1 || newKey == rightKey_Player1 || 
@@ -650,7 +650,7 @@ public class SettingCtrl {
                newKey == KeyCode.SPACE || newKey == KeyCode.Q;
     }
     
-    private void showAlert(String title, String message) {
+    public void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(null);
