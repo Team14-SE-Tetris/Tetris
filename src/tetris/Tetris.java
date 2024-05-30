@@ -174,7 +174,6 @@ public class Tetris {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y)> 0) {
                     board[currentY + y][currentX + x] = block.getColorNum();
-                    
                 }
             }
         }

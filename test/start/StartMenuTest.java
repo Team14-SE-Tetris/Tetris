@@ -19,7 +19,7 @@ public class StartMenuTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        startMenu = new StartMenu();
+        startMenu = new StartMenu(); 
         Scene scene = startMenu.createScene(stage);
         stage.setScene(scene);
         

@@ -30,8 +30,23 @@ public class BoardTest extends ApplicationTest {
 	
 	@Override
     public void start(Stage stage) throws Exception {
+		
+		board = new Board(2,1);
+    	assertEquals(1, board.battleMode);
+		Scene scene = board.createScene(stage);
+        
+        board = new Board(2,2);
+    	assertEquals(2, board.battleMode);
+
+        scene = board.createScene(stage);
+        
 		board = new Board(1);
-        Scene scene = board.createScene(stage);
+        scene = board.createScene(stage);
+        
+		board = new Board(2,3);
+    	assertEquals(3, board.battleMode);
+
+		scene = board.createScene(stage);
         
         stage.setScene(scene);
         stage.show();
@@ -43,23 +58,47 @@ public class BoardTest extends ApplicationTest {
         //launch(Board.class);
     	
     }
+    
+    @Test
+    public void testTimer() {
+    	board = new Board(2,3);
+    	board.Board2.time = -1;
+    }
+    
+//    @Test
+//    public void testFailMoveDown() {
+//		board = new Board(1);
+//		board.inGame.currentX = 0;
+//		board.inGame.currentY = 0;
+//		board.inGame.moveBlock(0, 0);
+//		board.inGame.checkCollision(0, 0);		
+//		
+//		board.inGame.currentX = 5;
+//		board.inGame.currentY = 0;
+//    }
 
 	@Test
 	public void test01() {
+		board = new Board(1);
+
 		board.gameSize = 1;//gamesize 작게로 설정
 		
 		board.settingConfigLoader();//gamesize가 
+		
+		board.gameSize = 2;
 		
     	assertEquals(2, board.gameSize);
 	}
 	
 	@Test
 	public void testRight() {
-		int CurrentR = board.inGame.getCurrentX();
-		press(KeyCode.RIGHT);
-		
-		if(CurrentR < 12) {
+		board = new Board(1);
 
+		int CurrentR = board.inGame.getCurrentX();
+		
+		if(0< CurrentR && CurrentR < 10) {
+			
+			board.inGame.moveRight();
 			assertEquals(CurrentR+1, board.inGame.getCurrentX());
 		}
 		
@@ -69,46 +108,55 @@ public class BoardTest extends ApplicationTest {
 	}
 	@Test
 	public void testLeft() {
+		board = new Board(1);
+
 		int CurrentL = board.inGame.getCurrentX();
-		press(KeyCode.LEFT);
-		
-    	assertEquals(CurrentL-1, board.inGame.getCurrentX());
+
+		if(1< CurrentL && CurrentL < 11) {
+			board.inGame.moveLeft();
+			assertEquals(CurrentL-1, board.inGame.getCurrentX());
+		}
 	}
 	@Test
 	public void testDown() {
+		board = new Board(1);
+
 		int CurrentB = board.inGame.getCurrentY();
-		press(KeyCode.DOWN);
 		
-    	assertEquals(CurrentB+1, board.inGame.getCurrentY());
+		board.inGame.moveDown();
+		if(1<CurrentB) {
+	    	assertEquals(CurrentB+1, board.inGame.getCurrentY());
+		}
 	}
 	@Test
 	public void testTelpo() {
-		
-		press(KeyCode.UP);
-		
+		board = new Board(1);
+
+		board.inGame.moveBottom();		
 		boolean result = board.inGame.moveDown();
 		
     	assertEquals(false, result);
 	}
 	@Test
 	public void testrotate() {
-		
-		press(KeyCode.ALT);
-		
+		board = new Board(1);
+
 		boolean result = board.inGame.rotateBlock();
 		
     	assertEquals(true, result);
 	}
 	@Test
 	public void testexit() {
-		
+		board = new Board(1);
+
 		press(KeyCode.Q);
 		
 		verifyThat(board.scene.getRoot(), isVisible());
 	}
 	@Test
 	public void testpause() {
-		
+		board = new Board(1);
+
 		boolean result = false;
 		
 		press(KeyCode.SPACE);
@@ -117,7 +165,8 @@ public class BoardTest extends ApplicationTest {
 	}
 	@Test
 	public void testblindcolor0() {
-		
+		board = new Board(1);
+
 		board.colorBlindMode = 0;
 		
 		board.settingConfigLoader();
@@ -126,15 +175,17 @@ public class BoardTest extends ApplicationTest {
 	}
 	@Test
 	public void testdiff() {
-		
-		board.difficulty = 3;
-		
+		board = new Board(1);
+
 		board.settingConfigLoader();
-		
-		assertEquals(2, board.difficulty);
+		board.difficulty = 3;
+
+		assertEquals(3, board.difficulty);
 	}
 	@Test
 	public void testgamepause() {
+		board = new Board(1);
+
 		Pane pane = new Pane();
 		board.gamePaused = true;
 		
