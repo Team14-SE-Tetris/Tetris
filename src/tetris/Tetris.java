@@ -217,6 +217,14 @@ public void clearBoard() {
                break;
            }
        }
+       for (int x = 0; x < BoardWidth; x++) {
+    	   if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
+               if(isDeleteBoardFull){
+            	   testBoard[line][x] = board[line][x];
+               }
+           }
+       }
+       
        
         for (int y = line; y > 0; y--) {
             for (int x = 0; x < BoardWidth; x++) {
@@ -224,14 +232,7 @@ public void clearBoard() {
                     deleteItem++;
                 }
                 board[y][x] = board[y - 1][x];
-                if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
-                    if(isDeleteBoardFull){
-                    	if (y == line) {
-                    		testBoard[y][x] = board[y][x];
-                    		// 삭제된 줄은 deleteBoard에 복사
-                    	}
-                    }
-                }
+                
             }
             
         }
@@ -355,14 +356,16 @@ public void clearBoard() {
     }
     
     public boolean placeDeleteBoard(int[][] input) {
-        int topY = 19;
+        int topY = 0;
         int[][] inputBoard = compressBoard(input);
         // 기존 블록의 가장 윗부분 찾기
-        for (int y = topY; y >= 0; y--) {
+        boolean flag = true;
+        for (int y = topY; y < 20; y++) {
             boolean rowEmpty = true;
             for (int x = 0; x < BoardWidth; x++) {
                 if (board[y][x] != ' ') {
                     rowEmpty = false;
+                    flag= false;
                     break;
                 }
             }
@@ -377,16 +380,19 @@ public void clearBoard() {
         }
 
         // 기존 블록을 위로 밀어내기
-        for (int y = topY; y <BoardHeight; y++) {
-            for (int x = 0; x < BoardWidth; x++) {
-                if (y - inputBoard.length >= 0) {
-                    board[y - inputBoard.length][x] = board[y][x];
-                } else {
-                    // 화면을 넘어가는 경우 false 반환
-                    return false;
+        if(!flag) {
+        	for (int y = topY; y <BoardHeight; y++) {
+                for (int x = 0; x < BoardWidth; x++) {
+                    if (y - inputBoard.length >= 0) {
+                        board[y - inputBoard.length][x] = board[y][x];
+                    } else {
+                        // 화면을 넘어가는 경우 false 반환
+                        return false;
+                    }
                 }
             }
         }
+        
 
         // deleteBoard를 아래쪽에 위치시키기
         for (int y = 0; y < inputBoard.length; y++) {
