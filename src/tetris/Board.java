@@ -193,7 +193,6 @@ public class Board{
 
 		//initializeBoard(); -> inGame 객체 내부 시작
 
-		System.out.println(1);// 테스트
 		if(mode ==1){
         	inGame.changeMode(1);
         }
@@ -867,7 +866,6 @@ public class Board{
 				for(int m=0; m<BOARD_WIDTH; m++) {
 	            	Text cellTextD = new Text(String.valueOf(lineBoard[k-10][m]));
 	            	
-	    			System.out.println(lineBoard[k-10][m]);
 	            	
 	            	if(lineBoard[k-10][m] == 0 || lineBoard[k-10][m] == 32) {
 	               	 
@@ -880,7 +878,6 @@ public class Board{
 	                    
 	                }
 	                else {
-	                System.out.println(lineBoard[k-10][m]);
 	               	 
 	               	 cellTextD.setText("■");
 	               	 cellTextD.setFill(Color.GRAY);

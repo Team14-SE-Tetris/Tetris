@@ -177,7 +177,6 @@ public int gameSize = 2; //게임 사이즈
 
 		//initializeBoard(); -> inGame2 객체 내부 시작
 
-		System.out.println(1);// 테스트
 		if (mode ==1){
         	inGame2.changeMode(1);
         }

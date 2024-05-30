@@ -46,7 +46,7 @@ public class Tetris2 {
     
     
     // 보드 초기화 
-    public void clearBoard() {
+public void clearBoard() {
     	
         for (int y = 0; y < BoardHeight; y++) {
             for (int x = 0; x < BoardWidth; x++) {
@@ -175,7 +175,6 @@ public class Tetris2 {
             for (int x = 0; x < block.width(); x++) {
                 if (block.getShape(x, y)> 0) {
                     board[currentY + y][currentX + x] = block.getColorNum();
-                    
                 }
             }
         }
@@ -193,25 +192,22 @@ public class Tetris2 {
        
        boolean isDeleteBoardFull = true;
        for (int x = 0; x < BoardWidth; x++) {
-           if (testDeleteBoard[0][x] != ' ') {
+           if (testDeleteBoard[0][x] != ' '&& testDeleteBoard[0][x] != 0) {
                isDeleteBoardFull = false;
                break;
            }
        }
        int topY=0;
+       boolean flag = true;
        for (int y = topY; y < 10; y++) {
            boolean rowEmpty = true;
-           boolean flag = true;
+           
            for (int x = 0; x < BoardWidth; x++) {
-               if (testDeleteBoard[y][x] != ' ') {
+               if (testDeleteBoard[y][x] != ' '&& testDeleteBoard[0][x] != 0) {
                    rowEmpty = false;
                    flag = false;
                    break;
                }
-           }
-           if(flag) {
-        	   topY=9;
-        	   
            }
            if (!rowEmpty) {
                topY = y;
@@ -239,14 +235,13 @@ public class Tetris2 {
         }
         
         deletedLines++; // 삭제된 줄 수 증가
-        System.out.println(deletedLines);
 
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
             board[0][x] = ' ';
            
         }
-
+        // 2줄 이상 삭제된 경우, 블록 부분을 제외한 부분만 deleteBoard에 저장
         if (vsMode == 1) { // 플레이어 모드일 경우에만 deleteBoard 처리
             for (int y = 0; y < block.height(); y++) {
                 for (int x = 0; x < block.width(); x++) {
@@ -256,29 +251,40 @@ public class Tetris2 {
                 }
             }
             
+         
+            
             if(isDeleteBoardFull) {
+            	if(!flag){
+            
             	for (int x = 0; x < BoardWidth; x++) {
-                	testDeleteBoard[topY-1][x] = testBoard[line][x];
+            		testDeleteBoard[topY-1][x] = testBoard[line][x];
+            	}
                    
+                } else {
+                	for (int x = 0; x < BoardWidth; x++) {
+                    	testDeleteBoard[9][x] = testBoard[line][x];
                 }
             }
+            }
+            
         }
+        
 
         liney = 0;
     }
     
     public void deleteBoardCheck() {
         // deleteBoard가 가득 차 있는지 확인
-        boolean isDeleteBoardFull = false;
+        boolean isDeleteBoardFull = true;
         for (int x = 0; x < BoardWidth; x++) {
-            if (deleteBoard[0][x] != ' ') {
-                isDeleteBoardFull = true;
+            if (deleteBoard[0][x] != ' '&& testDeleteBoard[0][x] != 0) {
+                isDeleteBoardFull = false;
                 break;
             }
         }
 
         // deleteBoard가 가득 차 있으면 testDeleteBoard 초기화 후 종료
-        if (isDeleteBoardFull) {
+        if (!isDeleteBoardFull) {
             for (int y = 0; y < BoardWidth; y++) {
                 for (int x = 0; x < BoardWidth; x++) {
                     testDeleteBoard[y][x] = ' ';
@@ -290,12 +296,14 @@ public class Tetris2 {
         if (deletedLines > 1) {
         	shiftDown(testDeleteBoard);
             int[][] inputBoard = compressBoard(testDeleteBoard);
-            int topY = 9;
-            for (int y = topY; y >= 0; y--) {
+            int topY = 0;
+            boolean flag = true;
+            for (int y = topY; y < 10; y++) {
                 boolean rowEmpty = true;
                 for (int x = 0; x < BoardWidth; x++) {
-                    if (deleteBoard[y][x] != ' ') {
+                    if (deleteBoard[y][x] != ' ' && deleteBoard[y][x] != 0) {
                         rowEmpty = false;
+                        flag= false;
                         break;
                     }
                 }
@@ -315,13 +323,16 @@ public class Tetris2 {
             }
             
             // 기존 블록을 위로 밀어내기
-            for (int y = topY; y < BoardWidth; y++) {
-                for (int x = 0; x < BoardWidth; x++) {
-                    if (y - inputBoard.length >= 0) {
-                        deleteBoard[y - inputBoard.length][x] = deleteBoard[y][x];
+            if(!flag) {
+            	for (int y = topY; y < BoardWidth; y++) {
+                    for (int x = 0; x < BoardWidth; x++) {
+                        if (y - inputBoard.length >= 0) {
+                            deleteBoard[y - 1][x] = deleteBoard[y][x];
+                        }
                     }
                 }
             }
+            
 
             // 아래쪽에 위치시키기
             for (int y = 0; y < inputBoard.length; y++) {
@@ -332,11 +343,11 @@ public class Tetris2 {
                 }
             }
         }
-
+        System.out.println(Arrays.deepToString(testDeleteBoard));
         deletedLines = 0;
         for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
-                testDeleteBoard[y][x] = ' ';
+                testDeleteBoard[y][x] = 0;
             }
         }
     }
@@ -352,14 +363,16 @@ public class Tetris2 {
     }
     
     public boolean placeDeleteBoard(int[][] input) {
-        int topY = 19;
+        int topY = 0;
         int[][] inputBoard = compressBoard(input);
         // 기존 블록의 가장 윗부분 찾기
-        for (int y = topY; y >= 0; y--) {
+        boolean flag = true;
+        for (int y = topY; y < 20; y++) {
             boolean rowEmpty = true;
             for (int x = 0; x < BoardWidth; x++) {
                 if (board[y][x] != ' ') {
                     rowEmpty = false;
+                    flag= false;
                     break;
                 }
             }
@@ -374,16 +387,19 @@ public class Tetris2 {
         }
 
         // 기존 블록을 위로 밀어내기
-        for (int y = topY; y <BoardHeight; y++) {
-            for (int x = 0; x < BoardWidth; x++) {
-                if (y - inputBoard.length >= 0) {
-                    board[y - inputBoard.length][x] = board[y][x];
-                } else {
-                    // 화면을 넘어가는 경우 false 반환
-                    return false;
+        if(!flag) {
+        	for (int y = topY; y <BoardHeight; y++) {
+                for (int x = 0; x < BoardWidth; x++) {
+                    if (y - inputBoard.length >= 0) {
+                        board[y - inputBoard.length][x] = board[y][x];
+                    } else {
+                        // 화면을 넘어가는 경우 false 반환
+                        return false;
+                    }
                 }
             }
         }
+        
 
         // deleteBoard를 아래쪽에 위치시키기
         for (int y = 0; y < inputBoard.length; y++) {

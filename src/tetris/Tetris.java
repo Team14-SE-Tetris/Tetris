@@ -192,24 +192,22 @@ public void clearBoard() {
        
        boolean isDeleteBoardFull = true;
        for (int x = 0; x < BoardWidth; x++) {
-           if (testDeleteBoard[0][x] != ' ') {
+           if (testDeleteBoard[0][x] != ' '&& testDeleteBoard[0][x] != 0) {
                isDeleteBoardFull = false;
                break;
            }
        }
        int topY=0;
+       boolean flag = true;
        for (int y = topY; y < 10; y++) {
            boolean rowEmpty = true;
-           boolean flag = true;
+           
            for (int x = 0; x < BoardWidth; x++) {
-               if (testDeleteBoard[y][x] != ' ') {
+               if (testDeleteBoard[y][x] != ' '&& testDeleteBoard[0][x] != 0) {
                    rowEmpty = false;
                    flag = false;
                    break;
                }
-           }
-           if(flag) {
-        	   topY=9;
            }
            if (!rowEmpty) {
                topY = y;
@@ -237,7 +235,6 @@ public void clearBoard() {
         }
         
         deletedLines++; // 삭제된 줄 수 증가
-        System.out.println(deletedLines);
 
         // 가장 윗 줄은 비워야 하므로 초기화
         for (int x = 0; x < BoardWidth; x++) {
@@ -254,13 +251,24 @@ public void clearBoard() {
                 }
             }
             
+         
+            
             if(isDeleteBoardFull) {
+            	if(!flag){
+            
             	for (int x = 0; x < BoardWidth; x++) {
-                	testDeleteBoard[topY-1][x] = testBoard[line][x];
+            		testDeleteBoard[topY-1][x] = testBoard[line][x];
+            	}
                    
+                } else {
+                	for (int x = 0; x < BoardWidth; x++) {
+                    	testDeleteBoard[9][x] = testBoard[line][x];
                 }
             }
+            }
+            
         }
+        
 
         liney = 0;
     }
@@ -269,7 +277,7 @@ public void clearBoard() {
         // deleteBoard가 가득 차 있는지 확인
         boolean isDeleteBoardFull = true;
         for (int x = 0; x < BoardWidth; x++) {
-            if (deleteBoard[0][x] != ' ') {
+            if (deleteBoard[0][x] != ' '&& testDeleteBoard[0][x] != 0) {
                 isDeleteBoardFull = false;
                 break;
             }
@@ -293,14 +301,11 @@ public void clearBoard() {
             for (int y = topY; y < 10; y++) {
                 boolean rowEmpty = true;
                 for (int x = 0; x < BoardWidth; x++) {
-                    if (deleteBoard[y][x] != ' ' || deleteBoard[y][x] != 0) {
+                    if (deleteBoard[y][x] != ' ' && deleteBoard[y][x] != 0) {
                         rowEmpty = false;
                         flag= false;
                         break;
                     }
-                }
-                if(flag) {
-                	topY = 9;
                 }
                 if (!rowEmpty) {
                     topY = y;
@@ -318,13 +323,16 @@ public void clearBoard() {
             }
             
             // 기존 블록을 위로 밀어내기
-            for (int y = topY; y < BoardWidth; y++) {
-                for (int x = 0; x < BoardWidth; x++) {
-                    if (y - inputBoard.length >= 0) {
-                        deleteBoard[y - inputBoard.length][x] = deleteBoard[y][x];
+            if(!flag) {
+            	for (int y = topY; y < BoardWidth; y++) {
+                    for (int x = 0; x < BoardWidth; x++) {
+                        if (y - inputBoard.length >= 0) {
+                            deleteBoard[y - 1][x] = deleteBoard[y][x];
+                        }
                     }
                 }
             }
+            
 
             // 아래쪽에 위치시키기
             for (int y = 0; y < inputBoard.length; y++) {
@@ -335,11 +343,11 @@ public void clearBoard() {
                 }
             }
         }
-
+        System.out.println(Arrays.deepToString(testDeleteBoard));
         deletedLines = 0;
         for (int y = 0; y < BoardWidth; y++) {
             for (int x = 0; x < BoardWidth; x++) {
-                testDeleteBoard[y][x] = ' ';
+                testDeleteBoard[y][x] = 0;
             }
         }
     }
