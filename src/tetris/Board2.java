@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.effect.InnerShadow;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -138,7 +139,7 @@ public int gameSize = 2; //게임 사이즈
     	inGame2 = new Tetris2(difficulty);
     	pane = new Pane();
     	this.mode = mode;
-    	this.time = 300; 
+    	this.time = 20; 
         pane.setStyle("-fx-background-color: #000000;");//배경 검은색 설정
         scene = new Scene(pane, XMAX, YMAX);
         delayflag=true;
@@ -170,6 +171,14 @@ public int gameSize = 2; //게임 사이즈
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+    
+    public void timerStop() {
+ 	   this.timeline.stop();
+    }
+    
+    public void timerStart() {
+ 	   this.timeline.play();
     }
 
 
@@ -416,27 +425,54 @@ public int gameSize = 2; //게임 사이즈
 		
 		if(deletedLines1 > 1) {
 			
+			int[][] reversedLineBoard = new int[BOARD_WIDTH][BOARD_WIDTH];
 			
-			for(int k=0; k<BOARD_WIDTH; k++) {
+			// 행을 역순으로 재배열
+			for (int i = 0; i < BOARD_WIDTH; i++) {
+			    reversedLineBoard[i] = lineBoard[BOARD_WIDTH - 1 - i];
+			}
+			
+			// 재배열된 배열을 lineBoard에 다시 할당
+			lineBoard = reversedLineBoard;
+			
+			//System.out.println(Arrays.deepToString(lineBoard));
+			
+			for(int k=0; k < BOARD_WIDTH; k++) {
 				for(int m=0; m<BOARD_WIDTH; m++) {
 	            	Text cellTextD = new Text(String.valueOf(lineBoard[k][m]));
 	            	
-	            	if(lineBoard[k][m] == 0 || lineBoard[k][m] == 32) {
+	            	 // 블럭 X 좌표와 Y 좌표를 일관되게 계산
+	                double x = m * interver / 2.12 + boardsize * 14 + 6;
+	                double y = k * interver / 2.12 + boardsize * 17 + 3;
+	            	
+	    			//System.out.println(lineBoard[k][m]);
+	            	
+	            	if(m == 0 || m == 11) {
+	            		
+	            		cellTextD.setText(" ");
+		               	cellTextD.setX(m* interver/2.09 + boardsize*14 + 6);//블럭 X좌표
+		                cellTextD.setY(k* interver/2.09 + boardsize*12 + 8);//블럭 Y좌표
+		                cellTextD.setFont(Font.font(scoresize/1.1));//블럭사이즈
+	            	}
+	            	
+	            	
+	            	else if(lineBoard[k][m] == 0 || lineBoard[k][m] == 32) {
 	               	 
 	               	 cellTextD.setText(" ");
-	               	 cellTextD.setFill(Color.BLACK);
-	               	 cellTextD.setX(m* interver/1.5 + boardsize*14);//블럭 X좌표
-	                 cellTextD.setY(k* interver/1.5 + boardsize*12);//블럭 Y좌표
-	                 cellTextD.setFont(Font.font(scoresize/1.1));//블럭사이즈
+	               	 cellTextD.setFill(Color.GRAY);
+	               	 cellTextD.setX(x);//블럭 X좌표
+	                 cellTextD.setY(y);//블럭 Y좌표
+	                 cellTextD.setFont(Font.font(scoresize/1.3));//블럭사이즈
 
 	                    
 	                }
 	                else {
+	                //System.out.println(lineBoard[k][m]);
 	               	 
 	               	 cellTextD.setText("■");
 	               	 cellTextD.setFill(Color.GRAY);
-	               	 cellTextD.setX(m* interver/2.09 + boardsize*14 + 6);//블럭 X좌표
-	                 cellTextD.setY(k* interver/2.09 + boardsize*12 + 10);//블럭 Y좌표
+	               	 cellTextD.setX(x);//블럭 X좌표
+	                 cellTextD.setY(y);//블럭 Y좌표
 	                 cellTextD.setFont(Font.font(scoresize/1.3));//블럭사이즈
 
 	                }
@@ -450,26 +486,26 @@ public int gameSize = 2; //게임 사이즈
 		
 		for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
-            	Text cellTextL = new Text();
+            	Text cellText = new Text();
             	
             	 if(i == 0 || i == 21) {//테트리스 벽 채우기
-                 	cellTextL.setText("■");
-                 	cellTextL.setFill(Color.WHITE);
-                 	cellTextL.setX(j* interver/2 + boardsize*14);//블럭 X좌표
-                    cellTextL.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
-                    cellTextL.setFont(Font.font(scoresize));//블럭사이즈
+                 	cellText.setText("■");
+                 	cellText.setFill(Color.WHITE);
+                 	cellText.setX(j* interver/2 + boardsize*14);//블럭 X좌표
+                    cellText.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
+                    cellText.setFont(Font.font(scoresize));//블럭사이즈
                  	
                  }
                  else if(j == 0 || j == 11) {//테트리스 벽 채우기
-                 	cellTextL.setText("■");
-                 	cellTextL.setFill(Color.WHITE);
-                 	cellTextL.setX(j* interver/2 + boardsize*14);//블럭 X좌표
-                    cellTextL.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
-                    cellTextL.setFont(Font.font(scoresize));//블럭사이즈
+                 	cellText.setText("■");
+                 	cellText.setFill(Color.WHITE);
+                 	cellText.setX(j* interver/2 + boardsize*14);//블럭 X좌표
+                    cellText.setY(i* interver/2 + boardsize*12);//블럭 Y좌표
+                    cellText.setFont(Font.font(scoresize));//블럭사이즈
                  }
                  
 
-                pane.getChildren().add(cellTextL);
+                pane.getChildren().add(cellText);
 
             	
 
@@ -506,14 +542,24 @@ public int gameSize = 2; //게임 사이즈
 		sc.setFont(Font.font(scoresize*0.8));
 		
 		//만약 battelmode ==3 이면 타이머 추가
-		// 배틀모드가 3일 때만 타이머 텍스트 추가
-        if (battleMode == 3) {
-            timerText.setX(boardsize * 14);
-            timerText.setY(boardsize * 15);
-            timerText.setFill(Color.WHITE);
-            timerText.setFont(Font.font(scoresize * 0.8));
-            pane.getChildren().add(timerText);
-        }
+				// 배틀모드가 3일 때만 타이머 텍스트 추가
+		        if (battleMode == 3) {
+		        	// 빛나는 효과
+		            InnerShadow innerShadow = new InnerShadow();
+		            innerShadow.setOffsetX(0f);
+		            innerShadow.setOffsetY(0f);
+		            innerShadow.setColor(Color.YELLOW);
+		            innerShadow.setRadius(10);
+
+		            timerText.setEffect(innerShadow);
+		            timerText.setStroke(Color.YELLOW); // 테두리 색상
+		            timerText.setStrokeWidth(1); // 테두리 두께
+		            timerText.setX(boardsize * 14);
+		            timerText.setY(boardsize * 1.5);
+		            timerText.setFill(Color.WHITE);
+		            timerText.setFont(Font.font(scoresize * 0.8));
+		            pane.getChildren().add(timerText);
+		        }
         
 		
 		//다음블럭 나타날 텍스트 테두리
@@ -656,6 +702,8 @@ public int gameSize = 2; //게임 사이즈
     				nbText.setText("d");
     				nbText.setFill(Color.WHITE);
         			break;
+    			case 14:
+    				nbText.setFill(Color.LIGHTGRAY);
     			default:
     				
     			}
