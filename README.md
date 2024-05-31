@@ -39,3 +39,6 @@ SE Lec TeamProject
 deleteBar는 가로 한 줄이 삭제될때 마다 증가합니다.
 
 줄 삭제 아이템들의 작용으로도 증가합니다.
+
+
+https://www.notion.so/add4e2246b0b43e9b75dcbe8fba0f1d7?pvs=4
