@@ -36,7 +36,7 @@ Follow these steps to set up the project in Eclipse:
 
 1. **Clone the Repository:**
    ```sh
-   git clone https://github.com/your-username/text-based-tetris.git
+   git clone https://github.com/Team14-SE-Tetris/Tetris.git
    ```
    
 2. **Import the Project into Eclipse:**
