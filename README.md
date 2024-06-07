@@ -1,6 +1,4 @@
-물론입니다! 아래는 Eclipse IDE를 사용하여 Java, JavaFX, JUnit5, TestFX를 활용해 텍스트 기반 테트리스를 구현한 프로젝트의 README 파일 예제입니다.
 
-```markdown
 # Text-based Tetris with Java, JavaFX, JUnit5, and TestFX
 
 Welcome to the Text-based Tetris project! This project is a simple implementation of the classic Tetris game using Java and JavaFX for the user interface, along with JUnit5 and TestFX for testing. The game is designed to run in an Eclipse IDE environment.
